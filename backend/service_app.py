@@ -10,7 +10,7 @@ sys.path.insert(0, str(backend_dir))
 from app import app
 
 if __name__ == '__main__':
-    # Set up logging for systemd
+    # Set up logging for launchd
     import logging
     logging.basicConfig(
         level=logging.INFO,
@@ -26,3 +26,4 @@ if __name__ == '__main__':
         host='0.0.0.0',
         use_reloader=False  # Important: disable reloader for service
     )
+
