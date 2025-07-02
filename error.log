@@ -1,0 +1,108 @@
+2025-07-02 16:02:48,641 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 16:02:48,642 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 16:03:16,616 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:03:16] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 16:03:16,650 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:03:16] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 16:03:16,652 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:03:16] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 16:03:16,688 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:03:16] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 16:03:16,689 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:03:16] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 16:05:19,464 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 16:05:19,465 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 16:05:29,660 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 16:05:29,661 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 16:08:27,242 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 16:08:27,242 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 16:10:44,838 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 16:10:44,839 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 16:13:31,255 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 16:13:31,270 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 16:13:31,270 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 16:13:31,301 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-02 16:13:31,315 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 16:13:31,317 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:13:31] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 16:14:11,852 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:14:11] "GET /api/scheduler/status HTTP/1.1" 200 -
+2025-07-02 16:14:13,251 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:14:13] "GET /api/email-config HTTP/1.1" 200 -
+2025-07-02 16:14:17,667 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:14:17] "GET /api/scheduler/status HTTP/1.1" 200 -
+2025-07-02 16:20:20,640 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:20:20] "POST /api/scheduler/start HTTP/1.1" 200 -
+2025-07-02 16:20:22,592 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:20:22] "GET /api/email-config HTTP/1.1" 200 -
+2025-07-02 16:20:25,103 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:20:25] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 16:20:25,104 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:20:25] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 16:33:49,381 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:33:49] "GET /api/scheduler/status HTTP/1.1" 200 -
+2025-07-02 16:33:50,969 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:33:50] "POST /api/scheduler/stop HTTP/1.1" 200 -
+2025-07-02 16:33:52,101 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 16:33:52] "POST /api/scheduler/start HTTP/1.1" 200 -
+2025-07-02 20:56:48,791 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 20:56:48,792 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 21:00:14,346 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.2:5000
+2025-07-02 21:00:14,346 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-02 21:14:40,777 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 21:14:40,791 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 21:14:40,794 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 21:14:40,827 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-02 21:14:40,834 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 21:14:40,835 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:40] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 21:14:49,471 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 21:14:49,472 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:14:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 21:22:33,173 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:22:33] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-02 21:22:44,506 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:22:44] "[35m[1mPOST /api/stocks HTTP/1.1[0m" 201 -
+2025-07-02 21:22:54,219 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:22:54] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-02 21:24:10,466 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 21:24:10] "POST /api/stocks/check HTTP/1.1" 200 -
+2025-07-02 22:07:37,840 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:37] "GET / HTTP/1.1" 200 -
+2025-07-02 22:07:37,856 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:37] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:07:37,861 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:37] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-02 22:07:37,874 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:07:37,875 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:07:52,659 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:52] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:07:52,672 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:52] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:07:52,673 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:52] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:07:52,684 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:07:52,686 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:07:53,359 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:53] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:07:53,370 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:53] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:07:53,371 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:53] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:07:53,377 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:53] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:07:53,378 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:07:53] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:08:44,912 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:44] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:08:44,925 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:44] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:08:44,927 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:44] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:08:44,949 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:44] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:08:44,953 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:44] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:08:45,461 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,474 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,476 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,484 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:08:45,485 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:08:45,694 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,706 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,706 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:08:45,711 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:08:45,712 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:45] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:08:47,643 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:47] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:08:47,655 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:47] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:08:47,656 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:47] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:08:47,667 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:08:47,667 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:08:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-02 22:09:41,236 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:09:41] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-02 22:09:41,251 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:09:41] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-02 22:09:41,252 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:09:41] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-02 22:09:41,290 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:09:41] "GET /api/products HTTP/1.1" 200 -
+2025-07-02 22:09:41,294 - werkzeug - INFO - 127.0.0.1 - - [02/Jul/2025 22:09:41] "GET /api/stats HTTP/1.1" 200 -
