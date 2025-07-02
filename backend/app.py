@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
+from stock_tracker import StockPriceTracker
 import asyncio
 import json
 from pathlib import Path
@@ -13,8 +14,9 @@ import os
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Initialize tracker
+# Initialize trackers
 tracker = StorenvyPriceTracker()
+stock_tracker = StockPriceTracker()
 
 # Global variable to store email config
 email_config_file = Path("email_config.json")
@@ -45,7 +47,7 @@ def js_files(filename):
     frontend_js = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'js')
     return send_from_directory(frontend_js, filename)
 
-# API ROUTES
+# PRODUCT API ROUTES
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Get all tracked products"""
@@ -98,6 +100,81 @@ def check_prices():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# STOCK API ROUTES
+@app.route('/api/stocks', methods=['GET'])
+def get_stock_alerts():
+    """Get all stock alerts"""
+    alerts = stock_tracker.get_stock_alerts()
+    return jsonify(alerts)
+
+@app.route('/api/stocks', methods=['POST'])
+def add_stock_alert():
+    """Add a new stock alert"""
+    data = request.json
+    symbol = data.get('symbol', '').upper().strip()
+    alert_type = data.get('alert_type')
+    threshold = data.get('threshold')
+    
+    if not symbol or not alert_type or threshold is None:
+        return jsonify({'error': 'Symbol, alert type, and threshold are required'}), 400
+    
+    # Validate alert type
+    valid_alert_types = ['price_above', 'price_below', 'percent_up', 'percent_down']
+    if alert_type not in valid_alert_types:
+        return jsonify({'error': f'Invalid alert type. Must be one of: {valid_alert_types}'}), 400
+    
+    try:
+        threshold = float(threshold)
+        stock_tracker.add_stock_alert(symbol, alert_type, threshold)
+        return jsonify({'message': f'Stock alert added for {symbol}'}), 201
+    except ValueError:
+        return jsonify({'error': 'Invalid threshold format'}), 400
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stocks/<int:alert_id>', methods=['DELETE'])
+def delete_stock_alert(alert_id):
+    """Delete a stock alert"""
+    try:
+        stock_tracker.delete_stock_alert(alert_id)
+        return jsonify({'message': 'Stock alert deleted successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stocks/check', methods=['POST'])
+def check_stock_prices():
+    """Manually check all stock prices"""
+    try:
+        # Run the async function in a new event loop
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(stock_tracker.check_all_stock_alerts(email_config))
+        
+        # Return updated alerts
+        alerts = stock_tracker.get_stock_alerts()
+        return jsonify({
+            'message': 'Stock price check completed',
+            'alerts': alerts
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/stocks/stats', methods=['GET'])
+def get_stock_stats():
+    """Get statistics about stock alerts"""
+    stats = stock_tracker.get_stock_stats()
+    return jsonify(stats)
+
+@app.route('/api/stocks/reset-triggered', methods=['POST'])
+def reset_triggered_stock_alerts():
+    """Reset all triggered alerts (useful for daily reset)"""
+    try:
+        stock_tracker.reset_triggered_alerts()
+        return jsonify({'message': 'All triggered alerts have been reset'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# EMAIL CONFIGURATION ROUTES
 @app.route('/api/email-config', methods=['GET'])
 def get_email_config():
     """Get current email configuration status"""
@@ -127,6 +204,7 @@ def update_email_config():
     
     return jsonify({'message': 'Email configuration updated'}), 200
 
+# SCHEDULER ROUTES
 @app.route('/api/scheduler/status', methods=['GET'])
 def get_scheduler_status():
     """Get scheduler status"""
@@ -146,8 +224,12 @@ def start_scheduler():
     scheduler_running = True
     
     def run_scheduler():
+        # Schedule both product and stock checks
         schedule.every(12).hours.do(
             lambda: asyncio.run(tracker.check_all_products(email_config))
+        )
+        schedule.every(12).hours.do(
+            lambda: asyncio.run(stock_tracker.check_all_stock_alerts(email_config))
         )
         
         while scheduler_running:
@@ -167,9 +249,11 @@ def stop_scheduler():
     scheduler_running = False
     return jsonify({'message': 'Scheduler stopped'}), 200
 
+# STATISTICS ROUTES
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    """Get statistics about tracked products"""
+    """Get statistics about tracked products and stocks"""
+    # Product stats
     products = tracker.get_tracked_products()
     
     total_products = len(products)
@@ -177,15 +261,24 @@ def get_stats():
     total_savings = sum(p['target_price'] - p['last_price'] for p in products 
                        if p.get('last_price') and p['last_price'] <= p['target_price'])
     
+    # Stock stats
+    stock_stats = stock_tracker.get_stock_stats()
+    
     return jsonify({
+        # Product stats (existing)
         'total_products': total_products,
         'products_below_target': products_below_target,
-        'total_savings': round(total_savings, 2)
+        'total_savings': round(total_savings, 2),
+        
+        # Stock stats (new)
+        'total_stock_alerts': stock_stats['total_alerts'],
+        'triggered_stock_alerts': stock_stats['triggered_alerts'],
+        'monitoring_stock_alerts': stock_stats['monitoring_alerts']
     })
 
 if __name__ == '__main__':
     print("\n" + "="*50)
-    print("STORENVY PRICE TRACKER")
+    print("STORENVY & STOCK PRICE TRACKER")
     print("="*50)
     print("\nBackend server starting...")
     print("\nOnce started, open your browser to:")

@@ -13,20 +13,24 @@
     <header class="header">
         <div class="container">
             <h1><i class="fas fa-shopping-bag"></i> Storenvy Price Tracker</h1>
-            <div class="stats" id="stats">
-                <div class="stat-item">
-                    <span class="stat-value" id="totalProducts">0</span>
-                    <span class="stat-label">Products</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="belowTarget">0</span>
-                    <span class="stat-label">Below Target</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value" id="totalSavings">$0</span>
-                    <span class="stat-label">Total Savings</span>
-                </div>
-            </div>
+<div class="stats" id="stats">
+    <div class="stat-item">
+        <span class="stat-value" id="totalProducts">0</span>
+        <span class="stat-label">Products</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-value" id="totalStockAlerts">0</span>
+        <span class="stat-label">Stock Alerts</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-value" id="triggeredAlerts">0</span>
+        <span class="stat-label">Triggered</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-value" id="totalSavings">$0</span>
+        <span class="stat-label">Savings</span>
+    </div>
+</div>
         </div>
     </header>
 
@@ -119,7 +123,29 @@
             </div>
         </div>
 
-        <!-- Schedule Page -->
+<!-- Stocks Page -->
+<div class="page" id="stocksPage">
+    <div class="container">
+        <div class="page-header">
+            <h2>Stock Alerts</h2>
+            <button class="btn btn-primary" onclick="showAddStockModal()">
+                <i class="fas fa-plus"></i> Add Stock Alert
+            </button>
+        </div>
+        
+        <div class="products-grid" id="stocksList">
+            <!-- Stock alerts will be loaded here -->
+        </div>
+        
+        <div class="empty-state" id="stocksEmptyState" style="display: none;">
+            <i class="fas fa-chart-line"></i>
+            <h3>No stock alerts yet</h3>
+            <p>Start tracking stocks by clicking the "Add Stock Alert" button above</p>
+        </div>
+    </div>
+</div>      
+
+  <!-- Schedule Page -->
         <div class="page" id="schedulePage">
             <div class="container">
                 <div class="schedule-content">
@@ -147,25 +173,29 @@
         </div>
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active" onclick="showPage('productsPage', this)">
-            <i class="fas fa-list"></i>
-            <span>Products</span>
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('checkPricesPage', this)">
-            <i class="fas fa-sync-alt"></i>
-            <span>Check</span>
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('emailPage', this)">
-            <i class="fas fa-envelope"></i>
-            <span>Email</span>
-        </a>
-        <a href="#" class="nav-item" onclick="showPage('schedulePage', this)">
-            <i class="fas fa-clock"></i>
-            <span>Schedule</span>
-        </a>
-    </nav>
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+    <a href="#" class="nav-item active" onclick="showPage('productsPage', this)">
+        <i class="fas fa-list"></i>
+        <span>Products</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('stocksPage', this)">
+        <i class="fas fa-chart-line"></i>
+        <span>Stocks</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('checkPricesPage', this)">
+        <i class="fas fa-sync-alt"></i>
+        <span>Check</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('emailPage', this)">
+        <i class="fas fa-envelope"></i>
+        <span>Email</span>
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('schedulePage', this)">
+        <i class="fas fa-clock"></i>
+        <span>Schedule</span>
+    </a>
+</nav>
 
     <!-- Add Product Modal -->
     <div class="modal" id="addProductModal">
@@ -198,6 +228,48 @@
             </form>
         </div>
     </div>
+
+<!-- Add Stock Alert Modal -->
+<div class="modal" id="addStockModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Add Stock Alert</h3>
+            <button class="modal-close" onclick="closeAddStockModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="addStockForm" onsubmit="addStockAlert(event)">
+            <div class="form-group">
+                <label>Stock Symbol</label>
+                <input type="text" id="stockSymbol" required class="form-control" 
+                       placeholder="AAPL, MSFT, GOOGL, etc." style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label>Alert Type</label>
+                <select id="alertType" required class="form-control">
+                    <option value="">Select alert type...</option>
+                    <option value="price_above">Price goes above</option>
+                    <option value="price_below">Price goes below</option>
+                    <option value="percent_up">Price increases by %</option>
+                    <option value="percent_down">Price decreases by %</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="thresholdLabel">Threshold</label>
+                <input type="number" id="alertThreshold" required step="0.01" min="0" 
+                       class="form-control" placeholder="210.00">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddStockModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Alert
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
