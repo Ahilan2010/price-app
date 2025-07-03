@@ -26,9 +26,55 @@ if email_config_file.exists():
     with open(email_config_file, 'r') as f:
         email_config = json.load(f)
 
-# Background scheduler
-scheduler_running = False
-scheduler_thread = None
+# Background schedulers
+schedulers_running = False
+product_scheduler_thread = None
+stock_scheduler_thread = None
+
+def start_automatic_schedulers():
+    """Start automatic background schedulers for products and stocks"""
+    global schedulers_running, product_scheduler_thread, stock_scheduler_thread
+    
+    if schedulers_running:
+        return
+    
+    schedulers_running = True
+    print("🚀 Starting automatic schedulers...")
+    print("📦 Products: Every 6 hours")
+    print("📈 Stocks: Every 5 minutes")
+    
+    def product_scheduler():
+        """Product price checking every 6 hours"""
+        schedule.every(6).hours.do(
+            lambda: asyncio.run(tracker.check_all_products(email_config))
+        )
+        
+        while schedulers_running:
+            schedule.run_pending()
+            time.sleep(60)  # Check every minute
+    
+    def stock_scheduler():
+        """Stock price checking every 5 minutes"""
+        schedule.every(5).minutes.do(
+            lambda: asyncio.run(stock_tracker.check_all_stock_alerts(email_config))
+        )
+        
+        while schedulers_running:
+            schedule.run_pending()
+            time.sleep(30)  # Check every 30 seconds for stocks
+    
+    # Start both schedulers in separate threads
+    product_scheduler_thread = threading.Thread(target=product_scheduler, daemon=True)
+    stock_scheduler_thread = threading.Thread(target=stock_scheduler, daemon=True)
+    
+    product_scheduler_thread.start()
+    stock_scheduler_thread.start()
+
+def stop_automatic_schedulers():
+    """Stop automatic schedulers"""
+    global schedulers_running
+    schedulers_running = False
+    print("⏹️ Automatic schedulers stopped")
 
 # SERVE THE FRONTEND
 @app.route('/')
@@ -204,51 +250,6 @@ def update_email_config():
     
     return jsonify({'message': 'Email configuration updated'}), 200
 
-# SCHEDULER ROUTES
-@app.route('/api/scheduler/status', methods=['GET'])
-def get_scheduler_status():
-    """Get scheduler status"""
-    return jsonify({
-        'running': scheduler_running,
-        'interval_hours': 12
-    })
-
-@app.route('/api/scheduler/start', methods=['POST'])
-def start_scheduler():
-    """Start automatic price checking"""
-    global scheduler_running, scheduler_thread
-    
-    if scheduler_running:
-        return jsonify({'message': 'Scheduler already running'}), 200
-    
-    scheduler_running = True
-    
-    def run_scheduler():
-        # Schedule both product and stock checks
-        schedule.every(12).hours.do(
-            lambda: asyncio.run(tracker.check_all_products(email_config))
-        )
-        schedule.every(12).hours.do(
-            lambda: asyncio.run(stock_tracker.check_all_stock_alerts(email_config))
-        )
-        
-        while scheduler_running:
-            schedule.run_pending()
-            time.sleep(60)
-    
-    scheduler_thread = threading.Thread(target=run_scheduler)
-    scheduler_thread.start()
-    
-    return jsonify({'message': 'Scheduler started'}), 200
-
-@app.route('/api/scheduler/stop', methods=['POST'])
-def stop_scheduler():
-    """Stop automatic price checking"""
-    global scheduler_running
-    
-    scheduler_running = False
-    return jsonify({'message': 'Scheduler stopped'}), 200
-
 # STATISTICS ROUTES
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
@@ -276,14 +277,34 @@ def get_stats():
         'monitoring_stock_alerts': stock_stats['monitoring_alerts']
     })
 
+# SCHEDULER STATUS ROUTE (for information only)
+@app.route('/api/scheduler/status', methods=['GET'])
+def get_scheduler_status():
+    """Get automatic scheduler status"""
+    return jsonify({
+        'products_running': schedulers_running,
+        'stocks_running': schedulers_running,
+        'products_interval': '6 hours',
+        'stocks_interval': '5 minutes'
+    })
+
 if __name__ == '__main__':
-    print("\n" + "="*50)
-    print("STORENVY & STOCK PRICE TRACKER")
-    print("="*50)
-    print("\nBackend server starting...")
-    print("\nOnce started, open your browser to:")
+    print("\n" + "="*60)
+    print("🛍️  STORENVY & STOCK PRICE TRACKER")
+    print("="*60)
+    print("\n🚀 Backend server starting...")
+    print("📦 Products: Auto-check every 6 hours")
+    print("📈 Stocks: Auto-check every 5 minutes")
+    print("\n🌐 Once started, open your browser to:")
     print("→ http://localhost:5000")
-    print("\nPress Ctrl+C to stop the server")
-    print("="*50 + "\n")
+    print("\n⏹️  Press Ctrl+C to stop the server")
+    print("="*60 + "\n")
     
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    # Start automatic schedulers
+    start_automatic_schedulers()
+    
+    try:
+        app.run(debug=True, port=5000, host='0.0.0.0')
+    finally:
+        # Stop schedulers when app shuts down
+        stop_automatic_schedulers()

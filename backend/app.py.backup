@@ -14,7 +14,7 @@ import os
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Initialize tracker
+# Initialize trackers
 tracker = StorenvyPriceTracker()
 stock_tracker = StockPriceTracker()
 
@@ -26,9 +26,55 @@ if email_config_file.exists():
     with open(email_config_file, 'r') as f:
         email_config = json.load(f)
 
-# Background scheduler
-scheduler_running = False
-scheduler_thread = None
+# Background schedulers
+schedulers_running = False
+product_scheduler_thread = None
+stock_scheduler_thread = None
+
+def start_automatic_schedulers():
+    """Start automatic background schedulers for products and stocks"""
+    global schedulers_running, product_scheduler_thread, stock_scheduler_thread
+    
+    if schedulers_running:
+        return
+    
+    schedulers_running = True
+    print("🚀 Starting automatic schedulers...")
+    print("📦 Products: Every 6 hours")
+    print("📈 Stocks: Every 5 minutes")
+    
+    def product_scheduler():
+        """Product price checking every 6 hours"""
+        schedule.every(6).hours.do(
+            lambda: asyncio.run(tracker.check_all_products(email_config))
+        )
+        
+        while schedulers_running:
+            schedule.run_pending()
+            time.sleep(60)  # Check every minute
+    
+    def stock_scheduler():
+        """Stock price checking every 5 minutes"""
+        schedule.every(5).minutes.do(
+            lambda: asyncio.run(stock_tracker.check_all_stock_alerts(email_config))
+        )
+        
+        while schedulers_running:
+            schedule.run_pending()
+            time.sleep(30)  # Check every 30 seconds for stocks
+    
+    # Start both schedulers in separate threads
+    product_scheduler_thread = threading.Thread(target=product_scheduler, daemon=True)
+    stock_scheduler_thread = threading.Thread(target=stock_scheduler, daemon=True)
+    
+    product_scheduler_thread.start()
+    stock_scheduler_thread.start()
+
+def stop_automatic_schedulers():
+    """Stop automatic schedulers"""
+    global schedulers_running
+    schedulers_running = False
+    print("⏹️ Automatic schedulers stopped")
 
 # SERVE THE FRONTEND
 @app.route('/')
@@ -47,7 +93,7 @@ def js_files(filename):
     frontend_js = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'js')
     return send_from_directory(frontend_js, filename)
 
-# API ROUTES
+# PRODUCT API ROUTES
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Get all tracked products"""
@@ -100,102 +146,7 @@ def check_prices():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/email-config', methods=['GET'])
-def get_email_config():
-    """Get current email configuration status"""
-    return jsonify({
-        'enabled': email_config.get('enabled', False),
-        'configured': bool(email_config.get('smtp_server'))
-    })
-
-@app.route('/api/email-config', methods=['POST'])
-def update_email_config():
-    """Update email configuration"""
-    global email_config
-    data = request.json
-    
-    email_config = {
-        'enabled': data.get('enabled', False),
-        'smtp_server': data.get('smtp_server', ''),
-        'smtp_port': int(data.get('smtp_port', 587)),
-        'from_email': data.get('from_email', ''),
-        'password': data.get('password', ''),
-        'to_email': data.get('to_email', '')
-    }
-    
-    # Save to file
-    with open(email_config_file, 'w') as f:
-        json.dump(email_config, f)
-    
-    return jsonify({'message': 'Email configuration updated'}), 200
-
-@app.route('/api/scheduler/status', methods=['GET'])
-def get_scheduler_status():
-    """Get scheduler status"""
-    return jsonify({
-        'running': scheduler_running,
-        'interval_hours': 12
-    })
-
-@app.route('/api/scheduler/start', methods=['POST'])
-def start_scheduler():
-    """Start automatic price checking"""
-    global scheduler_running, scheduler_thread
-    
-    if scheduler_running:
-        return jsonify({'message': 'Scheduler already running'}), 200
-    
-    scheduler_running = True
-    
-    def run_scheduler():
-        schedule.every(12).hours.do(
-            lambda: asyncio.run(tracker.check_all_products(email_config))
-        )
-        
-        while scheduler_running:
-            schedule.run_pending()
-            time.sleep(60)
-    
-    scheduler_thread = threading.Thread(target=run_scheduler)
-    scheduler_thread.start()
-    
-    return jsonify({'message': 'Scheduler started'}), 200
-
-@app.route('/api/scheduler/stop', methods=['POST'])
-def stop_scheduler():
-    """Stop automatic price checking"""
-    global scheduler_running
-    
-    scheduler_running = False
-    return jsonify({'message': 'Scheduler stopped'}), 200
-
-@app.route('/api/stats', methods=['GET'])
-def get_stats():
-    """Get statistics about tracked products and stocks"""
-    # Your existing product stats
-    products = tracker.get_tracked_products()
-    
-    total_products = len(products)
-    products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
-    total_savings = sum(p['target_price'] - p['last_price'] for p in products 
-                       if p.get('last_price') and p['last_price'] <= p['target_price'])
-    
-    # Add stock stats
-    stock_stats = stock_tracker.get_stock_stats()
-    
-    return jsonify({
-        # Product stats (existing)
-        'total_products': total_products,
-        'products_below_target': products_below_target,
-        'total_savings': round(total_savings, 2),
-        
-        # Stock stats (new)
-        'total_stock_alerts': stock_stats['total_alerts'],
-        'triggered_stock_alerts': stock_stats['triggered_alerts'],
-        'monitoring_stock_alerts': stock_stats['monitoring_alerts']
-    })
-
-    
+# STOCK API ROUTES
 @app.route('/api/stocks', methods=['GET'])
 def get_stock_alerts():
     """Get all stock alerts"""
@@ -267,16 +218,93 @@ def reset_triggered_stock_alerts():
         stock_tracker.reset_triggered_alerts()
         return jsonify({'message': 'All triggered alerts have been reset'}), 200
     except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# EMAIL CONFIGURATION ROUTES
+@app.route('/api/email-config', methods=['GET'])
+def get_email_config():
+    """Get current email configuration status"""
+    return jsonify({
+        'enabled': email_config.get('enabled', False),
+        'configured': bool(email_config.get('smtp_server'))
+    })
+
+@app.route('/api/email-config', methods=['POST'])
+def update_email_config():
+    """Update email configuration"""
+    global email_config
+    data = request.json
     
+    email_config = {
+        'enabled': data.get('enabled', False),
+        'smtp_server': data.get('smtp_server', ''),
+        'smtp_port': int(data.get('smtp_port', 587)),
+        'from_email': data.get('from_email', ''),
+        'password': data.get('password', ''),
+        'to_email': data.get('to_email', '')
+    }
+    
+    # Save to file
+    with open(email_config_file, 'w') as f:
+        json.dump(email_config, f)
+    
+    return jsonify({'message': 'Email configuration updated'}), 200
+
+# STATISTICS ROUTES
+@app.route('/api/stats', methods=['GET'])
+def get_stats():
+    """Get statistics about tracked products and stocks"""
+    # Product stats
+    products = tracker.get_tracked_products()
+    
+    total_products = len(products)
+    products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
+    total_savings = sum(p['target_price'] - p['last_price'] for p in products 
+                       if p.get('last_price') and p['last_price'] <= p['target_price'])
+    
+    # Stock stats
+    stock_stats = stock_tracker.get_stock_stats()
+    
+    return jsonify({
+        # Product stats (existing)
+        'total_products': total_products,
+        'products_below_target': products_below_target,
+        'total_savings': round(total_savings, 2),
+        
+        # Stock stats (new)
+        'total_stock_alerts': stock_stats['total_alerts'],
+        'triggered_stock_alerts': stock_stats['triggered_alerts'],
+        'monitoring_stock_alerts': stock_stats['monitoring_alerts']
+    })
+
+# SCHEDULER STATUS ROUTE (for information only)
+@app.route('/api/scheduler/status', methods=['GET'])
+def get_scheduler_status():
+    """Get automatic scheduler status"""
+    return jsonify({
+        'products_running': schedulers_running,
+        'stocks_running': schedulers_running,
+        'products_interval': '6 hours',
+        'stocks_interval': '5 minutes'
+    })
 
 if __name__ == '__main__':
-    print("\n" + "="*50)
-    print("STORENVY PRICE TRACKER")
-    print("="*50)
-    print("\nBackend server starting...")
-    print("\nOnce started, open your browser to:")
+    print("\n" + "="*60)
+    print("🛍️  STORENVY & STOCK PRICE TRACKER")
+    print("="*60)
+    print("\n🚀 Backend server starting...")
+    print("📦 Products: Auto-check every 6 hours")
+    print("📈 Stocks: Auto-check every 5 minutes")
+    print("\n🌐 Once started, open your browser to:")
     print("→ http://localhost:5000")
-    print("\nPress Ctrl+C to stop the server")
-    print("="*50 + "\n")
+    print("\n⏹️  Press Ctrl+C to stop the server")
+    print("="*60 + "\n")
     
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    # Start automatic schedulers
+    start_automatic_schedulers()
+    
+    try:
+        app.run(debug=True, port=5000, host='0.0.0.0')
+    finally:
+        # Stop schedulers when app shuts down
+        stop_automatic_schedulers()
