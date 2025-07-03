@@ -3,34 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Storenvy Price Tracker</title>
+    <title>PriceTracker</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="container">
-            <h1><i class="fas fa-shopping-bag"></i> Storenvy Price Tracker</h1>
-<div class="stats" id="stats">
-    <div class="stat-item">
-        <span class="stat-value" id="totalProducts">0</span>
-        <span class="stat-label">Products</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-value" id="totalStockAlerts">0</span>
-        <span class="stat-label">Stock Alerts</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-value" id="triggeredAlerts">0</span>
-        <span class="stat-label">Triggered</span>
-    </div>
-    <div class="stat-item">
-        <span class="stat-value" id="totalSavings">$0</span>
-        <span class="stat-label">Savings</span>
-    </div>
-</div>
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-chart-line-up"></i>
+                    </div>
+                    <h1>PriceTracker</h1>
+                    <span class="tagline">Smart Monitoring</span>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon products">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalProducts">0</span>
+                            <span class="stat-label">Products</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon stocks">
+                            <i class="fas fa-chart-candlestick"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalStockAlerts">0</span>
+                            <span class="stat-label">Stock Alerts</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon alerts">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="triggeredAlerts">0</span>
+                            <span class="stat-label">Triggered</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon savings">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalSavings">$0</span>
+                            <span class="stat-label">Potential Savings</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -40,20 +72,28 @@
         <div class="page active" id="productsPage">
             <div class="container">
                 <div class="page-header">
-                    <h2>Tracked Products</h2>
+                    <div class="page-title">
+                        <h2><i class="fas fa-shopping-cart"></i> Product Tracking</h2>
+                        <p>Monitor prices and get notified when they drop</p>
+                    </div>
                     <button class="btn btn-primary" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Product
                     </button>
                 </div>
                 
-                <div class="products-grid" id="productsList">
+                <div class="content-grid" id="productsList">
                     <!-- Products will be loaded here -->
                 </div>
                 
                 <div class="empty-state" id="emptyState" style="display: none;">
-                    <i class="fas fa-box-open"></i>
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-bag"></i>
+                    </div>
                     <h3>No products tracked yet</h3>
-                    <p>Start tracking products by clicking the "Add Product" button above</p>
+                    <p>Start monitoring your favorite products for price drops</p>
+                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Your First Product
+                    </button>
                 </div>
             </div>
         </div>
@@ -62,94 +102,161 @@
         <div class="page" id="stocksPage">
             <div class="container">
                 <div class="page-header">
-                    <h2>Stock Alerts</h2>
+                    <div class="page-title">
+                        <h2><i class="fas fa-chart-line"></i> Stock Alerts</h2>
+                        <p>Set price alerts for your favorite stocks</p>
+                    </div>
                     <button class="btn btn-primary" onclick="showAddStockModal()">
-                        <i class="fas fa-plus"></i> Add Stock Alert
+                        <i class="fas fa-plus"></i> Add Alert
                     </button>
                 </div>
                 
-                <div class="products-grid" id="stocksList">
+                <div class="content-grid" id="stocksList">
                     <!-- Stock alerts will be loaded here -->
                 </div>
                 
                 <div class="empty-state" id="stocksEmptyState" style="display: none;">
-                    <i class="fas fa-chart-line"></i>
+                    <div class="empty-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
                     <h3>No stock alerts yet</h3>
-                    <p>Start tracking stocks by clicking the "Add Stock Alert" button above</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Check Prices Page -->
-        <div class="page" id="checkPricesPage">
-            <div class="container">
-                <div class="check-prices-content">
-                    <i class="fas fa-sync-alt icon-large"></i>
-                    <h2>Check All Prices</h2>
-                    <p>Manually check the current prices of all tracked products and stocks</p>
-                    <button class="btn btn-primary btn-large" onclick="checkPrices()" id="checkPricesBtn">
-                        <i class="fas fa-search"></i> Check Prices Now
+                    <p>Create alerts to track stock price movements</p>
+                    <button class="btn btn-primary" onclick="showAddStockModal()">
+                        <i class="fas fa-plus"></i> Create First Alert
                     </button>
-                    <div class="checking-status" id="checkingStatus" style="display: none;">
-                        <div class="spinner"></div>
-                        <p>Checking prices...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monitor Page -->
+        <div class="page" id="monitorPage">
+            <div class="container">
+                <div class="monitor-content">
+                    <div class="monitor-header">
+                        <div class="monitor-icon">
+                            <i class="fas fa-radar"></i>
+                        </div>
+                        <h2>Price Monitor</h2>
+                        <p>Real-time price checking and automatic monitoring</p>
                     </div>
                     
-                    <!-- Auto-check Status -->
-                    <div style="margin-top: 40px; text-align: center;">
-                        <h3>Automatic Checking</h3>
-                        <p><i class="fas fa-clock"></i> Products: Every 6 hours</p>
-                        <p><i class="fas fa-chart-line"></i> Stocks: Every 5 minutes</p>
-                        <p><small>Background checking runs automatically when the app is running</small></p>
+                    <div class="monitor-actions">
+                        <button class="btn btn-primary btn-large" onclick="checkPrices()" id="checkPricesBtn">
+                            <i class="fas fa-search-dollar"></i> Check All Prices
+                        </button>
+                        
+                        <div class="checking-status" id="checkingStatus" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Scanning prices across the web...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Scheduler Status -->
+                    <div class="scheduler-panel">
+                        <h3><i class="fas fa-clock"></i> Automatic Monitoring</h3>
+                        <div class="scheduler-info">
+                            <div class="schedule-item">
+                                <div class="schedule-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="schedule-details">
+                                    <span class="schedule-type">Products</span>
+                                    <span class="schedule-interval">Every 6 hours</span>
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="schedule-details">
+                                    <span class="schedule-type">Stocks</span>
+                                    <span class="schedule-interval">Every 5 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="scheduler-status" id="schedulerStatus">
+                            <div class="status-indicator">
+                                <div class="status-dot" id="statusDot"></div>
+                                <span id="statusText">Checking status...</span>
+                            </div>
+                            
+                            <div class="scheduler-controls">
+                                <button class="btn btn-success" onclick="startScheduler()" id="startBtn">
+                                    <i class="fas fa-play"></i> Start Monitoring
+                                </button>
+                                <button class="btn btn-danger" onclick="stopScheduler()" id="stopBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i> Stop Monitoring
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Email Settings Page -->
-        <div class="page" id="emailPage">
+        <!-- Settings Page -->
+        <div class="page" id="settingsPage">
             <div class="container">
-                <h2>Email Notifications</h2>
-                <form class="settings-form" id="emailForm">
-                    <div class="form-group">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="emailEnabled">
-                            <span class="toggle-slider"></span>
-                            <span class="toggle-label">Enable Email Alerts</span>
-                        </label>
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-cog"></i> Settings</h2>
+                        <p>Configure email notifications and preferences</p>
                     </div>
-                    
-                    <div id="emailSettings" style="display: none;">
-                        <div class="form-group">
-                            <label>SMTP Server</label>
-                            <input type="text" id="smtpServer" placeholder="smtp.gmail.com" class="form-control">
+                </div>
+                
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
+                            <p>Get notified when prices hit your targets</p>
                         </div>
                         
-                        <div class="form-group">
-                            <label>SMTP Port</label>
-                            <input type="number" id="smtpPort" value="587" class="form-control">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>From Email</label>
-                            <input type="email" id="fromEmail" placeholder="your-email@gmail.com" class="form-control">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Password</label>
-                            <input type="password" id="password" placeholder="App-specific password" class="form-control">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>To Email</label>
-                            <input type="email" id="toEmail" placeholder="recipient@email.com" class="form-control">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Settings
-                        </button>
+                        <form class="settings-form" id="emailForm">
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="emailEnabled">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">Enable Email Alerts</span>
+                                </label>
+                            </div>
+                            
+                            <div id="emailSettings" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>SMTP Server</label>
+                                        <input type="text" id="smtpServer" placeholder="smtp.gmail.com" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Port</label>
+                                        <input type="number" id="smtpPort" value="587" class="form-control">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>From Email</label>
+                                    <input type="email" id="fromEmail" placeholder="your-email@gmail.com" class="form-control">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>App Password</label>
+                                    <input type="password" id="password" placeholder="Your app-specific password" class="form-control">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Notification Email</label>
+                                    <input type="email" id="toEmail" placeholder="notifications@email.com" class="form-control">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Configuration
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </main>
@@ -157,20 +264,28 @@
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
         <a href="#" class="nav-item active" onclick="showPage('productsPage', this)">
-            <i class="fas fa-list"></i>
+            <div class="nav-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
             <span>Products</span>
         </a>
         <a href="#" class="nav-item" onclick="showPage('stocksPage', this)">
-            <i class="fas fa-chart-line"></i>
+            <div class="nav-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
             <span>Stocks</span>
         </a>
-        <a href="#" class="nav-item" onclick="showPage('checkPricesPage', this)">
-            <i class="fas fa-sync-alt"></i>
-            <span>Check</span>
+        <a href="#" class="nav-item" onclick="showPage('monitorPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-radar"></i>
+            </div>
+            <span>Monitor</span>
         </a>
-        <a href="#" class="nav-item" onclick="showPage('emailPage', this)">
-            <i class="fas fa-envelope"></i>
-            <span>Email</span>
+        <a href="#" class="nav-item" onclick="showPage('settingsPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <span>Settings</span>
         </a>
     </nav>
 
@@ -178,19 +293,19 @@
     <div class="modal" id="addProductModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add Product to Track</h3>
+                <h3><i class="fas fa-plus"></i> Track New Product</h3>
                 <button class="modal-close" onclick="closeAddProductModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="addProductForm" onsubmit="addProduct(event)">
                 <div class="form-group">
-                    <label>Storenvy Product URL</label>
+                    <label><i class="fas fa-link"></i> Product URL</label>
                     <input type="url" id="productUrl" required class="form-control" 
                            placeholder="https://www.storenvy.com/products/...">
                 </div>
                 <div class="form-group">
-                    <label>Target Price ($)</label>
+                    <label><i class="fas fa-dollar-sign"></i> Target Price</label>
                     <input type="number" id="targetPrice" required step="0.01" min="0" 
                            class="form-control" placeholder="25.00">
                 </div>
@@ -199,7 +314,7 @@
                         Cancel
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Product
+                        <i class="fas fa-plus"></i> Start Tracking
                     </button>
                 </div>
             </form>
@@ -210,29 +325,29 @@
     <div class="modal" id="addStockModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add Stock Alert</h3>
+                <h3><i class="fas fa-chart-line"></i> Create Stock Alert</h3>
                 <button class="modal-close" onclick="closeAddStockModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <form id="addStockForm" onsubmit="addStockAlert(event)">
                 <div class="form-group">
-                    <label>Stock Symbol</label>
+                    <label><i class="fas fa-tag"></i> Stock Symbol</label>
                     <input type="text" id="stockSymbol" required class="form-control" 
                            placeholder="AAPL, MSFT, GOOGL, etc." style="text-transform: uppercase;">
                 </div>
                 <div class="form-group">
-                    <label>Alert Type</label>
+                    <label><i class="fas fa-bell"></i> Alert Type</label>
                     <select id="alertType" required class="form-control">
                         <option value="">Select alert type...</option>
-                        <option value="price_above">Price goes above</option>
-                        <option value="price_below">Price goes below</option>
+                        <option value="price_above">Price rises above</option>
+                        <option value="price_below">Price drops below</option>
                         <option value="percent_up">Price increases by %</option>
                         <option value="percent_down">Price decreases by %</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label id="thresholdLabel">Threshold</label>
+                    <label id="thresholdLabel"><i class="fas fa-target"></i> Threshold</label>
                     <input type="number" id="alertThreshold" required step="0.01" min="0" 
                            class="form-control" placeholder="210.00">
                 </div>
@@ -241,7 +356,7 @@
                         Cancel
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Alert
+                        <i class="fas fa-bell"></i> Create Alert
                     </button>
                 </div>
             </form>

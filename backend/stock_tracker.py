@@ -1,4 +1,4 @@
-# backend/stock_tracker.py
+# backend/stock_tracker.py - IMPROVED VERSION
 import asyncio
 import json
 import re
@@ -155,13 +155,18 @@ class StockPriceTracker:
         conn.close()
     
     async def scrape_yahoo_finance(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
-        """Scrape stock data from Yahoo Finance."""
+        """Improved Yahoo Finance scraper with better reliability."""
         url = f"https://finance.yahoo.com/quote/{symbol}"
         
         async with async_playwright() as p:
             browser = await p.chromium.launch(
                 headless=True,
-                args=['--disable-blink-features=AutomationControlled']
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu'
+                ]
             )
 
             context = await browser.new_context(
@@ -174,73 +179,76 @@ class StockPriceTracker:
             page = await context.new_page()
 
             try:
-                await asyncio.sleep(2)
+                print(f"Scraping {symbol} from Yahoo Finance...")
                 await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                await page.wait_for_timeout(3000)
+                await page.wait_for_timeout(5000)  # Increased wait time
 
-                # Extract company name
+                # Extract company name with multiple selectors
                 company_name = symbol  # Default fallback
                 name_selectors = [
                     'h1[data-testid="quote-header"]',
                     'h1.D\\(ib\\)',
                     'h1[data-field="name"]',
-                    '.quote-header-info h1'
+                    '.quote-header-info h1',
+                    '[data-testid="quote-header"] h1',
+                    'section[data-testid="quote-header"] h1'
                 ]
                 
                 for selector in name_selectors:
                     try:
-                        element = await page.wait_for_selector(selector, timeout=2000)
+                        element = await page.wait_for_selector(selector, timeout=3000)
                         if element:
                             name_text = await element.text_content()
                             if name_text and len(name_text.strip()) > 0:
                                 # Clean up the name (remove symbol if present)
                                 company_name = name_text.strip().split('(')[0].strip()
+                                print(f"Found company name: {company_name}")
                                 break
-                    except Exception:
+                    except Exception as e:
+                        print(f"Selector {selector} failed: {e}")
                         continue
 
-                # Extract current price
+                # Extract current price with improved selectors
                 price = None
                 price_selectors = [
+                    'fin-streamer[data-testid="quote-price"]',
                     '[data-testid="quote-price"]',
                     'fin-streamer[data-field="regularMarketPrice"]',
+                    'span[data-reactid*="price"]',
                     '.quote-header-info [data-reactid] span',
-                    '.quote-header .Fw\\(b\\).Fz\\(36px\\)',
-                    'span.Trsdu\\(0\\.3s\\).Fw\\(b\\).Fz\\(36px\\)'
+                    '.Fw\\(b\\).Fz\\(36px\\)',
+                    'span.Trsdu\\(0\\.3s\\).Fw\\(b\\).Fz\\(36px\\)',
+                    '[data-symbol="' + symbol + '"] fin-streamer[data-field="regularMarketPrice"]'
                 ]
 
                 for selector in price_selectors:
                     try:
-                        element = await page.wait_for_selector(selector, timeout=2000)
+                        element = await page.wait_for_selector(selector, timeout=3000)
                         if element:
                             price_text = await element.text_content()
+                            print(f"Found price text with selector {selector}: {price_text}")
+                            
                             if price_text:
-                                # Extract number from price text
-                                price_match = re.search(r'(\d+(?:,\d{3})*(?:\.\d{1,4})?)', price_text.replace(',', ''))
+                                # Clean and extract number from price text
+                                cleaned_price = price_text.replace('$', '').replace(',', '').strip()
+                                price_match = re.search(r'(\d+(?:\.\d{1,4})?)', cleaned_price)
                                 if price_match:
                                     price = float(price_match.group(1))
                                     if price > 0:
+                                        print(f"Successfully extracted price: ${price}")
                                         break
-                    except Exception:
+                    except Exception as e:
+                        print(f"Price selector {selector} failed: {e}")
                         continue
 
-                # Extract volume
-                volume = None
-                volume_selectors = [
-                    '[data-testid="quote-statistics"] td:contains("Volume") + td',
-                    'td[data-test="VOLUME-value"]',
-                    'span[data-reactid]:contains("Volume")',
-                ]
-
-                # Note: Volume extraction is complex on Yahoo Finance, we'll start without it
-                # and add later if needed
-
-                # Extract change percentage
+                # Extract change percentage with improved selectors
                 change_percent = None
                 change_selectors = [
-                    '[data-testid="quote-price"] + span',
+                    'fin-streamer[data-testid="quote-price"] + fin-streamer',
                     'fin-streamer[data-field="regularMarketChangePercent"]',
-                    '.quote-header span[data-reactid]:contains("%")'
+                    '[data-testid="quote-price"] + span',
+                    '.quote-header span[data-reactid*="percent"]',
+                    'span:contains("%")'
                 ]
 
                 for selector in change_selectors:
@@ -253,47 +261,62 @@ class StockPriceTracker:
                                 percent_match = re.search(r'([+-]?\d+(?:\.\d{1,2})?)%', change_text)
                                 if percent_match:
                                     change_percent = float(percent_match.group(1))
+                                    print(f"Found change percent: {change_percent}%")
                                     break
-                    except Exception:
+                    except Exception as e:
                         continue
 
                 if price is None:
-                    print(f"Could not extract price for {symbol}")
+                    print(f"Could not extract price for {symbol} from Yahoo Finance")
                     return None
 
-                return company_name, price, volume or 0, change_percent or 0.0
+                return company_name, price, 0, change_percent or 0.0
 
             except Exception as e:
-                print(f"Error scraping {symbol}: {str(e)}")
+                print(f"Error scraping {symbol} from Yahoo Finance: {str(e)}")
                 return None
 
             finally:
                 await browser.close()
 
-    async def scrape_google_finance_fallback(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
-        """Fallback scraper for Google Finance."""
-        url = f"https://www.google.com/finance/quote/{symbol}:NASDAQ"
+    async def scrape_marketwatch_fallback(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
+        """Fallback scraper for MarketWatch."""
+        url = f"https://www.marketwatch.com/investing/stock/{symbol.lower()}"
         
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
+            context = await browser.new_context(
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            )
+            page = await context.new_page()
 
             try:
+                print(f"Trying MarketWatch fallback for {symbol}...")
                 await page.goto(url, wait_until='domcontentloaded', timeout=15000)
-                await page.wait_for_timeout(2000)
+                await page.wait_for_timeout(3000)
 
-                # Google Finance selectors (simplified)
+                # MarketWatch selectors
                 company_name = symbol
                 price = None
                 
+                # Try to get company name
+                try:
+                    name_element = await page.wait_for_selector('h1.company__name', timeout=3000)
+                    if name_element:
+                        company_name = await name_element.text_content()
+                        company_name = company_name.strip()
+                except Exception:
+                    pass
+                
                 # Try to get price
                 try:
-                    price_element = await page.wait_for_selector('.YMlKec.fxKbKc', timeout=3000)
+                    price_element = await page.wait_for_selector('.intraday__price .value', timeout=3000)
                     if price_element:
                         price_text = await price_element.text_content()
                         price_match = re.search(r'(\d+(?:\.\d{1,4})?)', price_text.replace('$', '').replace(',', ''))
                         if price_match:
                             price = float(price_match.group(1))
+                            print(f"MarketWatch found price: ${price}")
                 except Exception:
                     pass
 
@@ -302,22 +325,29 @@ class StockPriceTracker:
                 return None
 
             except Exception as e:
-                print(f"Google Finance fallback failed for {symbol}: {str(e)}")
+                print(f"MarketWatch fallback failed for {symbol}: {str(e)}")
                 return None
             finally:
                 await browser.close()
 
     async def get_stock_data(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
-        """Get stock data with fallback sources."""
+        """Get stock data with multiple fallback sources."""
         # Try Yahoo Finance first
+        print(f"Attempting to get data for {symbol}...")
         data = await self.scrape_yahoo_finance(symbol)
         if data:
+            print(f"✅ Yahoo Finance success for {symbol}: ${data[1]}")
             return data
         
-        print(f"Yahoo Finance failed for {symbol}, trying Google Finance...")
-        # Fallback to Google Finance
-        data = await self.scrape_google_finance_fallback(symbol)
-        return data
+        print(f"Yahoo Finance failed for {symbol}, trying MarketWatch...")
+        # Fallback to MarketWatch
+        data = await self.scrape_marketwatch_fallback(symbol)
+        if data:
+            print(f"✅ MarketWatch success for {symbol}: ${data[1]}")
+            return data
+            
+        print(f"❌ All sources failed for {symbol}")
+        return None
 
     def check_alert_conditions(self, alert: Dict, current_price: float, change_percent: float) -> bool:
         """Check if alert conditions are met."""
@@ -344,7 +374,7 @@ class StockPriceTracker:
             msg = MIMEMultipart()
             msg['From'] = smtp_config['from_email']
             msg['To'] = smtp_config['to_email']
-            msg['Subject'] = f"Stock Alert: {alert['symbol']} - {alert['alert_type']}"
+            msg['Subject'] = f"🚨 Stock Alert: {alert['symbol']} - {alert['alert_type']}"
             
             # Create alert type description
             alert_descriptions = {
@@ -406,7 +436,7 @@ class StockPriceTracker:
             print("No stock alerts to check")
             return
         
-        print(f"Checking {len(alerts)} stock alerts...")
+        print(f"🔄 Checking {len(alerts)} stock alerts...")
         
         for alert in alerts:
             # Skip already triggered alerts (to avoid spam)
@@ -414,7 +444,7 @@ class StockPriceTracker:
                 continue
                 
             symbol = alert['symbol']
-            print(f"Checking {symbol}...")
+            print(f"📊 Checking {symbol}...")
             
             stock_data = await self.get_stock_data(symbol)
             
@@ -473,25 +503,19 @@ async def test_stock_tracker():
     """Test function to verify the stock tracker works."""
     tracker = StockPriceTracker()
     
-    print("Testing stock tracker...")
+    print("Testing improved stock tracker...")
     
-    # Test scraping Apple stock
-    print("Testing Apple (AAPL) scraping...")
-    data = await tracker.get_stock_data("AAPL")
-    if data:
-        company_name, price, volume, change_percent = data
-        print(f"✅ {company_name}: ${price:.2f} ({change_percent:+.2f}%)")
-    else:
-        print("❌ Failed to get Apple data")
+    # Test scraping different stocks
+    test_symbols = ["AAPL", "CNC", "MSFT", "GOOGL"]
     
-    # Test scraping Microsoft stock
-    print("Testing Microsoft (MSFT) scraping...")
-    data = await tracker.get_stock_data("MSFT")
-    if data:
-        company_name, price, volume, change_percent = data
-        print(f"✅ {company_name}: ${price:.2f} ({change_percent:+.2f}%)")
-    else:
-        print("❌ Failed to get Microsoft data")
+    for symbol in test_symbols:
+        print(f"\n📊 Testing {symbol}...")
+        data = await tracker.get_stock_data(symbol)
+        if data:
+            company_name, price, volume, change_percent = data
+            print(f"✅ {company_name}: ${price:.2f} ({change_percent:+.2f}%)")
+        else:
+            print(f"❌ Failed to get {symbol} data")
 
 if __name__ == "__main__":
     # Run the test

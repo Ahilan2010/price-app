@@ -1,14 +1,12 @@
-# backend/app.py
+# backend/app.py - SIMPLIFIED VERSION
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
 from stock_tracker import StockPriceTracker
+from scheduler_service import PersistentSchedulerService
 import asyncio
 import json
 from pathlib import Path
-import threading
-import schedule
-import time
 import os
 
 app = Flask(__name__)
@@ -18,6 +16,9 @@ CORS(app)  # Enable CORS for all routes
 tracker = StorenvyPriceTracker()
 stock_tracker = StockPriceTracker()
 
+# Initialize scheduler service
+scheduler_service = PersistentSchedulerService()
+
 # Global variable to store email config
 email_config_file = Path("email_config.json")
 email_config = {}
@@ -25,56 +26,6 @@ email_config = {}
 if email_config_file.exists():
     with open(email_config_file, 'r') as f:
         email_config = json.load(f)
-
-# Background schedulers
-schedulers_running = False
-product_scheduler_thread = None
-stock_scheduler_thread = None
-
-def start_automatic_schedulers():
-    """Start automatic background schedulers for products and stocks"""
-    global schedulers_running, product_scheduler_thread, stock_scheduler_thread
-    
-    if schedulers_running:
-        return
-    
-    schedulers_running = True
-    print("🚀 Starting automatic schedulers...")
-    print("📦 Products: Every 6 hours")
-    print("📈 Stocks: Every 5 minutes")
-    
-    def product_scheduler():
-        """Product price checking every 6 hours"""
-        schedule.every(6).hours.do(
-            lambda: asyncio.run(tracker.check_all_products(email_config))
-        )
-        
-        while schedulers_running:
-            schedule.run_pending()
-            time.sleep(60)  # Check every minute
-    
-    def stock_scheduler():
-        """Stock price checking every 5 minutes"""
-        schedule.every(5).minutes.do(
-            lambda: asyncio.run(stock_tracker.check_all_stock_alerts(email_config))
-        )
-        
-        while schedulers_running:
-            schedule.run_pending()
-            time.sleep(30)  # Check every 30 seconds for stocks
-    
-    # Start both schedulers in separate threads
-    product_scheduler_thread = threading.Thread(target=product_scheduler, daemon=True)
-    stock_scheduler_thread = threading.Thread(target=stock_scheduler, daemon=True)
-    
-    product_scheduler_thread.start()
-    stock_scheduler_thread.start()
-
-def stop_automatic_schedulers():
-    """Stop automatic schedulers"""
-    global schedulers_running
-    schedulers_running = False
-    print("⏹️ Automatic schedulers stopped")
 
 # SERVE THE FRONTEND
 @app.route('/')
@@ -277,34 +228,46 @@ def get_stats():
         'monitoring_stock_alerts': stock_stats['monitoring_alerts']
     })
 
-# SCHEDULER STATUS ROUTE (for information only)
+# SCHEDULER CONTROL ROUTES
 @app.route('/api/scheduler/status', methods=['GET'])
 def get_scheduler_status():
-    """Get automatic scheduler status"""
-    return jsonify({
-        'products_running': schedulers_running,
-        'stocks_running': schedulers_running,
-        'products_interval': '6 hours',
-        'stocks_interval': '5 minutes'
-    })
+    """Get scheduler service status"""
+    status = scheduler_service.status()
+    return jsonify(status)
+
+@app.route('/api/scheduler/start', methods=['POST'])
+def start_scheduler():
+    """Start the scheduler service"""
+    try:
+        scheduler_service.start()
+        return jsonify({'message': 'Scheduler service started'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/scheduler/stop', methods=['POST'])
+def stop_scheduler():
+    """Stop the scheduler service"""
+    try:
+        scheduler_service.stop()
+        return jsonify({'message': 'Scheduler service stopped'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🛍️  STORENVY & STOCK PRICE TRACKER")
+    print("🛍️  PRICETRACKER WEB APPLICATION")
     print("="*60)
-    print("\n🚀 Backend server starting...")
-    print("📦 Products: Auto-check every 6 hours")
-    print("📈 Stocks: Auto-check every 5 minutes")
-    print("\n🌐 Once started, open your browser to:")
-    print("→ http://localhost:5000")
-    print("\n⏹️  Press Ctrl+C to stop the server")
+    print("\n🚀 Web server starting...")
+    print("🌐 Interface: http://localhost:5000")
+    print("📦 Products: Manual + Background service")
+    print("📈 Stocks: Manual + Background service")
+    print("\n💡 For persistent background checking:")
+    print("   Run: python scheduler_service.py")
+    print("\n⏹️  Press Ctrl+C to stop the web server")
     print("="*60 + "\n")
-    
-    # Start automatic schedulers
-    start_automatic_schedulers()
     
     try:
         app.run(debug=True, port=5000, host='0.0.0.0')
     finally:
-        # Stop schedulers when app shuts down
-        stop_automatic_schedulers()
+        # Stop scheduler when app shuts down
+        scheduler_service.stop()

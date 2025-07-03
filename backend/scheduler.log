@@ -1,0 +1,21 @@
+2025-07-03 16:13:49,596 - INFO - Email configuration loaded
+2025-07-03 16:13:49,596 - INFO - 🚀 Starting PriceTracker Scheduler Service...
+2025-07-03 16:13:49,596 - INFO - 📦 Products: Every 6 hours
+2025-07-03 16:13:49,596 - INFO - 📈 Stocks: Every 5 minutes
+2025-07-03 16:13:49,596 - INFO - 🚀 Product scheduler started - will check every 6 hours
+2025-07-03 16:13:49,597 - INFO - 🚀 Stock scheduler started - will check every 5 minutes
+2025-07-03 16:13:49,597 - INFO - 📦 Starting product price check...
+2025-07-03 16:13:49,597 - INFO - ✅ Scheduler service started successfully
+2025-07-03 16:13:49,597 - INFO - 📈 Starting stock price check...
+2025-07-03 16:13:49,597 - INFO - Email configuration loaded
+2025-07-03 16:13:49,597 - INFO - Email configuration loaded
+2025-07-03 16:14:36,965 - INFO - ✅ Product price check completed
+2025-07-03 16:15:28,666 - INFO - ✅ Stock price check completed
+2025-07-03 16:17:05,384 - INFO - Received signal 2, shutting down gracefully...
+2025-07-03 16:17:05,385 - INFO - ⏹️ Stopping scheduler service...
+2025-07-03 16:17:15,393 - INFO - ✅ Scheduler service stopped
+2025-07-03 16:17:15,394 - WARNING - Scheduler service is not running
+2025-07-03 16:17:28,078 - INFO - Email configuration loaded
+2025-07-03 16:17:28,105 - WARNING - Scheduler service is not running
+2025-07-03 16:17:28,680 - INFO - 📈 Stock scheduler stopped
+2025-07-03 16:17:36,976 - INFO - 📦 Product scheduler stopped
