@@ -1,4 +1,4 @@
-# backend/tracker.py
+# backend/tracker.py - Updated with multi-platform support
 import asyncio
 import json
 import re
@@ -11,12 +11,13 @@ from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from playwright.async_api import async_playwright
+from multi_platform_scraper import MultiPlatformScraper
 
 
 class StorenvyPriceTracker:
     def __init__(self, db_path: str = "storenvy_tracker.db"):
         self.db_path = db_path
+        self.scraper = MultiPlatformScraper()
         self.init_database()
         
     def init_database(self) -> None:
@@ -24,10 +25,12 @@ class StorenvyPriceTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
+        # Update the table to include platform information
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS tracked_products (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 url TEXT UNIQUE NOT NULL,
+                platform TEXT,
                 title TEXT,
                 target_price REAL NOT NULL,
                 last_price REAL,
@@ -35,6 +38,12 @@ class StorenvyPriceTracker:
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        
+        # Check if platform column exists, if not add it
+        cursor.execute("PRAGMA table_info(tracked_products)")
+        columns = [column[1] for column in cursor.fetchall()]
+        if 'platform' not in columns:
+            cursor.execute('ALTER TABLE tracked_products ADD COLUMN platform TEXT')
         
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS price_history (
@@ -54,18 +63,23 @@ class StorenvyPriceTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
+        # Detect platform
+        platform = self.scraper.detect_platform(url)
+        if not platform:
+            raise ValueError("Unsupported e-commerce platform")
+        
         try:
             cursor.execute('''
-                INSERT INTO tracked_products (url, target_price)
-                VALUES (?, ?)
-            ''', (url, target_price))
+                INSERT INTO tracked_products (url, platform, target_price)
+                VALUES (?, ?, ?)
+            ''', (url, platform, target_price))
             conn.commit()
         except sqlite3.IntegrityError:
             cursor.execute('''
                 UPDATE tracked_products
-                SET target_price = ?
+                SET target_price = ?, platform = ?
                 WHERE url = ?
-            ''', (target_price, url))
+            ''', (target_price, platform, url))
             conn.commit()
         
         conn.close()
@@ -89,21 +103,29 @@ class StorenvyPriceTracker:
         cursor = conn.cursor()
         
         cursor.execute('''
-            SELECT id, url, title, target_price, last_price, last_checked
+            SELECT id, url, platform, title, target_price, last_price, last_checked
             FROM tracked_products
             ORDER BY created_at DESC
         ''')
         
         products: List[Dict[str, any]] = []
+        platform_info = MultiPlatformScraper.get_platform_info()
+        
         for row in cursor.fetchall():
+            platform = row[2] or 'storenvy'  # Default to storenvy for backward compatibility
+            platform_details = platform_info.get(platform, {'name': 'Unknown', 'icon': '🛒'})
+            
             products.append({
                 'id': row[0],
                 'url': row[1],
-                'title': row[2],
-                'target_price': row[3],
-                'last_price': row[4],
-                'last_checked': row[5],
-                'status': 'below_target' if row[4] and row[4] <= row[3] else 'waiting'
+                'platform': platform,
+                'platform_name': platform_details['name'],
+                'platform_icon': platform_details['icon'],
+                'title': row[3],
+                'target_price': row[4],
+                'last_price': row[5],
+                'last_checked': row[6],
+                'status': 'below_target' if row[5] and row[5] <= row[4] else 'waiting'
             })
         
         conn.close()
@@ -128,89 +150,10 @@ class StorenvyPriceTracker:
         conn.commit()
         conn.close()
     
-    async def scrape_storenvy_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Scrape product title and price from a Storenvy product URL."""
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(
-                headless=True,
-                args=['--disable-blink-features=AutomationControlled']
-            )
-
-            context = await browser.new_context(
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                viewport={'width': 1920, 'height': 1080},
-                locale='en-US',
-                timezone_id='America/New_York'
-            )
-
-            page = await context.new_page()
-
-            try:
-                await asyncio.sleep(2)
-                await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                await page.wait_for_timeout(3000)
-
-                # Extract title
-                title = "Unknown Product"
-                title_selectors = [
-                    'h1.product-name',
-                    'h1.product_name',
-                    'h1[itemprop="name"]',
-                    '.product-header h1',
-                    '.product_name',
-                    'h1'
-                ]
-                
-                for selector in title_selectors:
-                    try:
-                        element = await page.wait_for_selector(selector, timeout=2000)
-                        if element:
-                            title_text = await element.text_content()
-                            if title_text:
-                                title = title_text.strip()
-                                break
-                    except Exception:
-                        continue
-
-                # Extract price
-                price = None
-                price_selectors = [
-                    'div.price.vprice[itemprop="price"]',
-                    'div.price.vprice',
-                    'div[itemprop="price"]',
-                    '.price.vprice',
-                    'span.product-price',
-                    '.product-price',
-                    'span.price:not(.sale-price):not(.discount-price)'
-                ]
-
-                for selector in price_selectors:
-                    try:
-                        element = await page.wait_for_selector(selector, timeout=2000)
-                        if element:
-                            price_text = await element.text_content()
-                            if price_text and ('$' in price_text or re.search(r'\d+\.?\d*', price_text)):
-                                price_text = price_text.strip().replace('$', '').replace(',', '')
-                                price_match = re.search(r'(\d+(?:\.\d{1,2})?)', price_text)
-                                if price_match:
-                                    price = float(price_match.group(1))
-                                    if price > 0:
-                                        break
-                    except Exception:
-                        continue
-
-                if price is None:
-                    return None
-
-                return title, price
-
-            except Exception as e:
-                print(f"Error scraping {url}: {str(e)}")
-                return None
-
-            finally:
-                await browser.close()
-
+    async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
+        """Scrape product using the multi-platform scraper"""
+        return await self.scraper.scrape_product(url)
+    
     def send_email_alert(self, product: Dict[str, any], smtp_config: Dict[str, any]) -> None:
         """Send email alert for price drop."""
         if not smtp_config.get('enabled'):
@@ -225,6 +168,7 @@ class StorenvyPriceTracker:
             body = f"""
             Great news! A product you're tracking has dropped to or below your target price!
             
+            Platform: {product['platform_icon']} {product['platform_name']}
             Product: {product['title']}
             Current Price: ${product['last_price']:.2f}
             Target Price: ${product['target_price']:.2f}
@@ -253,18 +197,36 @@ class StorenvyPriceTracker:
         if not products:
             return
         
+        print(f"Checking {len(products)} products across multiple platforms...")
+        
         for product in products:
-            result = await self.scrape_storenvy_product(product['url'])
-            
-            if result:
-                title, current_price = result
-                self.update_product_info(product['id'], title, current_price)
+            try:
+                print(f"Checking {product['platform_name']} product: {product['url'][:50]}...")
+                result = await self.scrape_product(product['url'])
                 
-                if current_price <= product['target_price']:
-                    product['title'] = title
-                    product['last_price'] = current_price
+                if result:
+                    title, current_price = result
+                    self.update_product_info(product['id'], title, current_price)
                     
-                    if smtp_config:
-                        self.send_email_alert(product, smtp_config)
+                    if current_price <= product['target_price']:
+                        product['title'] = title
+                        product['last_price'] = current_price
+                        
+                        if smtp_config:
+                            self.send_email_alert(product, smtp_config)
+                else:
+                    print(f"Failed to scrape {product['platform_name']} product")
             
-            await asyncio.sleep(3)
+            except Exception as e:
+                print(f"Error checking product {product['id']}: {str(e)}")
+            
+            # Be respectful to servers with random delays
+            await asyncio.sleep(3 + (2 * random.random()))
+    
+    def get_supported_platforms(self) -> Dict[str, Dict[str, str]]:
+        """Get information about supported platforms"""
+        return MultiPlatformScraper.get_platform_info()
+
+
+# For backward compatibility, also import random
+import random

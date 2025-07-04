@@ -1009,3 +1009,171 @@ body {
         max-height: 80vh;
     }
 }
+
+/* Add these styles to your existing style.css file */
+
+/* Platform Badge */
+.platform-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    transition: var(--transition);
+}
+
+.platform-badge:hover {
+    background: var(--bg-card);
+    transform: translateY(-1px);
+}
+
+/* Platform Info Card */
+.platform-info {
+    margin-top: 20px;
+}
+
+.info-card {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    opacity: 0.5;
+}
+
+.info-card h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Form Hint */
+.form-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    display: block;
+    font-style: italic;
+}
+
+/* Enhanced Select Dropdown */
+.form-control[type="select"],
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cbd5e1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+/* Platform-specific card styling */
+.card[data-platform="amazon"] .platform-badge {
+    background: rgba(255, 153, 0, 0.1);
+    border-color: rgba(255, 153, 0, 0.2);
+    color: #ff9900;
+}
+
+.card[data-platform="ebay"] .platform-badge {
+    background: rgba(224, 16, 32, 0.1);
+    border-color: rgba(224, 16, 32, 0.2);
+    color: #e01020;
+}
+
+.card[data-platform="etsy"] .platform-badge {
+    background: rgba(242, 91, 49, 0.1);
+    border-color: rgba(242, 91, 49, 0.2);
+    color: #f25b31;
+}
+
+.card[data-platform="walmart"] .platform-badge {
+    background: rgba(0, 113, 206, 0.1);
+    border-color: rgba(0, 113, 206, 0.2);
+    color: #0071ce;
+}
+
+/* Loading state for scraping */
+.card.loading {
+    opacity: 0.7;
+    position: relative;
+}
+
+.card.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    opacity: 0.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Disabled state */
+.form-control:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-secondary);
+}
+
+/* Platform Icon Animation */
+@keyframes platformPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.platform-badge span:first-child {
+    display: inline-flex;
+    animation: platformPulse 2s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .platform-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    
+    .info-card {
+        padding: 12px;
+    }
+    
+    .info-card h4 {
+        font-size: 13px;
+    }
+    
+    .info-card p {
+        font-size: 12px;
+    }
+}

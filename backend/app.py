@@ -1,4 +1,4 @@
-# backend/app.py - SIMPLIFIED VERSION
+# backend/app.py - COMPLETE VERSION WITH MULTI-PLATFORM SUPPORT
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
@@ -63,10 +63,16 @@ def add_product():
     
     try:
         target_price = float(target_price)
+        
+        # Validate that the URL is from a supported platform
+        platform = tracker.scraper.detect_platform(url)
+        if not platform:
+            return jsonify({'error': 'Unsupported e-commerce platform. Please use a supported website.'}), 400
+        
         tracker.add_product(url, target_price)
-        return jsonify({'message': 'Product added successfully'}), 201
-    except ValueError:
-        return jsonify({'error': 'Invalid price format'}), 400
+        return jsonify({'message': f'Product from {platform.title()} added successfully'}), 201
+    except ValueError as ve:
+        return jsonify({'error': str(ve)}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -96,6 +102,13 @@ def check_prices():
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# NEW ROUTE: Get supported platforms
+@app.route('/api/platforms', methods=['GET'])
+def get_platforms():
+    """Get all supported e-commerce platforms"""
+    platforms = tracker.get_supported_platforms()
+    return jsonify(platforms)
 
 # STOCK API ROUTES
 @app.route('/api/stocks', methods=['GET'])
@@ -261,6 +274,7 @@ if __name__ == '__main__':
     print("🌐 Interface: http://localhost:5000")
     print("📦 Products: Manual + Background service")
     print("📈 Stocks: Manual + Background service")
+    print("🌍 Now supporting 11 e-commerce platforms!")
     print("\n💡 For persistent background checking:")
     print("   Run: python scheduler_service.py")
     print("\n⏹️  Press Ctrl+C to stop the web server")

@@ -1,6 +1,76 @@
-// Modern PriceTracker JavaScript
+// Modern PriceTracker JavaScript with Multi-Platform Support
 
 const API_URL = 'http://localhost:5000/api';
+
+// Platform configurations
+const platformConfigs = {
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    alibaba: {
+        name: 'Alibaba',
+        exampleUrl: 'https://www.alibaba.com/product-detail/example_123456789.html',
+        tips: 'Copy the full product URL. Alibaba URLs usually end with .html',
+        icon: '🏭'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    rakuten: {
+        name: 'Rakuten',
+        exampleUrl: 'https://www.rakuten.com/shop/store-name/product/ABC123/',
+        tips: 'Include the full product URL with the store and product information',
+        icon: '🎌'
+    },
+    flipkart: {
+        name: 'Flipkart',
+        exampleUrl: 'https://www.flipkart.com/product-name/p/itmf3qh7nkvfbhgu',
+        tips: 'Flipkart URLs contain /p/ followed by the item code starting with "itm"',
+        icon: '🛍️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    mercadolibre: {
+        name: 'MercadoLibre',
+        exampleUrl: 'https://www.mercadolibre.com/product-MLM-123456789',
+        tips: 'Use the product URL that contains the country code (like MLM for Mexico)',
+        icon: '🌎'
+    },
+    shopee: {
+        name: 'Shopee',
+        exampleUrl: 'https://shopee.sg/product-name-i.123456.7890123',
+        tips: 'Shopee URLs contain -i. followed by the shop and product IDs',
+        icon: '🛒'
+    },
+    aliexpress: {
+        name: 'AliExpress',
+        exampleUrl: 'https://www.aliexpress.com/item/1234567890123456.html',
+        tips: 'Use the item URL that ends with the product ID and .html',
+        icon: '🌏'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
+    }
+};
 
 // Page Management
 function showPage(pageId, navItem) {
@@ -45,6 +115,59 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
+// Update URL placeholder based on selected platform
+function updateUrlPlaceholder() {
+    const platformSelect = document.getElementById('platformSelect');
+    const urlInput = document.getElementById('productUrl');
+    const urlHint = document.getElementById('urlHint');
+    const platformInfo = document.getElementById('platformInfo');
+    const platformTips = document.getElementById('platformTips');
+    
+    const selectedPlatform = platformSelect.value;
+    
+    if (selectedPlatform && platformConfigs[selectedPlatform]) {
+        const config = platformConfigs[selectedPlatform];
+        urlInput.placeholder = config.exampleUrl;
+        urlHint.textContent = `Example: ${config.exampleUrl}`;
+        platformTips.textContent = config.tips;
+        platformInfo.style.display = 'block';
+        
+        // Clear the URL field when switching platforms
+        urlInput.value = '';
+        
+        // Enable the URL input
+        urlInput.disabled = false;
+    } else {
+        urlInput.placeholder = 'Select a platform first...';
+        urlHint.textContent = '';
+        platformInfo.style.display = 'none';
+        urlInput.disabled = true;
+    }
+}
+
+// Validate URL matches selected platform
+function validateProductUrl(url, platform) {
+    const domainPatterns = {
+        amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
+        alibaba: /alibaba\.com/i,
+        ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
+        walmart: /walmart\.com/i,
+        rakuten: /rakuten\.(com|co\.jp)/i,
+        flipkart: /flipkart\.com/i,
+        etsy: /etsy\.com/i,
+        mercadolibre: /(mercadolibre|mercadolivre)\.(com|com\.mx|com\.ar|com\.br)/i,
+        shopee: /shopee\.(sg|my|th|id|tw|vn|ph|com\.br)/i,
+        aliexpress: /aliexpress\.(com|us|ru)/i,
+        storenvy: /storenvy\.com/i
+    };
+    
+    if (!platform || !domainPatterns[platform]) {
+        return false;
+    }
+    
+    return domainPatterns[platform].test(url);
+}
+
 // Products Management
 async function loadProducts() {
     try {
@@ -62,7 +185,11 @@ async function loadProducts() {
             emptyState.style.display = 'none';
             
             productsList.innerHTML = products.map(product => `
-                <div class="card">
+                <div class="card" data-platform="${product.platform || 'storenvy'}">
+                    <div class="platform-badge">
+                        <span>${product.platform_icon || '🛒'}</span>
+                        <span style="font-weight: 500;">${product.platform_name || 'Unknown'}</span>
+                    </div>
                     <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
                     <p class="card-subtitle">${truncateUrl(product.url)}</p>
                     
@@ -122,6 +249,92 @@ function renderProductStatus(product) {
             Monitoring Price
         </div>
     `;
+}
+
+// Product Modal Functions
+function showAddProductModal() {
+    document.getElementById('addProductModal').classList.add('show');
+    document.getElementById('platformSelect').focus();
+}
+
+function closeAddProductModal() {
+    document.getElementById('addProductModal').classList.remove('show');
+    document.getElementById('addProductForm').reset();
+    document.getElementById('productUrl').disabled = true;
+    document.getElementById('productUrl').placeholder = 'Select a platform first...';
+    document.getElementById('urlHint').textContent = '';
+    document.getElementById('platformInfo').style.display = 'none';
+}
+
+async function addProduct(event) {
+    event.preventDefault();
+    
+    const platform = document.getElementById('platformSelect').value;
+    const url = document.getElementById('productUrl').value.trim();
+    const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+    
+    if (!platform) {
+        showToast('Please select an e-commerce platform', 'error');
+        return;
+    }
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid URL and target price', 'error');
+        return;
+    }
+    
+    // Validate URL matches selected platform
+    if (!validateProductUrl(url, platform)) {
+        showToast(`This URL doesn't appear to be from ${platformConfigs[platform].name}. Please check the URL and platform selection.`, 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        if (response.ok) {
+            const platformName = platformConfigs[platform].name;
+            showToast(`✅ ${platformName} product added successfully! Monitoring will begin shortly.`);
+            closeAddProductModal();
+            loadProducts();
+            loadStats();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to add product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add product', 'error');
+        console.error('Error adding product:', error);
+    }
+}
+
+async function deleteProduct(productId) {
+    if (!confirm('Are you sure you want to stop tracking this product?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Product removed from tracking');
+            loadProducts();
+            loadStats();
+        } else {
+            showToast('Failed to remove product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove product', 'error');
+        console.error('Error deleting product:', error);
+    }
 }
 
 // Stock Management Functions
@@ -192,7 +405,7 @@ function formatThreshold(alert) {
     if (alert.alert_type.includes('percent')) {
         return `${alert.threshold}%`;
     }
-    return `${alert.threshold.toFixed(2)}`;
+    return `$${alert.threshold.toFixed(2)}`;
 }
 
 function renderStockStatus(alert) {
@@ -231,79 +444,10 @@ async function loadStats() {
         document.getElementById('totalProducts').textContent = stats.total_products || 0;
         document.getElementById('totalStockAlerts').textContent = stats.total_stock_alerts || 0;
         document.getElementById('triggeredAlerts').textContent = stats.triggered_stock_alerts || 0;
-        document.getElementById('totalSavings').textContent = `${(stats.total_savings || 0).toFixed(2)}`;
+        document.getElementById('totalSavings').textContent = `$${(stats.total_savings || 0).toFixed(2)}`;
         
     } catch (error) {
         console.error('Failed to load stats:', error);
-    }
-}
-
-// Product Modal Functions
-function showAddProductModal() {
-    document.getElementById('addProductModal').classList.add('show');
-    document.getElementById('productUrl').focus();
-}
-
-function closeAddProductModal() {
-    document.getElementById('addProductModal').classList.remove('show');
-    document.getElementById('addProductForm').reset();
-}
-
-async function addProduct(event) {
-    event.preventDefault();
-    
-    const url = document.getElementById('productUrl').value.trim();
-    const targetPrice = parseFloat(document.getElementById('targetPrice').value);
-    
-    if (!url || !targetPrice || targetPrice <= 0) {
-        showToast('Please enter a valid URL and target price', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url, target_price: targetPrice })
-        });
-        
-        if (response.ok) {
-            showToast('✅ Product added successfully! Monitoring will begin shortly.');
-            closeAddProductModal();
-            loadProducts();
-            loadStats();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Failed to add product', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to add product', 'error');
-        console.error('Error adding product:', error);
-    }
-}
-
-async function deleteProduct(productId) {
-    if (!confirm('Are you sure you want to stop tracking this product?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products/${productId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('Product removed from tracking');
-            loadProducts();
-            loadStats();
-        } else {
-            showToast('Failed to remove product', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to remove product', 'error');
-        console.error('Error deleting product:', error);
     }
 }
 
@@ -567,6 +711,12 @@ function formatDate(dateString) {
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
+    // Disable URL input initially
+    const urlInput = document.getElementById('productUrl');
+    if (urlInput) {
+        urlInput.disabled = true;
+    }
+    
     // Set up alert type change listener
     const alertTypeSelect = document.getElementById('alertType');
     if (alertTypeSelect) {

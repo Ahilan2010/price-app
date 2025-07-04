@@ -289,37 +289,63 @@
         </a>
     </nav>
 
-    <!-- Add Product Modal -->
-    <div class="modal" id="addProductModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-plus"></i> Track New Product</h3>
-                <button class="modal-close" onclick="closeAddProductModal()">
-                    <i class="fas fa-times"></i>
+  <!-- Add Product Modal -->
+<div class="modal" id="addProductModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus"></i> Track New Product</h3>
+            <button class="modal-close" onclick="closeAddProductModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="addProductForm" onsubmit="addProduct(event)">
+            <div class="form-group">
+                <label><i class="fas fa-store"></i> E-commerce Platform</label>
+                <select id="platformSelect" required class="form-control" onchange="updateUrlPlaceholder()">
+                    <option value="">Select a platform...</option>
+                    <option value="amazon">🛒 Amazon</option>
+                    <option value="alibaba">🏭 Alibaba</option>
+                    <option value="ebay">🏷️ eBay</option>
+                    <option value="walmart">🏪 Walmart</option>
+                    <option value="rakuten">🎌 Rakuten</option>
+                    <option value="flipkart">🛍️ Flipkart</option>
+                    <option value="etsy">🎨 Etsy</option>
+                    <option value="mercadolibre">🌎 MercadoLibre</option>
+                    <option value="shopee">🛒 Shopee</option>
+                    <option value="aliexpress">🌏 AliExpress</option>
+                    <option value="storenvy">🏬 Storenvy</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-link"></i> Product URL</label>
+                <input type="url" id="productUrl" required class="form-control" 
+                       placeholder="Select a platform first...">
+                <small class="form-hint" id="urlHint" style="color: var(--text-secondary); margin-top: 4px; display: block;"></small>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-dollar-sign"></i> Target Price</label>
+                <input type="number" id="targetPrice" required step="0.01" min="0" 
+                       class="form-control" placeholder="25.00">
+            </div>
+            <div class="platform-info" id="platformInfo" style="display: none;">
+                <div class="info-card" style="background: var(--bg-card); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--primary);">
+                        <i class="fas fa-info-circle"></i> Platform Tips
+                    </h4>
+                    <p id="platformTips" style="font-size: 13px; color: var(--text-secondary); margin: 0;"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Start Tracking
                 </button>
             </div>
-            <form id="addProductForm" onsubmit="addProduct(event)">
-                <div class="form-group">
-                    <label><i class="fas fa-link"></i> Product URL</label>
-                    <input type="url" id="productUrl" required class="form-control" 
-                           placeholder="https://www.storenvy.com/products/...">
-                </div>
-                <div class="form-group">
-                    <label><i class="fas fa-dollar-sign"></i> Target Price</label>
-                    <input type="number" id="targetPrice" required step="0.01" min="0" 
-                           class="form-control" placeholder="25.00">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Start Tracking
-                    </button>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
     <!-- Add Stock Alert Modal -->
     <div class="modal" id="addStockModal">
