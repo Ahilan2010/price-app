@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PriceTracker</title>
+    <title>TagTracker</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,9 +15,10 @@
             <div class="header-content">
                 <div class="logo">
                     <div class="logo-icon">
-                        <i class="fas fa-chart-line-up"></i>
+                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-dollar-sign"></i>
                     </div>
-                    <h1>PriceTracker</h1>
+                    <h1>TagTracker</h1>
                     <span class="tagline">Smart Monitoring</span>
                 </div>
                 
@@ -134,7 +135,7 @@
                 <div class="monitor-content">
                     <div class="monitor-header">
                         <div class="monitor-icon">
-                            <i class="fas fa-radar"></i>
+                            <i class="fas fa-desktop"></i>
                         </div>
                         <h2>Price Monitor</h2>
                         <p>Real-time price checking and automatic monitoring</p>
@@ -277,7 +278,7 @@
         </a>
         <a href="#" class="nav-item" onclick="showPage('monitorPage', this)">
             <div class="nav-icon">
-                <i class="fas fa-radar"></i>
+                <i class="fas fa-desktop"></i>
             </div>
             <span>Monitor</span>
         </a>
@@ -289,63 +290,59 @@
         </a>
     </nav>
 
-  <!-- Add Product Modal -->
-<div class="modal" id="addProductModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-plus"></i> Track New Product</h3>
-            <button class="modal-close" onclick="closeAddProductModal()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <form id="addProductForm" onsubmit="addProduct(event)">
-            <div class="form-group">
-                <label><i class="fas fa-store"></i> E-commerce Platform</label>
-                <select id="platformSelect" required class="form-control" onchange="updateUrlPlaceholder()">
-                    <option value="">Select a platform...</option>
-                    <option value="amazon">🛒 Amazon</option>
-                    <option value="alibaba">🏭 Alibaba</option>
-                    <option value="ebay">🏷️ eBay</option>
-                    <option value="walmart">🏪 Walmart</option>
-                    <option value="rakuten">🎌 Rakuten</option>
-                    <option value="flipkart">🛍️ Flipkart</option>
-                    <option value="etsy">🎨 Etsy</option>
-                    <option value="mercadolibre">🌎 MercadoLibre</option>
-                    <option value="shopee">🛒 Shopee</option>
-                    <option value="aliexpress">🌏 AliExpress</option>
-                    <option value="storenvy">🏬 Storenvy</option>
-                </select>
+    <!-- Add Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Track New Product</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="form-group">
-                <label><i class="fas fa-link"></i> Product URL</label>
-                <input type="url" id="productUrl" required class="form-control" 
-                       placeholder="Select a platform first...">
-                <small class="form-hint" id="urlHint" style="color: var(--text-secondary); margin-top: 4px; display: block;"></small>
-            </div>
-            <div class="form-group">
-                <label><i class="fas fa-dollar-sign"></i> Target Price</label>
-                <input type="number" id="targetPrice" required step="0.01" min="0" 
-                       class="form-control" placeholder="25.00">
-            </div>
-            <div class="platform-info" id="platformInfo" style="display: none;">
-                <div class="info-card" style="background: var(--bg-card); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                    <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--primary);">
-                        <i class="fas fa-info-circle"></i> Platform Tips
-                    </h4>
-                    <p id="platformTips" style="font-size: 13px; color: var(--text-secondary); margin: 0;"></p>
+            <form id="addProductForm" onsubmit="addProduct(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-store"></i> E-commerce Platform</label>
+                    <select id="platformSelect" required class="form-control" onchange="updateUrlPlaceholder()">
+                        <option value="">Select a platform...</option>
+                        <option value="amazon">🛒 Amazon</option>
+                        <option value="alibaba">🏭 Alibaba</option>
+                        <option value="ebay">🏷️ eBay</option>
+                        <option value="walmart">🏪 Walmart</option>
+                        <option value="flipkart">🛍️ Flipkart</option>
+                        <option value="etsy">🎨 Etsy</option>
+                        <option value="storenvy">🏬 Storenvy</option>
+                    </select>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
-                    Cancel
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Start Tracking
-                </button>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> Product URL</label>
+                    <input type="url" id="productUrl" required class="form-control" 
+                           placeholder="Select a platform first...">
+                    <small class="form-hint" id="urlHint" style="color: var(--text-secondary); margin-top: 4px; display: block;"></small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-dollar-sign"></i> Target Price</label>
+                    <input type="number" id="targetPrice" required step="0.01" min="0" 
+                           class="form-control" placeholder="25.00">
+                </div>
+                <div class="platform-info" id="platformInfo" style="display: none;">
+                    <div class="info-card" style="background: var(--bg-card); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--primary);">
+                            <i class="fas fa-info-circle"></i> Platform Tips
+                        </h4>
+                        <p id="platformTips" style="font-size: 13px; color: var(--text-secondary); margin: 0;"></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Start Tracking
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
     <!-- Add Stock Alert Modal -->
     <div class="modal" id="addStockModal">

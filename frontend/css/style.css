@@ -1,4 +1,4 @@
-/* Modern PriceTracker CSS */
+/* Modern TagTracker CSS */
 
 /* Variables */
 :root {
@@ -89,13 +89,28 @@ body {
 .logo-icon {
     width: 48px;
     height: 48px;
-    background: var(--gradient-primary);
+    background: transparent;
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    box-shadow: var(--shadow-colored);
+    font-size: 32px;
+    position: relative;
+}
+
+.logo-icon .fa-shopping-cart {
+    color: var(--primary);
+    position: relative;
+}
+
+.logo-icon .fa-dollar-sign {
+    position: absolute;
+    font-size: 16px;
+    color: white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
 }
 
 .logo h1 {
@@ -941,77 +956,6 @@ body {
     color: var(--danger);
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-    
-    .scheduler-info {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        gap: 24px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 16px;
-    }
-    
-    .stat-card {
-        padding: 16px;
-    }
-    
-    .stat-value {
-        font-size: 20px;
-    }
-    
-    .content-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-    
-    .scheduler-controls {
-        flex-direction: column;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .container {
-        padding: 0 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-content {
-        margin: 0;
-        border-radius: 20px 20px 0 0;
-        max-height: 80vh;
-    }
-}
-
-/* Add these styles to your existing style.css file */
-
 /* Platform Badge */
 .platform-badge {
     display: inline-flex;
@@ -1119,6 +1063,18 @@ select.form-control {
     color: #0071ce;
 }
 
+.card[data-platform="alibaba"] .platform-badge {
+    background: rgba(255, 106, 0, 0.1);
+    border-color: rgba(255, 106, 0, 0.2);
+    color: #ff6a00;
+}
+
+.card[data-platform="flipkart"] .platform-badge {
+    background: rgba(0, 123, 255, 0.1);
+    border-color: rgba(0, 123, 255, 0.2);
+    color: #007bff;
+}
+
 /* Loading state for scraping */
 .card.loading {
     opacity: 0.7;
@@ -1158,8 +1114,62 @@ select.form-control {
     animation: platformPulse 2s ease-in-out infinite;
 }
 
-/* Responsive adjustments */
+/* Responsive */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+    
+    .scheduler-info {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 24px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .stat-card {
+        padding: 16px;
+    }
+    
+    .stat-value {
+        font-size: 20px;
+    }
+    
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .scheduler-controls {
+        flex-direction: column;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .container {
+        padding: 0 16px;
+    }
+    
     .platform-badge {
         font-size: 11px;
         padding: 4px 10px;
@@ -1175,5 +1185,17 @@ select.form-control {
     
     .info-card p {
         font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+        max-height: 80vh;
     }
 }

@@ -34,3 +34,557 @@ Starting Storenvy Price Tracker Service...
 Starting Storenvy Price Tracker Service...
  * Serving Flask app 'app'
  * Debug mode: off
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+No stock alerts to check
+🔄 Checking 1 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking CNC...
+Attempting to get data for CNC...
+Scraping CNC from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   33.31 -0.47 (-1.39%)  At close: July 3 at 1:00:02 PM EDT   33.28 -0.03 (-0.09%) After hours: July 3 at 4:59:59 PM EDT
+Successfully extracted price: $33.31
+✅ Yahoo Finance success for CNC: $33.31
+🚨 ALERT TRIGGERED: CNC - price_below
+🔄 Checking 2 stock alerts...
+📊 Checking CNC...
+Attempting to get data for CNC...
+Scraping CNC from Yahoo Finance...
+Alert email sent for CNC
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="CNC"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Could not extract price for CNC from Yahoo Finance
+Yahoo Finance failed for CNC, trying MarketWatch...
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Trying MarketWatch fallback for CNC...
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+❌ All sources failed for CNC
+❌ Failed to get data for CNC
+Yahoo Finance failed for V, trying MarketWatch...
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Trying MarketWatch fallback for V...
+📊 Checking V...
+Attempting to get data for V...
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+❌ All sources failed for V
+❌ Failed to get data for V
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+❌ All sources failed for V
+❌ Failed to get data for V
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+Trying MarketWatch fallback for V...
+❌ All sources failed for V
+❌ Failed to get data for V
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+Trying MarketWatch fallback for V...
+❌ All sources failed for V
+❌ Failed to get data for V
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Error scraping V from Yahoo Finance: Timeout 30000ms exceeded.
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+MarketWatch fallback failed for V: Timeout 15000ms exceeded.
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Error scraping V from Yahoo Finance: Timeout 30000ms exceeded.
+Yahoo Finance failed for V, trying MarketWatch...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Trying MarketWatch fallback for V...
+Scraping V from Yahoo Finance...
+❌ All sources failed for V
+❌ Failed to get data for V
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+Trying MarketWatch fallback for V...
+❌ All sources failed for V
+❌ Failed to get data for V
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="V"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Could not extract price for V from Yahoo Finance
+Yahoo Finance failed for V, trying MarketWatch...
+Trying MarketWatch fallback for V...
+Trying MarketWatch fallback for V...
+❌ All sources failed for V
+❌ Failed to get data for V
+❌ All sources failed for V
+❌ Failed to get data for V
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+Scraping V from Yahoo Finance...
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 2 stock alerts...
+📊 Checking V...
+Attempting to get data for V...
+Scraping V from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   358.86 +4.64 +(1.31%)  At close: July 3 at 1:00:02 PM EDT   358.65 -0.21 (-0.06%) After hours: July 3 at 4:59:18 PM EDT
+Successfully extracted price: $358.86
+✅ Yahoo Finance success for V: $358.86
+✅ V: $358.86 (+0.00%) - No trigger
+🔄 Checking 3 stock alerts...
+📊 Checking ^IXIC...
+Attempting to get data for ^IXIC...
+Scraping ^IXIC from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   20,601.10 +207.97 +(1.02%)  At close: July 3 at 2:15:59 PM EDT   
+Successfully extracted price: $20601.1
+🔄 Checking 3 stock alerts...
+📊 Checking ^IXIC...
+Attempting to get data for ^IXIC...
+Scraping ^IXIC from Yahoo Finance...
+✅ Yahoo Finance success for ^IXIC: $20601.1
+🚨 ALERT TRIGGERED: ^IXIC - price_above
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Alert email sent for ^IXIC
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+📊 Checking V...
+Attempting to get data for V...
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Scraping V from Yahoo Finance...
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Found price text with selector [data-testid="quote-price"]:   20,601.10 +207.97 +(1.02%)  At close: July 3 at 2:15:59 PM EDT   
+Successfully extracted price: $20601.1
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+✅ Yahoo Finance success for ^IXIC: $20601.1
+🚨 ALERT TRIGGERED: ^IXIC - price_above
