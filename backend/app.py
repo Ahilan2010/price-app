@@ -1,4 +1,4 @@
-# backend/app.py - COMPLETE VERSION WITH MULTI-PLATFORM SUPPORT
+# backend/app.py - COMPLETE VERSION WITH MULTI-PLATFORM SUPPORT AND REAL-TIME UPDATES
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
@@ -87,18 +87,19 @@ def delete_product(product_id):
 
 @app.route('/api/check-prices', methods=['POST'])
 def check_prices():
-    """Manually check all product prices"""
+    """Manually check all product prices with real-time response"""
     try:
         # Run the async function in a new event loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(tracker.check_all_products(email_config))
         
-        # Return updated products
+        # Return updated products for real-time frontend updates
         products = tracker.get_tracked_products()
         return jsonify({
             'message': 'Price check completed',
-            'products': products
+            'products': products,
+            'timestamp': str(asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 'now')
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -153,18 +154,19 @@ def delete_stock_alert(alert_id):
 
 @app.route('/api/stocks/check', methods=['POST'])
 def check_stock_prices():
-    """Manually check all stock prices"""
+    """Manually check all stock prices with real-time response"""
     try:
         # Run the async function in a new event loop
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(stock_tracker.check_all_stock_alerts(email_config))
         
-        # Return updated alerts
+        # Return updated alerts for real-time frontend updates
         alerts = stock_tracker.get_stock_alerts()
         return jsonify({
             'message': 'Stock price check completed',
-            'alerts': alerts
+            'alerts': alerts,
+            'timestamp': str(asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 'now')
         }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -190,7 +192,12 @@ def get_email_config():
     """Get current email configuration status"""
     return jsonify({
         'enabled': email_config.get('enabled', False),
-        'configured': bool(email_config.get('smtp_server'))
+        'configured': bool(email_config.get('smtp_server')),
+        'smtp_server': email_config.get('smtp_server', ''),
+        'smtp_port': email_config.get('smtp_port', 587),
+        'from_email': email_config.get('from_email', ''),
+        'to_email': email_config.get('to_email', '')
+        # Note: We never return the password for security
     })
 
 @app.route('/api/email-config', methods=['POST'])
@@ -266,6 +273,27 @@ def stop_scheduler():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# NEW ROUTE: Real-time price update endpoint
+@app.route('/api/products/<int:product_id>/price', methods=['GET'])
+def get_product_current_price(product_id):
+    """Get current price for a specific product (for real-time updates)"""
+    try:
+        products = tracker.get_tracked_products()
+        product = next((p for p in products if p['id'] == product_id), None)
+        
+        if not product:
+            return jsonify({'error': 'Product not found'}), 404
+        
+        return jsonify({
+            'id': product['id'],
+            'current_price': product['last_price'],
+            'target_price': product['target_price'],
+            'last_checked': product['last_checked'],
+            'status': product['status']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     print("\n" + "="*60)
     print("🛍️  PRICETRACKER WEB APPLICATION")
@@ -274,7 +302,7 @@ if __name__ == '__main__':
     print("🌐 Interface: http://localhost:5000")
     print("📦 Products: Manual + Background service")
     print("📈 Stocks: Manual + Background service")
-    print("🌍 Now supporting 11 e-commerce platforms!")
+    print("🌍 Now supporting 7 major e-commerce platforms!")
     print("\n💡 For persistent background checking:")
     print("   Run: python scheduler_service.py")
     print("\n⏹️  Press Ctrl+C to stop the web server")

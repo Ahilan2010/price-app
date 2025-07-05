@@ -1,8 +1,8 @@
-// Modern PriceTracker JavaScript with Multi-Platform Support
+// Modern PriceTracker JavaScript with Auto-Refresh and Updated Platforms
 
 const API_URL = 'http://localhost:5000/api';
 
-// Platform configurations
+// Updated platform configurations (removed unwanted platforms)
 const platformConfigs = {
     amazon: {
         name: 'Amazon',
@@ -10,35 +10,11 @@ const platformConfigs = {
         tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
         icon: '🛒'
     },
-    alibaba: {
-        name: 'Alibaba',
-        exampleUrl: 'https://www.alibaba.com/product-detail/example_123456789.html',
-        tips: 'Copy the full product URL. Alibaba URLs usually end with .html',
-        icon: '🏭'
-    },
     ebay: {
         name: 'eBay',
         exampleUrl: 'https://www.ebay.com/itm/123456789012',
         tips: 'Use the item URL that contains /itm/ followed by the item number',
         icon: '🏷️'
-    },
-    walmart: {
-        name: 'Walmart',
-        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
-        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
-        icon: '🏪'
-    },
-    rakuten: {
-        name: 'Rakuten',
-        exampleUrl: 'https://www.rakuten.com/shop/store-name/product/ABC123/',
-        tips: 'Include the full product URL with the store and product information',
-        icon: '🎌'
-    },
-    flipkart: {
-        name: 'Flipkart',
-        exampleUrl: 'https://www.flipkart.com/product-name/p/itmf3qh7nkvfbhgu',
-        tips: 'Flipkart URLs contain /p/ followed by the item code starting with "itm"',
-        icon: '🛍️'
     },
     etsy: {
         name: 'Etsy',
@@ -46,23 +22,23 @@ const platformConfigs = {
         tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
         icon: '🎨'
     },
-    mercadolibre: {
-        name: 'MercadoLibre',
-        exampleUrl: 'https://www.mercadolibre.com/product-MLM-123456789',
-        tips: 'Use the product URL that contains the country code (like MLM for Mexico)',
-        icon: '🌎'
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
     },
-    shopee: {
-        name: 'Shopee',
-        exampleUrl: 'https://shopee.sg/product-name-i.123456.7890123',
-        tips: 'Shopee URLs contain -i. followed by the shop and product IDs',
-        icon: '🛒'
+    flipkart: {
+        name: 'Flipkart',
+        exampleUrl: 'https://www.flipkart.com/product-name/p/itmf3qh7nkvfbhgu',
+        tips: 'Flipkart URLs contain /p/ followed by the item code starting with "itm"',
+        icon: '🛍️'
     },
-    aliexpress: {
-        name: 'AliExpress',
-        exampleUrl: 'https://www.aliexpress.com/item/1234567890123456.html',
-        tips: 'Use the item URL that ends with the product ID and .html',
-        icon: '🌏'
+    alibaba: {
+        name: 'Alibaba',
+        exampleUrl: 'https://www.alibaba.com/product-detail/example_123456789.html',
+        tips: 'Use the product URL that ends with .html and contains product details',
+        icon: '🏭'
     },
     storenvy: {
         name: 'Storenvy',
@@ -71,6 +47,10 @@ const platformConfigs = {
         icon: '🏬'
     }
 };
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+let isChecking = false;
 
 // Page Management
 function showPage(pageId, navItem) {
@@ -100,6 +80,43 @@ function showPage(pageId, navItem) {
         loadStats();
     } else if (pageId === 'settingsPage') {
         loadEmailConfig();
+    }
+}
+
+// Auto-refresh functionality
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Refresh stats every 5 seconds, products/stocks every 30 seconds
+    autoRefreshInterval = setInterval(() => {
+        if (!isChecking) {
+            loadStats();
+            
+            // Refresh current page data
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                if (pageId === 'productsPage') {
+                    loadProducts();
+                } else if (pageId === 'stocksPage') {
+                    loadStockAlerts();
+                } else if (pageId === 'monitorPage') {
+                    loadSchedulerStatus();
+                }
+            }
+        }
+    }, 30000); // 30 seconds
+    
+    // Faster stats refresh
+    setInterval(loadStats, 5000); // 5 seconds for stats only
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
     }
 }
 
@@ -149,15 +166,11 @@ function updateUrlPlaceholder() {
 function validateProductUrl(url, platform) {
     const domainPatterns = {
         amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
-        alibaba: /alibaba\.com/i,
         ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
-        walmart: /walmart\.com/i,
-        rakuten: /rakuten\.(com|co\.jp)/i,
-        flipkart: /flipkart\.com/i,
         etsy: /etsy\.com/i,
-        mercadolibre: /(mercadolibre|mercadolivre)\.(com|com\.mx|com\.ar|com\.br)/i,
-        shopee: /shopee\.(sg|my|th|id|tw|vn|ph|com\.br)/i,
-        aliexpress: /aliexpress\.(com|us|ru)/i,
+        walmart: /walmart\.com/i,
+        flipkart: /flipkart\.com/i,
+        alibaba: /alibaba\.com/i,
         storenvy: /storenvy\.com/i
     };
     
@@ -168,7 +181,7 @@ function validateProductUrl(url, platform) {
     return domainPatterns[platform].test(url);
 }
 
-// Products Management
+// Products Management with Auto-Update
 async function loadProducts() {
     try {
         const response = await fetch(`${API_URL}/products`);
@@ -185,7 +198,7 @@ async function loadProducts() {
             emptyState.style.display = 'none';
             
             productsList.innerHTML = products.map(product => `
-                <div class="card" data-platform="${product.platform || 'storenvy'}">
+                <div class="card" data-platform="${product.platform || 'storenvy'}" id="product-${product.id}">
                     <div class="platform-badge">
                         <span>${product.platform_icon || '🛒'}</span>
                         <span style="font-weight: 500;">${product.platform_name || 'Unknown'}</span>
@@ -196,15 +209,17 @@ async function loadProducts() {
                     <div class="price-info">
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
-                            <span class="price-value">$${product.last_price ? product.last_price.toFixed(2) : '--'}</span>
+                            <span class="price-value" id="current-price-${product.id}">${product.last_price ? product.last_price.toFixed(2) : '--'}</span>
                         </div>
                         <div class="price-item">
                             <span class="price-label">Target Price</span>
-                            <span class="price-value">$${product.target_price.toFixed(2)}</span>
+                            <span class="price-value">${product.target_price.toFixed(2)}</span>
                         </div>
                     </div>
                     
-                    ${renderProductStatus(product)}
+                    <div id="status-${product.id}">
+                        ${renderProductStatus(product)}
+                    </div>
                     
                     <div class="card-actions">
                         <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
@@ -238,7 +253,7 @@ function renderProductStatus(product) {
         return `
             <div class="status-badge status-triggered">
                 <i class="fas fa-check-circle"></i>
-                Target Hit! Save $${savings}
+                Target Hit! Save ${savings}
             </div>
         `;
     }
@@ -249,6 +264,37 @@ function renderProductStatus(product) {
             Monitoring Price
         </div>
     `;
+}
+
+// Real-time price update function
+function updateProductPrice(productId, newPrice, targetPrice) {
+    const priceElement = document.getElementById(`current-price-${productId}`);
+    const statusElement = document.getElementById(`status-${productId}`);
+    const cardElement = document.getElementById(`product-${productId}`);
+    
+    if (priceElement) {
+        // Animate price change
+        priceElement.style.transition = 'all 0.3s ease';
+        priceElement.style.transform = 'scale(1.1)';
+        priceElement.textContent = `${newPrice.toFixed(2)}`;
+        
+        setTimeout(() => {
+            priceElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    if (statusElement) {
+        const product = { last_price: newPrice, target_price: targetPrice, status: newPrice <= targetPrice ? 'below_target' : 'waiting' };
+        statusElement.innerHTML = renderProductStatus(product);
+    }
+    
+    // Add visual feedback for price updates
+    if (cardElement) {
+        cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+        setTimeout(() => {
+            cardElement.style.boxShadow = '';
+        }, 2000);
+    }
 }
 
 // Product Modal Functions
@@ -354,7 +400,7 @@ async function loadStockAlerts() {
             emptyState.style.display = 'none';
             
             stocksList.innerHTML = alerts.map(alert => `
-                <div class="card">
+                <div class="card" id="stock-${alert.id}">
                     <h3 class="card-title">
                         <i class="fas fa-chart-line"></i>
                         ${alert.company_name} (${alert.symbol})
@@ -364,7 +410,7 @@ async function loadStockAlerts() {
                     <div class="price-info">
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
-                            <span class="price-value">$${alert.current_price ? alert.current_price.toFixed(2) : '--'}</span>
+                            <span class="price-value" id="stock-price-${alert.id}">${alert.current_price ? alert.current_price.toFixed(2) : '--'}</span>
                         </div>
                         <div class="price-item">
                             <span class="price-label">Threshold</span>
@@ -372,7 +418,9 @@ async function loadStockAlerts() {
                         </div>
                     </div>
                     
-                    ${renderStockStatus(alert)}
+                    <div id="stock-status-${alert.id}">
+                        ${renderStockStatus(alert)}
+                    </div>
                     
                     <div class="card-actions">
                         <a href="https://finance.yahoo.com/quote/${alert.symbol}" target="_blank" class="btn btn-primary btn-icon">
@@ -405,7 +453,7 @@ function formatThreshold(alert) {
     if (alert.alert_type.includes('percent')) {
         return `${alert.threshold}%`;
     }
-    return `$${alert.threshold.toFixed(2)}`;
+    return `${alert.threshold.toFixed(2)}`;
 }
 
 function renderStockStatus(alert) {
@@ -435,19 +483,62 @@ function renderStockStatus(alert) {
     `;
 }
 
-// Statistics
+// Real-time stock update function
+function updateStockPrice(alertId, newPrice, isTriggered = false) {
+    const priceElement = document.getElementById(`stock-price-${alertId}`);
+    const statusElement = document.getElementById(`stock-status-${alertId}`);
+    const cardElement = document.getElementById(`stock-${alertId}`);
+    
+    if (priceElement) {
+        priceElement.style.transition = 'all 0.3s ease';
+        priceElement.style.transform = 'scale(1.1)';
+        priceElement.textContent = `${newPrice.toFixed(2)}`;
+        
+        setTimeout(() => {
+            priceElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    if (statusElement) {
+        const alert = { current_price: newPrice, is_triggered: isTriggered };
+        statusElement.innerHTML = renderStockStatus(alert);
+    }
+    
+    if (cardElement) {
+        cardElement.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
+        setTimeout(() => {
+            cardElement.style.boxShadow = '';
+        }, 2000);
+    }
+}
+
+// Statistics with Real-time Updates
 async function loadStats() {
     try {
         const response = await fetch(`${API_URL}/stats`);
         const stats = await response.json();
         
-        document.getElementById('totalProducts').textContent = stats.total_products || 0;
-        document.getElementById('totalStockAlerts').textContent = stats.total_stock_alerts || 0;
-        document.getElementById('triggeredAlerts').textContent = stats.triggered_stock_alerts || 0;
-        document.getElementById('totalSavings').textContent = `$${(stats.total_savings || 0).toFixed(2)}`;
+        // Animate stats updates
+        updateStatWithAnimation('totalProducts', stats.total_products || 0);
+        updateStatWithAnimation('totalStockAlerts', stats.total_stock_alerts || 0);
+        updateStatWithAnimation('triggeredAlerts', stats.triggered_stock_alerts || 0);
+        updateStatWithAnimation('totalSavings', `${(stats.total_savings || 0).toFixed(2)}`);
         
     } catch (error) {
         console.error('Failed to load stats:', error);
+    }
+}
+
+function updateStatWithAnimation(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (element && element.textContent !== newValue.toString()) {
+        element.style.transition = 'all 0.3s ease';
+        element.style.transform = 'scale(1.1)';
+        element.textContent = newValue;
+        
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+        }, 300);
     }
 }
 
@@ -545,8 +636,14 @@ async function deleteStockAlert(alertId) {
     }
 }
 
-// Monitor Page Functions
+// Enhanced Monitor Page Functions with Real-time Updates
 async function checkPrices() {
+    if (isChecking) {
+        showToast('Price check already in progress', 'warning');
+        return;
+    }
+    
+    isChecking = true;
     const button = document.getElementById('checkPricesBtn');
     const status = document.getElementById('checkingStatus');
     
@@ -566,13 +663,33 @@ async function checkPrices() {
         let errorMessages = [];
         
         if (productsResponse.ok) {
+            const productData = await productsResponse.json();
             successCount++;
+            
+            // Real-time update products if response contains updated data
+            if (productData.products) {
+                productData.products.forEach(product => {
+                    if (product.last_price) {
+                        updateProductPrice(product.id, product.last_price, product.target_price);
+                    }
+                });
+            }
         } else {
             errorMessages.push('Product price check failed');
         }
         
         if (stocksResponse.ok) {
+            const stockData = await stocksResponse.json();
             successCount++;
+            
+            // Real-time update stocks if response contains updated data
+            if (stockData.alerts) {
+                stockData.alerts.forEach(alert => {
+                    if (alert.current_price) {
+                        updateStockPrice(alert.id, alert.current_price, alert.is_triggered);
+                    }
+                });
+            }
         } else {
             errorMessages.push('Stock price check failed');
         }
@@ -586,14 +703,17 @@ async function checkPrices() {
         }
         
         // Refresh data
-        loadProducts();
-        loadStockAlerts();
-        loadStats();
+        setTimeout(() => {
+            loadProducts();
+            loadStockAlerts();
+            loadStats();
+        }, 2000);
         
     } catch (error) {
         showToast('Network error: Failed to check prices', 'error');
         console.error('Error checking prices:', error);
     } finally {
+        isChecking = false;
         button.style.display = 'inline-flex';
         status.style.display = 'none';
     }
@@ -803,6 +923,11 @@ document.addEventListener('DOMContentLoaded', function() {
     loadProducts();
     loadStats();
     
-    // Set up periodic stats refresh (every 30 seconds)
-    setInterval(loadStats, 30000);
+    // Start auto-refresh functionality
+    startAutoRefresh();
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        stopAutoRefresh();
+    });
 });
