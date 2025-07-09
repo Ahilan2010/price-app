@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - IMPROVED VERSION WITH BETTER RELIABILITY
+# backend/multi_platform_scraper.py - IMPROVED VERSION WITH FIXED PRICE EXTRACTION
 import asyncio
 import re
 import random
@@ -8,10 +8,10 @@ from playwright.async_api import async_playwright
 import time
 
 class MultiPlatformScraper:
-    """Enhanced e-commerce scraper with improved reliability for major platforms"""
+    """Enhanced e-commerce scraper with improved price extraction for Amazon and eBay"""
     
     def __init__(self):
-        # Enhanced platform-specific selectors with better reliability
+        # Enhanced platform-specific selectors with better price extraction
         self.platform_configs = {
             'amazon': {
                 'domain_patterns': ['amazon.com', 'amazon.co', 'amazon.ca', 'amazon.in', 'amazon.de', 'amazon.fr'],
@@ -24,7 +24,8 @@ class MultiPlatformScraper:
                     '.product-title'
                 ],
                 'price_selectors': [
-                    'span.a-price-whole',
+                    # Complete price selectors for Amazon (whole + fraction)
+                    'span.a-price-whole',  # For getting whole number
                     '.a-price-whole',
                     'span.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
                     '.a-price .a-offscreen',
@@ -35,6 +36,11 @@ class MultiPlatformScraper:
                     '#priceblock_dealprice',
                     '#priceblock_ourprice',
                     '.a-size-medium.a-color-price'
+                ],
+                'price_fraction_selectors': [
+                    # Specific selectors for Amazon price fractions
+                    'span.a-price-fraction',
+                    '.a-price-fraction'
                 ],
                 'wait_time': 5000,
                 'user_agents': [
@@ -55,13 +61,15 @@ class MultiPlatformScraper:
                     'h1'
                 ],
                 'price_selectors': [
-                    'span.ux-textspans[role="text"]',
-                    'span.ux-textspans',
+                    # Updated eBay price selectors with your specific class
+                    'span.ux-textspans[role="text"]',  # Primary selector
+                    'span.ux-textspans',              # Your specific selector
                     'span.notranslate',
                     '.x-price-primary',
                     'span[itemprop="price"]',
                     '.u-flL.condText',
-                    '#prcIsum'
+                    '#prcIsum',
+                    'span.ux-textspans:not([class*="BOLD"]):not([class*="SECONDARY"])'  # More specific ux-textspans
                 ],
                 'wait_time': 4000,
                 'user_agents': [
@@ -246,6 +254,165 @@ class MultiPlatformScraper:
         except Exception as e:
             print(f"⚠️ Human behavior simulation failed: {e}")
     
+    async def extract_amazon_price(self, page) -> Optional[float]:
+        """Special Amazon price extraction handling whole + fraction"""
+        config = self.platform_configs['amazon']
+        
+        # Method 1: Try to get complete price from .a-offscreen (most reliable)
+        for selector in [
+            'span.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
+            '.a-price .a-offscreen',
+            '.a-price-current .a-offscreen',
+            'span.a-price.a-text-price.apexPriceToPay .a-offscreen'
+        ]:
+            try:
+                element = await page.wait_for_selector(selector, timeout=2000)
+                if element:
+                    price_text = await element.text_content()
+                    if price_text:
+                        print(f"🎯 Amazon complete price from .a-offscreen: '{price_text}'")
+                        price = await self.extract_price_from_text(price_text)
+                        if price and price > 0:
+                            return price
+            except Exception as e:
+                print(f"⚠️ Amazon .a-offscreen selector failed ({selector}): {str(e)[:50]}")
+                continue
+        
+        # Method 2: Combine whole + fraction if .a-offscreen fails
+        print("🔧 Trying Amazon whole + fraction method...")
+        whole_price = None
+        fraction_price = None
+        
+        # Get whole price
+        for selector in config['price_selectors']:
+            try:
+                element = await page.wait_for_selector(selector, timeout=1500)
+                if element:
+                    whole_text = await element.text_content()
+                    if whole_text:
+                        print(f"📄 Amazon whole price text: '{whole_text}'")
+                        # Extract just the number part
+                        whole_match = re.search(r'(\d+)', whole_text.replace(',', ''))
+                        if whole_match:
+                            whole_price = int(whole_match.group(1))
+                            print(f"💰 Amazon whole price: {whole_price}")
+                            break
+            except Exception as e:
+                continue
+        
+        # Get fraction price using specific selectors
+        for selector in config.get('price_fraction_selectors', []):
+            try:
+                element = await page.wait_for_selector(selector, timeout=1500)
+                if element:
+                    fraction_text = await element.text_content()
+                    if fraction_text:
+                        print(f"🔢 Amazon fraction text: '{fraction_text}'")
+                        fraction_match = re.search(r'(\d{1,2})', fraction_text)
+                        if fraction_match:
+                            fraction_price = int(fraction_match.group(1))
+                            print(f"💫 Amazon fraction: {fraction_price}")
+                            break
+            except Exception as e:
+                continue
+        
+        # Combine whole and fraction
+        if whole_price is not None:
+            if fraction_price is not None:
+                combined_price = whole_price + (fraction_price / 100)
+                print(f"✅ Amazon combined price: ${combined_price:.2f} (${whole_price}.{fraction_price:02d})")
+                return combined_price
+            else:
+                # If no fraction found, assume .00
+                print(f"✅ Amazon whole price only: ${whole_price:.2f}")
+                return float(whole_price)
+        
+        print("❌ Amazon price extraction failed")
+        return None
+    
+    async def extract_ebay_price(self, page) -> Optional[float]:
+        """Special eBay price extraction with updated selectors"""
+        config = self.platform_configs['ebay']
+        
+        print("🔍 Extracting eBay price with updated selectors...")
+        
+        # Enhanced eBay price extraction with specific focus on ux-textspans
+        enhanced_selectors = [
+            'span.ux-textspans[role="text"]',  # Primary selector
+            'span.ux-textspans:contains("$")',  # Your specific selector with price symbol
+            'span.ux-textspans',  # General ux-textspans
+            'span.notranslate',
+            '.x-price-primary',
+            'span[itemprop="price"]',
+            '.u-flL.condText',
+            '#prcIsum'
+        ]
+        
+        for i, selector in enumerate(enhanced_selectors):
+            try:
+                # Handle special contains selector
+                if ':contains("$")' in selector:
+                    elements = await page.query_selector_all('span.ux-textspans')
+                    for element in elements:
+                        price_text = await element.text_content()
+                        if price_text and '$' in price_text:
+                            print(f"💰 eBay price from ux-textspans: '{price_text}'")
+                            price = await self.extract_price_from_text(price_text)
+                            if price and price > 0:
+                                return price
+                else:
+                    element = await page.wait_for_selector(selector, timeout=2000)
+                    if element:
+                        price_text = await element.text_content()
+                        if price_text:
+                            print(f"📄 eBay price text from selector #{i+1}: '{price_text}'")
+                            price = await self.extract_price_from_text(price_text)
+                            if price and price > 0:
+                                return price
+            except Exception as e:
+                print(f"⚠️ eBay selector #{i+1} failed ({selector}): {str(e)[:50]}")
+                continue
+        
+        # JavaScript fallback for eBay
+        print("🔧 Trying eBay JavaScript fallback...")
+        try:
+            price_candidates = await page.evaluate('''
+                () => {
+                    const results = [];
+                    
+                    // Look for all ux-textspans elements
+                    const uxElements = document.querySelectorAll('span.ux-textspans');
+                    for (const element of uxElements) {
+                        const text = element.textContent || '';
+                        if (text.includes('$') || text.includes('US') || text.match(/\d+\.\d{2}/)) {
+                            results.push(text.trim());
+                        }
+                    }
+                    
+                    // Also check for other price elements
+                    const priceElements = document.querySelectorAll('*');
+                    for (const element of priceElements) {
+                        const text = element.textContent || '';
+                        if (text.match(/US\s*\$\d+\.\d{2}/) && element.offsetParent !== null) {
+                            results.push(text.trim());
+                        }
+                    }
+                    
+                    return results.slice(0, 10);
+                }
+            ''')
+            
+            print(f"🔍 eBay JavaScript found candidates: {price_candidates[:3]}")
+            for price_text in price_candidates:
+                price = await self.extract_price_from_text(price_text)
+                if price and price > 0:
+                    return price
+        except Exception as e:
+            print(f"⚠️ eBay JavaScript fallback failed: {e}")
+        
+        print("❌ eBay price extraction failed")
+        return None
+    
     async def extract_with_fallbacks(self, page, selectors: list, extract_type: str = "text") -> Optional[str]:
         """Extract content using multiple selector fallbacks with enhanced methods"""
         for i, selector in enumerate(selectors):
@@ -302,6 +469,7 @@ class MultiPlatformScraper:
         
         # Enhanced price patterns (order matters - most specific first)
         price_patterns = [
+            r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',  # US $135.00 format
             r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',  # $1,234.56
             r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',  # 1,234.56$
             r'(\d{1,3}(?:,\d{3})*\.\d{2})',              # 1,234.56
@@ -330,7 +498,7 @@ class MultiPlatformScraper:
         return None
     
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Enhanced product scraping with better error handling and stealth"""
+        """Enhanced product scraping with platform-specific price extraction"""
         platform = self.detect_platform(url)
         
         if not platform:
@@ -406,60 +574,31 @@ class MultiPlatformScraper:
                         }
                     ''')
                 
-                # Extract price with enhanced methods
+                # Platform-specific price extraction
                 print(f"💰 Extracting price for {platform}...")
                 price = None
                 
-                # Try each price selector
-                for i, selector in enumerate(config['price_selectors']):
-                    try:
-                        elements = await page.query_selector_all(selector)
-                        for element in elements:
-                            price_text = await element.text_content()
-                            if price_text:
-                                print(f"📄 Price text from selector #{i+1}: '{price_text[:50]}'")
-                                price = await self.extract_price_from_text(price_text)
-                                if price and price > 0:
-                                    break
-                        if price and price > 0:
-                            break
-                    except Exception as e:
-                        print(f"⚠️ Price selector #{i+1} failed: {str(e)[:50]}")
-                        continue
-                
-                # Enhanced JavaScript fallback for price
-                if not price:
-                    print(f"🔧 Trying enhanced JavaScript fallback for price...")
-                    try:
-                        price_candidates = await page.evaluate('''
-                            () => {
-                                const results = [];
-                                const elements = document.querySelectorAll('*');
-                                
-                                for (const element of elements) {
-                                    const text = element.textContent || '';
-                                    const innerHTML = element.innerHTML || '';
-                                    
-                                    // Look for price patterns in text content
-                                    if (text.match(/[\$€£¥₹]\s*\d+/) || text.match(/\d+[\$€£¥₹]/) || 
-                                        text.match(/price/i) || text.match(/cost/i)) {
-                                        if (element.offsetParent !== null) { // visible element
-                                            results.push(text.trim());
-                                        }
-                                    }
-                                }
-                                
-                                return results.slice(0, 10); // Return top 10 candidates
-                            }
-                        ''')
-                        
-                        print(f"🔍 JavaScript found price candidates: {price_candidates[:3]}")
-                        for price_text in price_candidates:
-                            price = await self.extract_price_from_text(price_text)
+                if platform == 'amazon':
+                    price = await self.extract_amazon_price(page)
+                elif platform == 'ebay':
+                    price = await self.extract_ebay_price(page)
+                else:
+                    # Standard price extraction for other platforms
+                    for i, selector in enumerate(config['price_selectors']):
+                        try:
+                            elements = await page.query_selector_all(selector)
+                            for element in elements:
+                                price_text = await element.text_content()
+                                if price_text:
+                                    print(f"📄 Price text from selector #{i+1}: '{price_text[:50]}'")
+                                    price = await self.extract_price_from_text(price_text)
+                                    if price and price > 0:
+                                        break
                             if price and price > 0:
                                 break
-                    except Exception as e:
-                        print(f"⚠️ Enhanced JavaScript price extraction failed: {e}")
+                        except Exception as e:
+                            print(f"⚠️ Price selector #{i+1} failed: {str(e)[:50]}")
+                            continue
                 
                 # Final validation
                 if not title:
