@@ -4891,3 +4891,792 @@ Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
 Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
 Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
 Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector [data-testid="quote-price"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector span[data-reactid*="price"] failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .quote-header-info [data-reactid] span failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector .Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector span.Trsdu\(0\.3s\).Fw\(b\).Fz\(36px\) failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Price selector [data-symbol="ABNB"] fin-streamer[data-field="regularMarketPrice"] failed: Timeout 3000ms exceeded.
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Could not extract price for ABNB from Yahoo Finance
+Yahoo Finance failed for ABNB, trying MarketWatch...
+Trying MarketWatch fallback for ABNB...
+Trying MarketWatch fallback for ABNB...
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+❌ All sources failed for ABNB
+❌ Failed to get data for ABNB
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+🔄 Checking 1 stock alerts...
+📊 Checking ABNB...
+Attempting to get data for ABNB...
+Scraping ABNB from Yahoo Finance...
+Scraping ABNB from Yahoo Finance...
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1[data-testid="quote-header"] failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1.D\(ib\) failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector h1[data-field="name"] failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector .quote-header-info h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector [data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.
+Selector section[data-testid="quote-header"] h1 failed: Timeout 3000ms exceeded.

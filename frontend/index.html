@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TagTracker</title>
+    <title>TagTracker - Enhanced Multi-Platform Price Monitor</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,7 +19,7 @@
                         <i class="fas fa-dollar-sign"></i>
                     </div>
                     <h1>TagTracker</h1>
-                    <span class="tagline">Smart Monitoring</span>
+                    <span class="tagline">Smart Multi-Platform Monitoring</span>
                 </div>
                 
                 <div class="stats-grid">
@@ -75,7 +75,7 @@
                 <div class="page-header">
                     <div class="page-title">
                         <h2><i class="fas fa-shopping-cart"></i> Product Tracking</h2>
-                        <p>Monitor prices and get notified when they drop</p>
+                        <p>Monitor prices across 7 major platforms and get notified when they drop</p>
                     </div>
                     <button class="btn btn-primary" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Product
@@ -91,7 +91,7 @@
                         <i class="fas fa-shopping-bag"></i>
                     </div>
                     <h3>No products tracked yet</h3>
-                    <p>Start monitoring your favorite products for price drops</p>
+                    <p>Start monitoring your favorite products across Amazon, eBay, Etsy, Walmart, Roblox UGC, and more!</p>
                     <button class="btn btn-primary" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Your First Product
                     </button>
@@ -138,7 +138,7 @@
                             <i class="fas fa-desktop"></i>
                         </div>
                         <h2>Price Monitor</h2>
-                        <p>Real-time price checking and automatic monitoring</p>
+                        <p>Real-time price checking and automatic monitoring across all platforms</p>
                     </div>
                     
                     <div class="monitor-actions">
@@ -148,7 +148,7 @@
                         
                         <div class="checking-status" id="checkingStatus" style="display: none;">
                             <div class="spinner"></div>
-                            <p>Scanning prices across the web...</p>
+                            <p>Scanning prices across multiple platforms...</p>
                         </div>
                     </div>
                     
@@ -301,7 +301,7 @@
             </div>
             <form id="addProductForm" onsubmit="addProduct(event)">
                 <div class="form-group">
-                    <label><i class="fas fa-store"></i> E-commerce Platform</label>
+                    <label><i class="fas fa-store"></i> Platform</label>
                     <select id="platformSelect" required class="form-control" onchange="updateUrlPlaceholder()">
                         <option value="">Select a platform...</option>
                         <option value="amazon">🛒 Amazon</option>
@@ -309,6 +309,8 @@
                         <option value="etsy">🎨 Etsy</option>
                         <option value="walmart">🏪 Walmart</option>
                         <option value="storenvy">🏬 Storenvy</option>
+                        <option value="roblox">🎮 Roblox UGC</option>
+                        <option value="flights">✈️ Flight Tickets</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -318,7 +320,7 @@
                     <small class="form-hint" id="urlHint" style="color: var(--text-secondary); margin-top: 4px; display: block;"></small>
                 </div>
                 <div class="form-group">
-                    <label><i class="fas fa-dollar-sign"></i> Target Price</label>
+                    <label for="targetPrice"><i class="fas fa-dollar-sign"></i> Target Price</label>
                     <input type="number" id="targetPrice" required step="0.01" min="0" 
                            class="form-control" placeholder="25.00">
                 </div>

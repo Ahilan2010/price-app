@@ -1,8 +1,8 @@
-// Modern PriceTracker JavaScript with Auto-Refresh and Updated Platforms
+// Modern PriceTracker JavaScript with Auto-Refresh and Updated Platforms Including Roblox & Flights
 
 const API_URL = 'http://localhost:5000/api';
 
-// Updated platform configurations (removed unwanted platforms)
+// Updated platform configurations with new platforms
 const platformConfigs = {
     amazon: {
         name: 'Amazon',
@@ -28,23 +28,24 @@ const platformConfigs = {
         tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
         icon: '🏪'
     },
-    flipkart: {
-        name: 'Flipkart',
-        exampleUrl: 'https://www.flipkart.com/product-name/p/itmf3qh7nkvfbhgu',
-        tips: 'Flipkart URLs contain /p/ followed by the item code starting with "itm"',
-        icon: '🛍️'
-    },
-    alibaba: {
-        name: 'Alibaba',
-        exampleUrl: 'https://www.alibaba.com/product-detail/example_123456789.html',
-        tips: 'Use the product URL that ends with .html and contains product details',
-        icon: '🏭'
-    },
     storenvy: {
         name: 'Storenvy',
         exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
         tips: 'Copy the full product URL from the product page',
         icon: '🏬'
+    },
+    roblox: {
+        name: 'Roblox UGC',
+        exampleUrl: 'https://www.roblox.com/catalog/123456789/Item-Name',
+        tips: 'Use the catalog URL for UGC items. Prices shown in Robux.',
+        icon: '🎮',
+        currency: 'robux'
+    },
+    flights: {
+        name: 'Flight Tickets',
+        exampleUrl: 'https://www.kayak.com/flights/NYC-LAX/2024-03-15',
+        tips: 'Use flight search result URLs from Kayak, Expedia, or similar sites',
+        icon: '✈️'
     }
 };
 
@@ -154,6 +155,16 @@ function updateUrlPlaceholder() {
         
         // Enable the URL input
         urlInput.disabled = false;
+        
+        // Update target price label for Roblox
+        const targetPriceLabel = document.querySelector('label[for="targetPrice"]');
+        if (targetPriceLabel) {
+            if (config.currency === 'robux') {
+                targetPriceLabel.innerHTML = '<i class="fas fa-coins"></i> Target Price (Robux)';
+            } else {
+                targetPriceLabel.innerHTML = '<i class="fas fa-dollar-sign"></i> Target Price ($)';
+            }
+        }
     } else {
         urlInput.placeholder = 'Select a platform first...';
         urlHint.textContent = '';
@@ -169,9 +180,9 @@ function validateProductUrl(url, platform) {
         ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
         etsy: /etsy\.com/i,
         walmart: /walmart\.com/i,
-        flipkart: /flipkart\.com/i,
-        alibaba: /alibaba\.com/i,
-        storenvy: /storenvy\.com/i
+        storenvy: /storenvy\.com/i,
+        roblox: /roblox\.com/i,
+        flights: /(kayak|expedia|booking|priceline|momondo)\.com/i
     };
     
     if (!platform || !domainPatterns[platform]) {
@@ -179,6 +190,15 @@ function validateProductUrl(url, platform) {
     }
     
     return domainPatterns[platform].test(url);
+}
+
+// Format price based on platform currency
+function formatPrice(price, platform) {
+    const config = platformConfigs[platform];
+    if (config && config.currency === 'robux') {
+        return `${Math.round(price)} R$`;
+    }
+    return `$${price.toFixed(2)}`;
 }
 
 // Products Management with Auto-Update
@@ -197,11 +217,16 @@ async function loadProducts() {
             productsList.style.display = 'grid';
             emptyState.style.display = 'none';
             
-            productsList.innerHTML = products.map(product => `
-                <div class="card" data-platform="${product.platform || 'storenvy'}" id="product-${product.id}">
+            productsList.innerHTML = products.map(product => {
+                const platform = product.platform || 'storenvy';
+                const config = platformConfigs[platform] || {};
+                const isRobux = config.currency === 'robux';
+                
+                return `
+                <div class="card" data-platform="${platform}" id="product-${product.id}">
                     <div class="platform-badge">
-                        <span>${product.platform_icon || '🛒'}</span>
-                        <span style="font-weight: 500;">${product.platform_name || 'Unknown'}</span>
+                        <span>${product.platform_icon || config.icon || '🛒'}</span>
+                        <span style="font-weight: 500;">${product.platform_name || config.name || 'Unknown'}</span>
                     </div>
                     <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
                     <p class="card-subtitle">${truncateUrl(product.url)}</p>
@@ -209,28 +234,31 @@ async function loadProducts() {
                     <div class="price-info">
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
-                            <span class="price-value" id="current-price-${product.id}">${product.last_price ? product.last_price.toFixed(2) : '--'}</span>
+                            <span class="price-value" id="current-price-${product.id}">
+                                ${product.last_price ? formatPrice(product.last_price, platform) : '--'}
+                            </span>
                         </div>
                         <div class="price-item">
                             <span class="price-label">Target Price</span>
-                            <span class="price-value">${product.target_price.toFixed(2)}</span>
+                            <span class="price-value">${formatPrice(product.target_price, platform)}</span>
                         </div>
                     </div>
                     
                     <div id="status-${product.id}">
-                        ${renderProductStatus(product)}
+                        ${renderProductStatus(product, platform)}
                     </div>
                     
                     <div class="card-actions">
                         <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
-                            <i class="fas fa-external-link-alt"></i> View Product
+                            <i class="fas fa-external-link-alt"></i> View ${isRobux ? 'Item' : 'Product'}
                         </a>
                         <button onclick="deleteProduct(${product.id})" class="btn btn-secondary btn-icon">
                             <i class="fas fa-trash"></i> Remove
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
     } catch (error) {
         showToast('Failed to load products', 'error');
@@ -238,7 +266,10 @@ async function loadProducts() {
     }
 }
 
-function renderProductStatus(product) {
+function renderProductStatus(product, platform = null) {
+    const config = platformConfigs[platform] || {};
+    const isRobux = config.currency === 'robux';
+    
     if (!product.last_price) {
         return `
             <div class="status-badge status-waiting">
@@ -249,11 +280,12 @@ function renderProductStatus(product) {
     }
     
     if (product.status === 'below_target') {
-        const savings = (product.target_price - product.last_price).toFixed(2);
+        const savings = product.target_price - product.last_price;
+        const savingsText = isRobux ? `${Math.round(savings)} R$` : `$${savings.toFixed(2)}`;
         return `
             <div class="status-badge status-triggered">
                 <i class="fas fa-check-circle"></i>
-                Target Hit! Save ${savings}
+                Target Hit! Save ${savingsText}
             </div>
         `;
     }
@@ -267,7 +299,7 @@ function renderProductStatus(product) {
 }
 
 // Real-time price update function
-function updateProductPrice(productId, newPrice, targetPrice) {
+function updateProductPrice(productId, newPrice, targetPrice, platform = null) {
     const priceElement = document.getElementById(`current-price-${productId}`);
     const statusElement = document.getElementById(`status-${productId}`);
     const cardElement = document.getElementById(`product-${productId}`);
@@ -276,7 +308,7 @@ function updateProductPrice(productId, newPrice, targetPrice) {
         // Animate price change
         priceElement.style.transition = 'all 0.3s ease';
         priceElement.style.transform = 'scale(1.1)';
-        priceElement.textContent = `${newPrice.toFixed(2)}`;
+        priceElement.textContent = formatPrice(newPrice, platform);
         
         setTimeout(() => {
             priceElement.style.transform = 'scale(1)';
@@ -285,7 +317,7 @@ function updateProductPrice(productId, newPrice, targetPrice) {
     
     if (statusElement) {
         const product = { last_price: newPrice, target_price: targetPrice, status: newPrice <= targetPrice ? 'below_target' : 'waiting' };
-        statusElement.innerHTML = renderProductStatus(product);
+        statusElement.innerHTML = renderProductStatus(product, platform);
     }
     
     // Add visual feedback for price updates
@@ -310,6 +342,12 @@ function closeAddProductModal() {
     document.getElementById('productUrl').placeholder = 'Select a platform first...';
     document.getElementById('urlHint').textContent = '';
     document.getElementById('platformInfo').style.display = 'none';
+    
+    // Reset target price label
+    const targetPriceLabel = document.querySelector('label[for="targetPrice"]');
+    if (targetPriceLabel) {
+        targetPriceLabel.innerHTML = '<i class="fas fa-dollar-sign"></i> Target Price';
+    }
 }
 
 async function addProduct(event) {
@@ -325,7 +363,9 @@ async function addProduct(event) {
     }
     
     if (!url || !targetPrice || targetPrice <= 0) {
-        showToast('Please enter a valid URL and target price', 'error');
+        const config = platformConfigs[platform];
+        const priceType = config && config.currency === 'robux' ? 'target price in Robux' : 'target price in dollars';
+        showToast(`Please enter a valid URL and ${priceType}`, 'error');
         return;
     }
     
@@ -346,7 +386,11 @@ async function addProduct(event) {
         
         if (response.ok) {
             const platformName = platformConfigs[platform].name;
-            showToast(`✅ ${platformName} product added successfully! Monitoring will begin shortly.`);
+            const config = platformConfigs[platform];
+            const successMessage = config && config.currency === 'robux' 
+                ? `✅ ${platformName} item added successfully! Monitoring will begin shortly.`
+                : `✅ ${platformName} product added successfully! Monitoring will begin shortly.`;
+            showToast(successMessage);
             closeAddProductModal();
             loadProducts();
             loadStats();
@@ -670,7 +714,8 @@ async function checkPrices() {
             if (productData.products) {
                 productData.products.forEach(product => {
                     if (product.last_price) {
-                        updateProductPrice(product.id, product.last_price, product.target_price);
+                        const platform = product.platform || 'storenvy';
+                        updateProductPrice(product.id, product.last_price, product.target_price, platform);
                     }
                 });
             }

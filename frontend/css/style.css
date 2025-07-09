@@ -1203,3 +1203,382 @@ select.form-control {
         max-height: 80vh;
     }
 }
+/* Additional CSS for new platforms - Add this to the existing style.css */
+
+/* Platform-specific card styling for new platforms */
+.card[data-platform="roblox"] .platform-badge {
+    background: rgba(0, 162, 255, 0.1);
+    border-color: rgba(0, 162, 255, 0.2);
+    color: #00a2ff;
+}
+
+.card[data-platform="flights"] .platform-badge {
+    background: rgba(52, 152, 219, 0.1);
+    border-color: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+}
+
+/* Enhanced platform badge animation for all platforms */
+.platform-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.platform-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: var(--transition);
+}
+
+.platform-badge:hover::before {
+    left: 100%;
+}
+
+/* Specific styling for Roblox currency display */
+.price-value.robux {
+    background: linear-gradient(135deg, #00a2ff 0%, #0076cc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Flight-specific styling */
+.card[data-platform="flights"] {
+    position: relative;
+}
+
+.card[data-platform="flights"]::after {
+    content: '✈️';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 24px;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+/* Roblox-specific styling */
+.card[data-platform="roblox"] {
+    position: relative;
+}
+
+.card[data-platform="roblox"]::after {
+    content: '🎮';
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 24px;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+/* Enhanced form styling for new platforms */
+.platform-specific-note {
+    background: var(--gradient-glass);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.platform-specific-note.roblox {
+    border-color: rgba(0, 162, 255, 0.3);
+    background: rgba(0, 162, 255, 0.05);
+}
+
+.platform-specific-note.flights {
+    border-color: rgba(52, 152, 219, 0.3);
+    background: rgba(52, 152, 219, 0.05);
+}
+
+/* Currency indicator styles */
+.currency-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-left: 8px;
+}
+
+.currency-indicator.robux {
+    color: #00a2ff;
+}
+
+/* Enhanced modal styling for platform selection */
+#platformSelect {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cbd5e1' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+}
+
+/* Platform validation styling */
+.url-validation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    transition: var(--transition);
+}
+
+.url-validation.valid {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--secondary);
+}
+
+.url-validation.invalid {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+}
+
+/* Enhanced price display for different currencies */
+.price-value-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price-value-container .currency-symbol {
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
+/* Improved responsive design for new platforms */
+@media (max-width: 768px) {
+    .platform-badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+    
+    .card[data-platform="flights"]::after,
+    .card[data-platform="roblox"]::after {
+        font-size: 20px;
+        top: 12px;
+        right: 12px;
+    }
+    
+    .platform-specific-note {
+        padding: 8px;
+        font-size: 11px;
+    }
+}
+
+/* Loading state for new platforms */
+.card.loading[data-platform="roblox"] {
+    background: linear-gradient(45deg, rgba(0, 162, 255, 0.1), rgba(0, 162, 255, 0.05));
+}
+
+.card.loading[data-platform="flights"] {
+    background: linear-gradient(45deg, rgba(52, 152, 219, 0.1), rgba(52, 152, 219, 0.05));
+}
+
+/* Enhanced status badges for new platforms */
+.status-badge.roblox-target {
+    background: rgba(0, 162, 255, 0.2);
+    color: #00a2ff;
+    border: 1px solid rgba(0, 162, 255, 0.3);
+}
+
+.status-badge.flight-deal {
+    background: rgba(52, 152, 219, 0.2);
+    color: #3498db;
+    border: 1px solid rgba(52, 152, 219, 0.3);
+}
+
+/* Platform icon animations */
+@keyframes robloxPulse {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes flightBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+}
+
+.platform-badge span:first-child[data-platform="roblox"] {
+    animation: robloxPulse 3s ease-in-out infinite;
+}
+
+.platform-badge span:first-child[data-platform="flights"] {
+    animation: flightBounce 2s ease-in-out infinite;
+}
+
+/* Enhanced form field styling for currency inputs */
+.form-control.currency-robux {
+    border-left: 3px solid #00a2ff;
+}
+
+.form-control.currency-robux:focus {
+    border-color: #00a2ff;
+    box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.1);
+}
+
+/* Special styling for flight search URLs */
+.form-control.flight-url {
+    border-left: 3px solid #3498db;
+}
+
+.form-control.flight-url:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Enhanced tooltip styling for platform tips */
+.platform-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.platform-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    text-align: center;
+    border-radius: 8px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+    border: 1px solid var(--border);
+}
+
+.platform-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Enhanced success messages for new platforms */
+.toast.roblox-success {
+    background: rgba(0, 162, 255, 0.2);
+    border-color: rgba(0, 162, 255, 0.3);
+    color: #00a2ff;
+}
+
+.toast.flight-success {
+    background: rgba(52, 152, 219, 0.2);
+    border-color: rgba(52, 152, 219, 0.3);
+    color: #3498db;
+}
+
+/* Platform-specific card hover effects */
+.card[data-platform="roblox"]:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 162, 255, 0.15);
+}
+
+.card[data-platform="flights"]:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(52, 152, 219, 0.15);
+}
+
+/* Enhanced grid layout for mixed platform types */
+.content-grid .card[data-platform="roblox"],
+.content-grid .card[data-platform="flights"] {
+    position: relative;
+    overflow: hidden;
+}
+
+.content-grid .card[data-platform="roblox"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #00a2ff, #0076cc);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.content-grid .card[data-platform="flights"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.content-grid .card[data-platform="roblox"]:hover::before,
+.content-grid .card[data-platform="flights"]:hover::before {
+    opacity: 1;
+}
+
+/* Improved accessibility for new platforms */
+.card[data-platform="roblox"] .card-title::before {
+    content: '🎮 ';
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+.card[data-platform="flights"] .card-title::before {
+    content: '✈️ ';
+    margin-right: 8px;
+    opacity: 0.7;
+}
+
+/* Enhanced stats display for mixed currencies */
+.stat-value.mixed-currency {
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.stat-value.mixed-currency .currency-breakdown {
+    display: block;
+    font-size: 12px;
+    opacity: 0.7;
+    font-weight: 400;
+}
+
+/* Platform performance indicators */
+.platform-performance {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.performance-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.performance-dot.good {
+    background: var(--secondary);
+}
+
+.performance-dot.fair {
+    background: var(--warning);
+}
+
+.performance-dot.poor {
+    background: var(--danger);
+}
