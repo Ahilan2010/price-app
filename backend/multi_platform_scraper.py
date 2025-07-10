@@ -736,6 +736,7 @@ class MultiPlatformScraper:
         config = self.platform_configs[platform]
         
         async with async_playwright() as p:
+            browser = None
             try:
                 # Enhanced browser setup with stealth features
                 browser = await p.chromium.launch(
@@ -866,7 +867,7 @@ class MultiPlatformScraper:
                 return None
             
             finally:
-                if 'browser' in locals():
+                if browser:
                     await browser.close()
     
     async def extract_amazon_price(self, page) -> Optional[float]:
@@ -911,7 +912,7 @@ class MultiPlatformScraper:
                             whole_price = int(whole_match.group(1))
                             print(f"💰 Amazon whole price: {whole_price}")
                             break
-            except Exception as e:
+            except Exception:
                 continue
         
         # Get fraction price using specific selectors
@@ -927,7 +928,7 @@ class MultiPlatformScraper:
                             fraction_price = int(fraction_match.group(1))
                             print(f"💫 Amazon fraction: {fraction_price}")
                             break
-            except Exception as e:
+            except Exception:
                 continue
         
         # Combine whole and fraction
@@ -964,7 +965,7 @@ class MultiPlatformScraper:
                 elements = await page.query_selector_all(selector)
                 for element in elements:
                     price_text = await element.text_content()
-                    if price_text and ' in price_text:
+                    if price_text and '$' in price_text:
                         print(f"💰 eBay price from selector #{i+1}: '{price_text}'")
                         price = await self.extract_price_from_text(price_text)
                         if price and price > 0:

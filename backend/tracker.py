@@ -1,10 +1,11 @@
-# backend/tracker.py - Updated with multi-platform support
+# backend/tracker.py - Updated with multi-platform support and fixed imports
 import asyncio
 import json
 import re
 import smtplib
 import sqlite3
 import time
+import random
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -165,14 +166,29 @@ class StorenvyPriceTracker:
             msg['To'] = smtp_config['to_email']
             msg['Subject'] = f"Price Drop Alert: {product['title'][:50]}..."
             
+            # Determine currency symbol based on platform
+            platform = product.get('platform', 'storenvy')
+            platform_info = MultiPlatformScraper.get_platform_info().get(platform, {})
+            is_robux = platform == 'roblox'
+            
+            # Format prices based on currency
+            if is_robux:
+                current_price_str = f"{int(product['last_price'])} Robux"
+                target_price_str = f"{int(product['target_price'])} Robux"
+                savings_str = f"{int(product['target_price'] - product['last_price'])} Robux"
+            else:
+                current_price_str = f"${product['last_price']:.2f}"
+                target_price_str = f"${product['target_price']:.2f}"
+                savings_str = f"${product['target_price'] - product['last_price']:.2f}"
+            
             body = f"""
             Great news! A product you're tracking has dropped to or below your target price!
             
             Platform: {product['platform_icon']} {product['platform_name']}
             Product: {product['title']}
-            Current Price: ${product['last_price']:.2f}
-            Target Price: ${product['target_price']:.2f}
-            Savings: ${product['target_price'] - product['last_price']:.2f}
+            Current Price: {current_price_str}
+            Target Price: {target_price_str}
+            Savings: {savings_str}
             
             View Product: {product['url']}
             
@@ -187,6 +203,8 @@ class StorenvyPriceTracker:
             server.send_message(msg)
             server.quit()
             
+            print(f"📧 Email alert sent for {product['title']}")
+            
         except Exception as e:
             print(f"Failed to send email: {str(e)}")
     
@@ -195,38 +213,83 @@ class StorenvyPriceTracker:
         products = self.get_tracked_products()
         
         if not products:
+            print("No products to check")
             return
         
-        print(f"Checking {len(products)} products across multiple platforms...")
+        print(f"🔄 Checking {len(products)} products across multiple platforms...")
         
         for product in products:
             try:
-                print(f"Checking {product['platform_name']} product: {product['url'][:50]}...")
+                platform_name = product.get('platform_name', 'Unknown')
+                print(f"📦 Checking {platform_name} product: {product['url'][:50]}...")
+                
                 result = await self.scrape_product(product['url'])
                 
                 if result:
                     title, current_price = result
                     self.update_product_info(product['id'], title, current_price)
                     
+                    print(f"✅ Updated {platform_name} product: {title[:30]}... - Price: {current_price}")
+                    
+                    # Check if price dropped below target
                     if current_price <= product['target_price']:
+                        print(f"🎉 TARGET HIT! {title[:30]}... is now at/below target price!")
+                        
+                        # Update product info for email
                         product['title'] = title
                         product['last_price'] = current_price
                         
                         if smtp_config:
                             self.send_email_alert(product, smtp_config)
                 else:
-                    print(f"Failed to scrape {product['platform_name']} product")
+                    print(f"❌ Failed to scrape {platform_name} product")
             
             except Exception as e:
                 print(f"Error checking product {product['id']}: {str(e)}")
             
             # Be respectful to servers with random delays
-            await asyncio.sleep(3 + (2 * random.random()))
+            delay = 3 + (2 * random.random())
+            print(f"⏳ Waiting {delay:.1f}s before next check...")
+            await asyncio.sleep(delay)
+        
+        print("✅ Finished checking all products")
     
     def get_supported_platforms(self) -> Dict[str, Dict[str, str]]:
         """Get information about supported platforms"""
         return MultiPlatformScraper.get_platform_info()
 
 
-# For backward compatibility, also import random
-import random
+# Test function for development
+async def test_tracker():
+    """Test function to verify the tracker works with multiple platforms"""
+    tracker = StorenvyPriceTracker()
+    
+    print("Testing Multi-Platform Price Tracker")
+    print("=" * 50)
+    
+    # Test adding products from different platforms
+    test_products = [
+        ("https://www.amazon.com/dp/B08N5WRWNW", 100.00),  # Amazon
+        ("https://www.etsy.com/listing/123456789/test", 25.00),  # Etsy
+    ]
+    
+    for url, target_price in test_products:
+        try:
+            platform = tracker.scraper.detect_platform(url)
+            print(f"\n🎯 Testing {platform} URL: {url}")
+            
+            # Add product
+            tracker.add_product(url, target_price)
+            print(f"✅ Added {platform} product with target price ${target_price}")
+            
+        except Exception as e:
+            print(f"❌ Failed to add {url}: {e}")
+    
+    # Test getting tracked products
+    products = tracker.get_tracked_products()
+    print(f"\n📋 Currently tracking {len(products)} products:")
+    for product in products:
+        print(f"  - {product['platform_name']}: {product['url'][:50]}...")
+
+if __name__ == "__main__":
+    asyncio.run(test_tracker())
