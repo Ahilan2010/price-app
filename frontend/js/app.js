@@ -1,9 +1,10 @@
-// Modern PriceTracker JavaScript with Auto-Refresh and Updated Platforms Including Roblox & Flights
+// Enhanced TagTracker JavaScript with Separate Platform Pages
 
 const API_URL = 'http://localhost:5000/api';
 
-// Updated platform configurations with new platforms
+// Updated platform configurations - separated by category
 const platformConfigs = {
+    // E-commerce platforms (Products page)
     amazon: {
         name: 'Amazon',
         exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
@@ -33,19 +34,6 @@ const platformConfigs = {
         exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
         tips: 'Copy the full product URL from the product page',
         icon: '🏬'
-    },
-    roblox: {
-        name: 'Roblox UGC',
-        exampleUrl: 'https://www.roblox.com/catalog/123456789/Item-Name',
-        tips: 'Use the catalog URL for UGC items. Prices shown in Robux.',
-        icon: '🎮',
-        currency: 'robux'
-    },
-    flights: {
-        name: 'Flight Tickets',
-        exampleUrl: 'https://www.kayak.com/flights/NYC-LAX/2024-03-15',
-        tips: 'Use flight search result URLs from Kayak, Expedia, or similar sites',
-        icon: '✈️'
     }
 };
 
@@ -73,6 +61,12 @@ function showPage(pageId, navItem) {
     if (pageId === 'productsPage') {
         loadProducts();
         loadStats();
+    } else if (pageId === 'robloxPage') {
+        loadRobloxItems();
+        loadStats();
+    } else if (pageId === 'flightsPage') {
+        loadFlights();
+        loadStats();
     } else if (pageId === 'stocksPage') {
         loadStockAlerts();
         loadStats();
@@ -90,7 +84,7 @@ function startAutoRefresh() {
         clearInterval(autoRefreshInterval);
     }
     
-    // Refresh stats every 5 seconds, products/stocks every 30 seconds
+    // Refresh stats every 5 seconds, data every 30 seconds
     autoRefreshInterval = setInterval(() => {
         if (!isChecking) {
             loadStats();
@@ -101,6 +95,10 @@ function startAutoRefresh() {
                 const pageId = activePage.id;
                 if (pageId === 'productsPage') {
                     loadProducts();
+                } else if (pageId === 'robloxPage') {
+                    loadRobloxItems();
+                } else if (pageId === 'flightsPage') {
+                    loadFlights();
                 } else if (pageId === 'stocksPage') {
                     loadStockAlerts();
                 } else if (pageId === 'monitorPage') {
@@ -133,48 +131,20 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
-// Update URL placeholder based on selected platform
-function updateUrlPlaceholder() {
-    const platformSelect = document.getElementById('platformSelect');
-    const urlInput = document.getElementById('productUrl');
-    const urlHint = document.getElementById('urlHint');
-    const platformInfo = document.getElementById('platformInfo');
-    const platformTips = document.getElementById('platformTips');
-    
-    const selectedPlatform = platformSelect.value;
-    
-    if (selectedPlatform && platformConfigs[selectedPlatform]) {
-        const config = platformConfigs[selectedPlatform];
-        urlInput.placeholder = config.exampleUrl;
-        urlHint.textContent = `Example: ${config.exampleUrl}`;
-        platformTips.textContent = config.tips;
-        platformInfo.style.display = 'block';
-        
-        // Clear the URL field when switching platforms
-        urlInput.value = '';
-        
-        // Enable the URL input
-        urlInput.disabled = false;
-        
-        // Update target price label for Roblox
-        const targetPriceLabel = document.querySelector('label[for="targetPrice"]');
-        if (targetPriceLabel) {
-            if (config.currency === 'robux') {
-                targetPriceLabel.innerHTML = '<i class="fas fa-coins"></i> Target Price (Robux)';
-            } else {
-                targetPriceLabel.innerHTML = '<i class="fas fa-dollar-sign"></i> Target Price ($)';
-            }
-        }
-    } else {
-        urlInput.placeholder = 'Select a platform first...';
-        urlHint.textContent = '';
-        platformInfo.style.display = 'none';
-        urlInput.disabled = true;
-    }
+// Utility Functions
+function truncateUrl(url) {
+    if (url.length <= 50) return url;
+    return url.substring(0, 47) + '...';
 }
 
-// Validate URL matches selected platform
-function validateProductUrl(url, platform) {
+function formatPrice(price, platform) {
+    if (platform === 'roblox') {
+        return `${Math.round(price)} R$`;
+    }
+    return `$${price.toFixed(2)}`;
+}
+
+function validatePlatformUrl(url, platform) {
     const domainPatterns = {
         amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
         ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
@@ -192,35 +162,31 @@ function validateProductUrl(url, platform) {
     return domainPatterns[platform].test(url);
 }
 
-// Format price based on platform currency
-function formatPrice(price, platform) {
-    const config = platformConfigs[platform];
-    if (config && config.currency === 'robux') {
-        return `${Math.round(price)} R$`;
-    }
-    return `$${price.toFixed(2)}`;
-}
+// ===== PRODUCTS MANAGEMENT (Amazon, eBay, Etsy, Walmart, Storenvy) =====
 
-// Products Management with Auto-Update
 async function loadProducts() {
     try {
         const response = await fetch(`${API_URL}/products`);
-        const products = await response.json();
+        const allProducts = await response.json();
+        
+        // Filter for e-commerce platforms only
+        const ecommerceProducts = allProducts.filter(product => 
+            ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(product.platform)
+        );
         
         const productsList = document.getElementById('productsList');
         const emptyState = document.getElementById('emptyState');
         
-        if (products.length === 0) {
+        if (ecommerceProducts.length === 0) {
             productsList.style.display = 'none';
             emptyState.style.display = 'block';
         } else {
             productsList.style.display = 'grid';
             emptyState.style.display = 'none';
             
-            productsList.innerHTML = products.map(product => {
+            productsList.innerHTML = ecommerceProducts.map(product => {
                 const platform = product.platform || 'storenvy';
                 const config = platformConfigs[platform] || {};
-                const isRobux = config.currency === 'robux';
                 
                 return `
                 <div class="card" data-platform="${platform}" id="product-${product.id}">
@@ -250,7 +216,7 @@ async function loadProducts() {
                     
                     <div class="card-actions">
                         <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
-                            <i class="fas fa-external-link-alt"></i> View ${isRobux ? 'Item' : 'Product'}
+                            <i class="fas fa-external-link-alt"></i> View Product
                         </a>
                         <button onclick="deleteProduct(${product.id})" class="btn btn-secondary btn-icon">
                             <i class="fas fa-trash"></i> Remove
@@ -266,70 +232,6 @@ async function loadProducts() {
     }
 }
 
-function renderProductStatus(product, platform = null) {
-    const config = platformConfigs[platform] || {};
-    const isRobux = config.currency === 'robux';
-    
-    if (!product.last_price) {
-        return `
-            <div class="status-badge status-waiting">
-                <i class="fas fa-clock"></i>
-                Not Checked Yet
-            </div>
-        `;
-    }
-    
-    if (product.status === 'below_target') {
-        const savings = product.target_price - product.last_price;
-        const savingsText = isRobux ? `${Math.round(savings)} R$` : `$${savings.toFixed(2)}`;
-        return `
-            <div class="status-badge status-triggered">
-                <i class="fas fa-check-circle"></i>
-                Target Hit! Save ${savingsText}
-            </div>
-        `;
-    }
-    
-    return `
-        <div class="status-badge status-waiting">
-            <i class="fas fa-eye"></i>
-            Monitoring Price
-        </div>
-    `;
-}
-
-// Real-time price update function
-function updateProductPrice(productId, newPrice, targetPrice, platform = null) {
-    const priceElement = document.getElementById(`current-price-${productId}`);
-    const statusElement = document.getElementById(`status-${productId}`);
-    const cardElement = document.getElementById(`product-${productId}`);
-    
-    if (priceElement) {
-        // Animate price change
-        priceElement.style.transition = 'all 0.3s ease';
-        priceElement.style.transform = 'scale(1.1)';
-        priceElement.textContent = formatPrice(newPrice, platform);
-        
-        setTimeout(() => {
-            priceElement.style.transform = 'scale(1)';
-        }, 300);
-    }
-    
-    if (statusElement) {
-        const product = { last_price: newPrice, target_price: targetPrice, status: newPrice <= targetPrice ? 'below_target' : 'waiting' };
-        statusElement.innerHTML = renderProductStatus(product, platform);
-    }
-    
-    // Add visual feedback for price updates
-    if (cardElement) {
-        cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
-        setTimeout(() => {
-            cardElement.style.boxShadow = '';
-        }, 2000);
-    }
-}
-
-// Product Modal Functions
 function showAddProductModal() {
     document.getElementById('addProductModal').classList.add('show');
     document.getElementById('platformSelect').focus();
@@ -342,11 +244,30 @@ function closeAddProductModal() {
     document.getElementById('productUrl').placeholder = 'Select a platform first...';
     document.getElementById('urlHint').textContent = '';
     document.getElementById('platformInfo').style.display = 'none';
+}
+
+function updateUrlPlaceholder() {
+    const platformSelect = document.getElementById('platformSelect');
+    const urlInput = document.getElementById('productUrl');
+    const urlHint = document.getElementById('urlHint');
+    const platformInfo = document.getElementById('platformInfo');
+    const platformTips = document.getElementById('platformTips');
     
-    // Reset target price label
-    const targetPriceLabel = document.querySelector('label[for="targetPrice"]');
-    if (targetPriceLabel) {
-        targetPriceLabel.innerHTML = '<i class="fas fa-dollar-sign"></i> Target Price';
+    const selectedPlatform = platformSelect.value;
+    
+    if (selectedPlatform && platformConfigs[selectedPlatform]) {
+        const config = platformConfigs[selectedPlatform];
+        urlInput.placeholder = config.exampleUrl;
+        urlHint.textContent = `Example: ${config.exampleUrl}`;
+        platformTips.textContent = config.tips;
+        platformInfo.style.display = 'block';
+        urlInput.disabled = false;
+        urlInput.value = '';
+    } else {
+        urlInput.placeholder = 'Select a platform first...';
+        urlHint.textContent = '';
+        platformInfo.style.display = 'none';
+        urlInput.disabled = true;
     }
 }
 
@@ -363,14 +284,11 @@ async function addProduct(event) {
     }
     
     if (!url || !targetPrice || targetPrice <= 0) {
-        const config = platformConfigs[platform];
-        const priceType = config && config.currency === 'robux' ? 'target price in Robux' : 'target price in dollars';
-        showToast(`Please enter a valid URL and ${priceType}`, 'error');
+        showToast('Please enter a valid URL and target price', 'error');
         return;
     }
     
-    // Validate URL matches selected platform
-    if (!validateProductUrl(url, platform)) {
+    if (!validatePlatformUrl(url, platform)) {
         showToast(`This URL doesn't appear to be from ${platformConfigs[platform].name}. Please check the URL and platform selection.`, 'error');
         return;
     }
@@ -386,11 +304,7 @@ async function addProduct(event) {
         
         if (response.ok) {
             const platformName = platformConfigs[platform].name;
-            const config = platformConfigs[platform];
-            const successMessage = config && config.currency === 'robux' 
-                ? `✅ ${platformName} item added successfully! Monitoring will begin shortly.`
-                : `✅ ${platformName} product added successfully! Monitoring will begin shortly.`;
-            showToast(successMessage);
+            showToast(`✅ ${platformName} product added successfully! Monitoring will begin shortly.`);
             closeAddProductModal();
             loadProducts();
             loadStats();
@@ -427,7 +341,341 @@ async function deleteProduct(productId) {
     }
 }
 
-// Stock Management Functions
+// ===== ROBLOX UGC MANAGEMENT =====
+
+async function loadRobloxItems() {
+    try {
+        const response = await fetch(`${API_URL}/products`);
+        const allProducts = await response.json();
+        
+        // Filter for Roblox items only
+        const robloxItems = allProducts.filter(product => product.platform === 'roblox');
+        
+        const robloxList = document.getElementById('robloxList');
+        const emptyState = document.getElementById('robloxEmptyState');
+        
+        if (robloxItems.length === 0) {
+            robloxList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            robloxList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            robloxList.innerHTML = robloxItems.map(item => `
+                <div class="card" data-platform="roblox" id="roblox-${item.id}">
+                    <div class="platform-badge">
+                        <span>🎮</span>
+                        <span style="font-weight: 500;">Roblox UGC</span>
+                    </div>
+                    <h3 class="card-title">${item.title || 'Loading item details...'}</h3>
+                    <p class="card-subtitle">${truncateUrl(item.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value robux" id="roblox-price-${item.id}">
+                                ${item.last_price ? `${Math.round(item.last_price)} R$` : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value robux">${Math.round(item.target_price)} R$</span>
+                        </div>
+                    </div>
+                    
+                    <div id="roblox-status-${item.id}">
+                        ${renderProductStatus(item, 'roblox')}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${item.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-external-link-alt"></i> View Item
+                        </a>
+                        <button onclick="deleteRobloxItem(${item.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load Roblox items', 'error');
+        console.error('Error loading Roblox items:', error);
+    }
+}
+
+function showAddRobloxModal() {
+    document.getElementById('addRobloxModal').classList.add('show');
+    document.getElementById('robloxUrl').focus();
+}
+
+function closeAddRobloxModal() {
+    document.getElementById('addRobloxModal').classList.remove('show');
+    document.getElementById('addRobloxForm').reset();
+}
+
+async function addRobloxItem(event) {
+    event.preventDefault();
+    
+    const url = document.getElementById('robloxUrl').value.trim();
+    const targetPrice = parseInt(document.getElementById('robloxTargetPrice').value);
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid Roblox URL and target price in Robux', 'error');
+        return;
+    }
+    
+    if (!validatePlatformUrl(url, 'roblox')) {
+        showToast('This URL doesn\'t appear to be from Roblox. Please check the URL.', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        if (response.ok) {
+            showToast('🎮 Roblox UGC item added successfully! Monitoring will begin shortly.');
+            closeAddRobloxModal();
+            loadRobloxItems();
+            loadStats();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to add Roblox item', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add Roblox item', 'error');
+        console.error('Error adding Roblox item:', error);
+    }
+}
+
+async function deleteRobloxItem(itemId) {
+    if (!confirm('Are you sure you want to stop tracking this Roblox item?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${itemId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Roblox item removed from tracking');
+            loadRobloxItems();
+            loadStats();
+        } else {
+            showToast('Failed to remove Roblox item', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove Roblox item', 'error');
+        console.error('Error deleting Roblox item:', error);
+    }
+}
+
+// ===== FLIGHTS MANAGEMENT =====
+
+async function loadFlights() {
+    try {
+        const response = await fetch(`${API_URL}/products`);
+        const allProducts = await response.json();
+        
+        // Filter for flight items only
+        const flights = allProducts.filter(product => product.platform === 'flights');
+        
+        const flightsList = document.getElementById('flightsList');
+        const emptyState = document.getElementById('flightsEmptyState');
+        
+        if (flights.length === 0) {
+            flightsList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            flightsList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            flightsList.innerHTML = flights.map(flight => `
+                <div class="card" data-platform="flights" id="flight-${flight.id}">
+                    <div class="platform-badge">
+                        <span>✈️</span>
+                        <span style="font-weight: 500;">Flight Deal</span>
+                    </div>
+                    <h3 class="card-title">${flight.title || 'Loading flight details...'}</h3>
+                    <p class="card-subtitle">${truncateUrl(flight.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value" id="flight-price-${flight.id}">
+                                ${flight.last_price ? `$${flight.last_price.toFixed(2)}` : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value">$${flight.target_price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <div id="flight-status-${flight.id}">
+                        ${renderProductStatus(flight, 'flights')}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${flight.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-external-link-alt"></i> View Flight
+                        </a>
+                        <button onclick="deleteFlight(${flight.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load flights', 'error');
+        console.error('Error loading flights:', error);
+    }
+}
+
+function showAddFlightModal() {
+    document.getElementById('addFlightModal').classList.add('show');
+    document.getElementById('flightUrl').focus();
+}
+
+function closeAddFlightModal() {
+    document.getElementById('addFlightModal').classList.remove('show');
+    document.getElementById('addFlightForm').reset();
+}
+
+async function addFlight(event) {
+    event.preventDefault();
+    
+    const url = document.getElementById('flightUrl').value.trim();
+    const targetPrice = parseFloat(document.getElementById('flightTargetPrice').value);
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid flight URL and target price', 'error');
+        return;
+    }
+    
+    if (!validatePlatformUrl(url, 'flights')) {
+        showToast('This URL doesn\'t appear to be from a supported flight site. Please use URLs from Kayak, Expedia, Booking.com, Priceline, or Momondo.', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        if (response.ok) {
+            showToast('✈️ Flight added successfully! Monitoring will begin shortly.');
+            closeAddFlightModal();
+            loadFlights();
+            loadStats();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to add flight', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add flight', 'error');
+        console.error('Error adding flight:', error);
+    }
+}
+
+async function deleteFlight(flightId) {
+    if (!confirm('Are you sure you want to stop tracking this flight?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${flightId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Flight removed from tracking');
+            loadFlights();
+            loadStats();
+        } else {
+            showToast('Failed to remove flight', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove flight', 'error');
+        console.error('Error deleting flight:', error);
+    }
+}
+
+// ===== SHARED FUNCTIONS =====
+
+function renderProductStatus(product, platform = null) {
+    if (!product.last_price) {
+        return `
+            <div class="status-badge status-waiting">
+                <i class="fas fa-clock"></i>
+                Not Checked Yet
+            </div>
+        `;
+    }
+    
+    if (product.status === 'below_target') {
+        const savings = product.target_price - product.last_price;
+        const savingsText = platform === 'roblox' ? `${Math.round(savings)} R$` : `$${savings.toFixed(2)}`;
+        return `
+            <div class="status-badge status-triggered">
+                <i class="fas fa-check-circle"></i>
+                Target Hit! Save ${savingsText}
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="status-badge status-waiting">
+            <i class="fas fa-eye"></i>
+            Monitoring Price
+        </div>
+    `;
+}
+
+// Real-time price update functions
+function updateProductPrice(productId, newPrice, targetPrice, platform = null) {
+    const priceElement = document.getElementById(`current-price-${productId}`);
+    const statusElement = document.getElementById(`status-${productId}`);
+    const cardElement = document.getElementById(`product-${productId}`);
+    
+    if (priceElement) {
+        priceElement.style.transition = 'all 0.3s ease';
+        priceElement.style.transform = 'scale(1.1)';
+        priceElement.textContent = formatPrice(newPrice, platform);
+        
+        setTimeout(() => {
+            priceElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    if (statusElement) {
+        const product = { last_price: newPrice, target_price: targetPrice, status: newPrice <= targetPrice ? 'below_target' : 'waiting' };
+        statusElement.innerHTML = renderProductStatus(product, platform);
+    }
+    
+    // Add visual feedback for price updates
+    if (cardElement) {
+        cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+        setTimeout(() => {
+            cardElement.style.boxShadow = '';
+        }, 2000);
+    }
+}
+
+// ===== STOCK MANAGEMENT =====
+
 async function loadStockAlerts() {
     try {
         const response = await fetch(`${API_URL}/stocks`);
@@ -527,66 +775,6 @@ function renderStockStatus(alert) {
     `;
 }
 
-// Real-time stock update function
-function updateStockPrice(alertId, newPrice, isTriggered = false) {
-    const priceElement = document.getElementById(`stock-price-${alertId}`);
-    const statusElement = document.getElementById(`stock-status-${alertId}`);
-    const cardElement = document.getElementById(`stock-${alertId}`);
-    
-    if (priceElement) {
-        priceElement.style.transition = 'all 0.3s ease';
-        priceElement.style.transform = 'scale(1.1)';
-        priceElement.textContent = `${newPrice.toFixed(2)}`;
-        
-        setTimeout(() => {
-            priceElement.style.transform = 'scale(1)';
-        }, 300);
-    }
-    
-    if (statusElement) {
-        const alert = { current_price: newPrice, is_triggered: isTriggered };
-        statusElement.innerHTML = renderStockStatus(alert);
-    }
-    
-    if (cardElement) {
-        cardElement.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
-        setTimeout(() => {
-            cardElement.style.boxShadow = '';
-        }, 2000);
-    }
-}
-
-// Statistics with Real-time Updates
-async function loadStats() {
-    try {
-        const response = await fetch(`${API_URL}/stats`);
-        const stats = await response.json();
-        
-        // Animate stats updates
-        updateStatWithAnimation('totalProducts', stats.total_products || 0);
-        updateStatWithAnimation('totalStockAlerts', stats.total_stock_alerts || 0);
-        updateStatWithAnimation('triggeredAlerts', stats.triggered_stock_alerts || 0);
-        updateStatWithAnimation('totalSavings', `${(stats.total_savings || 0).toFixed(2)}`);
-        
-    } catch (error) {
-        console.error('Failed to load stats:', error);
-    }
-}
-
-function updateStatWithAnimation(elementId, newValue) {
-    const element = document.getElementById(elementId);
-    if (element && element.textContent !== newValue.toString()) {
-        element.style.transition = 'all 0.3s ease';
-        element.style.transform = 'scale(1.1)';
-        element.textContent = newValue;
-        
-        setTimeout(() => {
-            element.style.transform = 'scale(1)';
-        }, 300);
-    }
-}
-
-// Stock Modal Functions
 function showAddStockModal() {
     document.getElementById('addStockModal').classList.add('show');
     document.getElementById('stockSymbol').focus();
@@ -680,8 +868,80 @@ async function deleteStockAlert(alertId) {
     }
 }
 
-// Enhanced Monitor Page Functions with Real-time Updates
-async function checkPrices() {
+function updateStockPrice(alertId, newPrice, isTriggered = false) {
+    const priceElement = document.getElementById(`stock-price-${alertId}`);
+    const statusElement = document.getElementById(`stock-status-${alertId}`);
+    const cardElement = document.getElementById(`stock-${alertId}`);
+    
+    if (priceElement) {
+        priceElement.style.transition = 'all 0.3s ease';
+        priceElement.style.transform = 'scale(1.1)';
+        priceElement.textContent = `${newPrice.toFixed(2)}`;
+        
+        setTimeout(() => {
+            priceElement.style.transform = 'scale(1)';
+        }, 300);
+    }
+    
+    if (statusElement) {
+        const alert = { current_price: newPrice, is_triggered: isTriggered };
+        statusElement.innerHTML = renderStockStatus(alert);
+    }
+    
+    if (cardElement) {
+        cardElement.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
+        setTimeout(() => {
+            cardElement.style.boxShadow = '';
+        }, 2000);
+    }
+}
+
+// ===== STATISTICS WITH SEPARATE COUNTERS =====
+
+async function loadStats() {
+    try {
+        const [statsResponse, productsResponse] = await Promise.all([
+            fetch(`${API_URL}/stats`),
+            fetch(`${API_URL}/products`)
+        ]);
+        
+        const stats = await statsResponse.json();
+        const allProducts = await productsResponse.json();
+        
+        // Count by platform
+        const productCounts = {
+            ecommerce: allProducts.filter(p => ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(p.platform)).length,
+            roblox: allProducts.filter(p => p.platform === 'roblox').length,
+            flights: allProducts.filter(p => p.platform === 'flights').length
+        };
+        
+        // Animate stats updates
+        updateStatWithAnimation('totalProducts', productCounts.ecommerce);
+        updateStatWithAnimation('totalRobloxItems', productCounts.roblox);
+        updateStatWithAnimation('totalFlights', productCounts.flights);
+        updateStatWithAnimation('totalStockAlerts', stats.total_stock_alerts || 0);
+        
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+function updateStatWithAnimation(elementId, newValue) {
+    const element = document.getElementById(elementId);
+    if (element && element.textContent !== newValue.toString()) {
+        element.style.transition = 'all 0.3s ease';
+        element.style.transform = 'scale(1.1)';
+        element.textContent = newValue;
+        
+        setTimeout(() => {
+            element.style.transform = 'scale(1)';
+        }, 300);
+    }
+}
+
+// ===== MONITOR PAGE FUNCTIONS =====
+
+async function checkAllPrices() {
     if (isChecking) {
         showToast('Price check already in progress', 'warning');
         return;
@@ -695,7 +955,7 @@ async function checkPrices() {
     status.style.display = 'block';
     
     try {
-        showToast('🔄 Starting comprehensive price check...', 'success');
+        showToast('🔄 Starting comprehensive price check across all platforms...', 'success');
         
         // Check both products and stocks simultaneously
         const [productsResponse, stocksResponse] = await Promise.all([
@@ -750,6 +1010,8 @@ async function checkPrices() {
         // Refresh data
         setTimeout(() => {
             loadProducts();
+            loadRobloxItems();
+            loadFlights();
             loadStockAlerts();
             loadStats();
         }, 2000);
@@ -764,7 +1026,8 @@ async function checkPrices() {
     }
 }
 
-// Scheduler Functions
+// ===== SCHEDULER FUNCTIONS =====
+
 async function loadSchedulerStatus() {
     try {
         const response = await fetch(`${API_URL}/scheduler/status`);
@@ -829,7 +1092,8 @@ async function stopScheduler() {
     }
 }
 
-// Email Configuration
+// ===== EMAIL CONFIGURATION =====
+
 async function loadEmailConfig() {
     try {
         const response = await fetch(`${API_URL}/email-config`);
@@ -843,7 +1107,6 @@ async function loadEmailConfig() {
         
         // Load existing values if they exist
         if (config.enabled) {
-            // Note: We don't load sensitive data like passwords for security
             document.getElementById('smtpServer').value = config.smtp_server || '';
             document.getElementById('smtpPort').value = config.smtp_port || 587;
             document.getElementById('fromEmail').value = config.from_email || '';
@@ -855,26 +1118,8 @@ async function loadEmailConfig() {
     }
 }
 
-// Utility Functions
-function truncateUrl(url) {
-    if (url.length <= 50) return url;
-    return url.substring(0, 47) + '...';
-}
+// ===== EVENT LISTENERS =====
 
-function formatCurrency(amount) {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
-    }).format(amount);
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Never';
-    const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-}
-
-// Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Disable URL input initially
     const urlInput = document.getElementById('productUrl');

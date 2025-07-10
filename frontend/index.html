@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -34,32 +34,32 @@
                     </div>
                     
                     <div class="stat-card">
+                        <div class="stat-icon roblox">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalRobloxItems">0</span>
+                            <span class="stat-label">Roblox UGC</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon flights">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalFlights">0</span>
+                            <span class="stat-label">Flight Deals</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
                         <div class="stat-icon stocks">
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="stat-info">
                             <span class="stat-value" id="totalStockAlerts">0</span>
                             <span class="stat-label">Stock Alerts</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon alerts">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value" id="triggeredAlerts">0</span>
-                            <span class="stat-label">Triggered</span>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon savings">
-                            <i class="fas fa-piggy-bank"></i>
-                        </div>
-                        <div class="stat-info">
-                            <span class="stat-value" id="totalSavings">$0</span>
-                            <span class="stat-label">Potential Savings</span>
                         </div>
                     </div>
                 </div>
@@ -69,13 +69,13 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Products Page -->
+        <!-- Products Page (Amazon, eBay, Etsy, Walmart, Storenvy only) -->
         <div class="page active" id="productsPage">
             <div class="container">
                 <div class="page-header">
                     <div class="page-title">
                         <h2><i class="fas fa-shopping-cart"></i> Product Tracking</h2>
-                        <p>Monitor prices across 7 major platforms and get notified when they drop</p>
+                        <p>Monitor prices across Amazon, eBay, Etsy, Walmart, and Storenvy</p>
                     </div>
                     <button class="btn btn-primary" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Product
@@ -91,9 +91,116 @@
                         <i class="fas fa-shopping-bag"></i>
                     </div>
                     <h3>No products tracked yet</h3>
-                    <p>Start monitoring your favorite products across Amazon, eBay, Etsy, Walmart, Roblox UGC, and more!</p>
+                    <p>Start monitoring your favorite products across major e-commerce platforms!</p>
                     <button class="btn btn-primary" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Your First Product
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Roblox UGC Page -->
+        <div class="page" id="robloxPage">
+            <div class="container">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-gamepad"></i> Roblox UGC Tracking</h2>
+                        <p>Track Roblox User-Generated Content items and their Robux prices</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                        <i class="fas fa-plus"></i> Add Roblox Item
+                    </button>
+                </div>
+                
+                <div class="content-grid" id="robloxList">
+                    <!-- Roblox items will be loaded here -->
+                </div>
+                
+                <div class="empty-state" id="robloxEmptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>No Roblox items tracked yet</h3>
+                    <p>Start tracking UGC items, accessories, and avatar items on Roblox!</p>
+                    <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                        <i class="fas fa-plus"></i> Add Your First Item
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flights Page -->
+        <div class="page" id="flightsPage">
+            <div class="container">
+                <!-- Supported Sites Info -->
+                <div class="supported-sites-info">
+                    <h3><i class="fas fa-info-circle"></i> Supported Flight Search Sites</h3>
+                    <div class="sites-grid">
+                        <div class="site-card">
+                            <div class="site-icon">✈️</div>
+                            <div class="site-details">
+                                <h4>Kayak</h4>
+                                <p>Use search result URLs from kayak.com</p>
+                                <small>Example: kayak.com/flights/NYC-LAX/2024-03-15</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🌍</div>
+                            <div class="site-details">
+                                <h4>Expedia</h4>
+                                <p>Use flight search results from expedia.com</p>
+                                <small>Example: expedia.com/Flights-Search?...</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🏨</div>
+                            <div class="site-details">
+                                <h4>Booking.com</h4>
+                                <p>Use flight search pages from booking.com</p>
+                                <small>Example: booking.com/flights/...</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">💰</div>
+                            <div class="site-details">
+                                <h4>Priceline</h4>
+                                <p>Use search results from priceline.com</p>
+                                <small>Example: priceline.com/m/flights/...</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🔍</div>
+                            <div class="site-details">
+                                <h4>Momondo</h4>
+                                <p>Use flight search results from momondo.com</p>
+                                <small>Example: momondo.com/flight-search/...</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-plane"></i> Flight Price Tracking</h2>
+                        <p>Monitor flight prices and get notified when they drop</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddFlightModal()">
+                        <i class="fas fa-plus"></i> Add Flight
+                    </button>
+                </div>
+                
+                <div class="content-grid" id="flightsList">
+                    <!-- Flight items will be loaded here -->
+                </div>
+                
+                <div class="empty-state" id="flightsEmptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3>No flights tracked yet</h3>
+                    <p>Start tracking flight prices from supported travel sites!</p>
+                    <button class="btn btn-primary" onclick="showAddFlightModal()">
+                        <i class="fas fa-plus"></i> Add Your First Flight
                     </button>
                 </div>
             </div>
@@ -142,13 +249,13 @@
                     </div>
                     
                     <div class="monitor-actions">
-                        <button class="btn btn-primary btn-large" onclick="checkPrices()" id="checkPricesBtn">
+                        <button class="btn btn-primary btn-large" onclick="checkAllPrices()" id="checkPricesBtn">
                             <i class="fas fa-search-dollar"></i> Check All Prices
                         </button>
                         
                         <div class="checking-status" id="checkingStatus" style="display: none;">
                             <div class="spinner"></div>
-                            <p>Scanning prices across multiple platforms...</p>
+                            <p>Scanning prices across all platforms...</p>
                         </div>
                     </div>
                     
@@ -161,7 +268,7 @@
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>
                                 <div class="schedule-details">
-                                    <span class="schedule-type">Products</span>
+                                    <span class="schedule-type">Products & UGC</span>
                                     <span class="schedule-interval">Every 6 hours</span>
                                 </div>
                             </div>
@@ -270,6 +377,18 @@
             </div>
             <span>Products</span>
         </a>
+        <a href="#" class="nav-item" onclick="showPage('robloxPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <span>Roblox UGC</span>
+        </a>
+        <a href="#" class="nav-item" onclick="showPage('flightsPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-plane"></i>
+            </div>
+            <span>Flights</span>
+        </a>
         <a href="#" class="nav-item" onclick="showPage('stocksPage', this)">
             <div class="nav-icon">
                 <i class="fas fa-chart-line"></i>
@@ -290,7 +409,7 @@
         </a>
     </nav>
 
-    <!-- Add Product Modal -->
+    <!-- Add Product Modal (Amazon, eBay, Etsy, Walmart, Storenvy only) -->
     <div class="modal" id="addProductModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -309,8 +428,6 @@
                         <option value="etsy">🎨 Etsy</option>
                         <option value="walmart">🏪 Walmart</option>
                         <option value="storenvy">🏬 Storenvy</option>
-                        <option value="roblox">🎮 Roblox UGC</option>
-                        <option value="flights">✈️ Flight Tickets</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -320,20 +437,84 @@
                     <small class="form-hint" id="urlHint" style="color: var(--text-secondary); margin-top: 4px; display: block;"></small>
                 </div>
                 <div class="form-group">
-                    <label for="targetPrice"><i class="fas fa-dollar-sign"></i> Target Price</label>
+                    <label for="targetPrice"><i class="fas fa-dollar-sign"></i> Target Price ($)</label>
                     <input type="number" id="targetPrice" required step="0.01" min="0" 
                            class="form-control" placeholder="25.00">
                 </div>
                 <div class="platform-info" id="platformInfo" style="display: none;">
-                    <div class="info-card" style="background: var(--bg-card); padding: 16px; border-radius: 12px; margin-bottom: 20px;">
-                        <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--primary);">
-                            <i class="fas fa-info-circle"></i> Platform Tips
-                        </h4>
-                        <p id="platformTips" style="font-size: 13px; color: var(--text-secondary); margin: 0;"></p>
+                    <div class="info-card">
+                        <h4><i class="fas fa-info-circle"></i> Platform Tips</h4>
+                        <p id="platformTips"></p>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Start Tracking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Roblox Item Modal -->
+    <div class="modal" id="addRobloxModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-gamepad"></i> Track Roblox UGC Item</h3>
+                <button class="modal-close" onclick="closeAddRobloxModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addRobloxForm" onsubmit="addRobloxItem(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> Roblox Catalog URL</label>
+                    <input type="url" id="robloxUrl" required class="form-control" 
+                           placeholder="https://www.roblox.com/catalog/123456789/Item-Name">
+                    <small class="form-hint">Example: https://www.roblox.com/catalog/123456789/Item-Name</small>
+                </div>
+                <div class="form-group">
+                    <label for="robloxTargetPrice"><i class="fas fa-coins"></i> Target Price (Robux)</label>
+                    <input type="number" id="robloxTargetPrice" required step="1" min="1" 
+                           class="form-control" placeholder="100">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddRobloxModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Start Tracking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Flight Modal -->
+    <div class="modal" id="addFlightModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plane"></i> Track Flight Price</h3>
+                <button class="modal-close" onclick="closeAddFlightModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addFlightForm" onsubmit="addFlight(event)">
+                <div class="form-group">
+                    <label><i class="fas fa-link"></i> Flight Search URL</label>
+                    <input type="url" id="flightUrl" required class="form-control" 
+                           placeholder="https://www.kayak.com/flights/NYC-LAX/2024-03-15">
+                    <small class="form-hint">Use search result URLs from Kayak, Expedia, Booking.com, Priceline, or Momondo</small>
+                </div>
+                <div class="form-group">
+                    <label for="flightTargetPrice"><i class="fas fa-dollar-sign"></i> Target Price ($)</label>
+                    <input type="number" id="flightTargetPrice" required step="0.01" min="0" 
+                           class="form-control" placeholder="350.00">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddFlightModal()">
                         Cancel
                     </button>
                     <button type="submit" class="btn btn-primary">

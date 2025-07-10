@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - FIXED VERSION WITH ALL ERRORS RESOLVED
+# backend/multi_platform_scraper.py - UPDATED VERSION WITH IMPROVED ROBLOX NAME EXTRACTION
 import asyncio
 import re
 import random
@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 
 class MultiPlatformScraper:
-    """Enhanced e-commerce scraper with fixed Walmart/Etsy and new Roblox UGC/Flight trackers"""
+    """Enhanced e-commerce scraper with improved Roblox name extraction and flight tracking"""
     
     def __init__(self):
         # Enhanced platform-specific selectors with better extraction methods
@@ -144,10 +144,15 @@ class MultiPlatformScraper:
             'roblox': {
                 'domain_patterns': ['roblox.com'],
                 'title_selectors': [
+                    # NEW: Enhanced selectors for proper item name extraction
+                    'div.item-details-name-row h1',  # Primary target based on user specification
                     'h1[data-testid="item-name"]',
                     'h1.item-name-container h1',
                     'h1.font-header-1',
                     '.item-name-container h1',
+                    '.item-details-name h1',
+                    'div[class*="item-details"] h1',
+                    'div[class*="name-row"] h1',
                     'h1'
                 ],
                 'price_selectors': [
@@ -156,9 +161,11 @@ class MultiPlatformScraper:
                     'span.robux',
                     'span[class*="robux"]',
                     '.price-robux',
-                    'span.icon-robux + span'
+                    'span.icon-robux + span',
+                    'div[class*="price"] span',
+                    'span[class*="Price"]'
                 ],
-                'wait_time': 4000,
+                'wait_time': 5000,  # Increased wait time for Roblox
                 'user_agents': [
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
                 ],
@@ -171,7 +178,9 @@ class MultiPlatformScraper:
                     '.itinerary-title',
                     '.trip-summary',
                     'h1.flight-header',
-                    'h2.flight-details'
+                    'h2.flight-details',
+                    '.flight-route',
+                    '[data-testid="flight-summary"]'
                 ],
                 'price_selectors': [
                     'span[data-testid="price"]',
@@ -179,7 +188,9 @@ class MultiPlatformScraper:
                     '.flight-price',
                     'span.price',
                     '.fare-price',
-                    'div[class*="price"] span'
+                    'div[class*="price"] span',
+                    '.total-price',
+                    '[data-testid="flight-price"]'
                 ],
                 'wait_time': 6000,
                 'user_agents': [
@@ -289,20 +300,25 @@ class MultiPlatformScraper:
             # Platform-specific behavior
             if platform == 'walmart':
                 try:
-                    # Try to interact with Walmart-specific elements
                     await page.hover('[data-testid="price-wrap"]', timeout=2000)
                 except:
                     pass
             elif platform == 'etsy':
                 try:
-                    # Scroll to price section for Etsy
                     await page.evaluate("document.querySelector('[data-testid=\"lp-price\"]')?.scrollIntoView()")
                 except:
                     pass
             elif platform == 'roblox':
                 try:
-                    # Wait for Roblox authentication check
-                    await page.wait_for_timeout(2000)
+                    # Wait for Roblox authentication check and scroll to item details
+                    await page.wait_for_timeout(3000)
+                    await page.evaluate("document.querySelector('.item-details-name-row')?.scrollIntoView()")
+                except:
+                    pass
+            elif platform == 'flights':
+                try:
+                    # Scroll to price section for flights
+                    await page.evaluate("document.querySelector('[class*=\"price\"]')?.scrollIntoView()")
                 except:
                     pass
             
@@ -311,174 +327,82 @@ class MultiPlatformScraper:
         except Exception as e:
             print(f"⚠️ Human behavior simulation failed: {e}")
     
-    async def extract_walmart_price(self, page) -> Optional[float]:
-        """Enhanced Walmart price extraction"""
-        config = self.platform_configs['walmart']
+    async def extract_roblox_info(self, page) -> Optional[Tuple[str, float]]:
+        """Enhanced Roblox UGC item extraction with proper name detection"""
+        print("🎮 Extracting Roblox UGC item with enhanced name detection...")
         
-        print("🔍 Extracting Walmart price with enhanced selectors...")
+        # Wait for Roblox page to fully load
+        await page.wait_for_timeout(5000)
         
-        # Wait for price elements to load
-        await page.wait_for_timeout(3000)
-        
-        # Enhanced Walmart price extraction
-        enhanced_selectors = [
-            'span[data-automation-id="product-price"]',
-            'span[data-testid="product-price"]',
-            'div[data-testid="price-wrap"] span[itemprop="price"]',
-            'span[itemprop="price"]',
-            'div[data-testid="price-wrap"] span',
-            'span.price-current',
-            'span.price-display',
-            '[data-testid="price-current"]',
-            'div.price span'
+        # ENHANCED ROBLOX NAME EXTRACTION - Target the specific class
+        item_name = None
+        enhanced_name_selectors = [
+            'div.item-details-name-row h1',  # Primary target as specified by user
+            'div.item-details-name-row > h1',
+            '.item-details-name-row h1',
+            'div[class*="item-details-name-row"] h1',
+            'div[class*="name-row"] h1',
+            'h1[data-testid="item-name"]',
+            'h1.item-name-container h1',
+            '.item-name-container h1',
+            'div.item-details h1',
+            'h1.font-header-1',
+            'h1'  # Fallback
         ]
         
-        for i, selector in enumerate(enhanced_selectors):
+        for i, selector in enumerate(enhanced_name_selectors):
             try:
-                elements = await page.query_selector_all(selector)
-                for element in elements:
-                    price_text = await element.text_content()
-                    if price_text and '$' in price_text:
-                        print(f"💰 Walmart price from selector #{i+1}: '{price_text}'")
-                        price = await self.extract_price_from_text(price_text)
-                        if price and price > 0:
-                            return price
+                print(f"🔍 Trying Roblox name selector #{i+1}: {selector}")
+                element = await page.wait_for_selector(selector, timeout=3000)
+                if element:
+                    name_text = await element.text_content()
+                    if name_text and len(name_text.strip()) > 0:
+                        item_name = name_text.strip()
+                        print(f"✅ Found Roblox item name: '{item_name}' with selector #{i+1}")
+                        break
             except Exception as e:
-                print(f"⚠️ Walmart selector #{i+1} failed ({selector}): {str(e)[:50]}")
+                print(f"⚠️ Roblox name selector #{i+1} failed: {str(e)[:50]}")
                 continue
         
-        # JavaScript fallback for Walmart
-        print("🔧 Trying Walmart JavaScript fallback...")
-        try:
-            price_candidates = await page.evaluate('''
-                () => {
-                    const results = [];
-                    
-                    // Look for price elements with various patterns
-                    const priceElements = document.querySelectorAll('*');
-                    for (const element of priceElements) {
-                        const text = element.textContent || '';
-                        if (text.match(/\\$\\d+\\.\\d{2}/) && element.offsetParent !== null) {
-                            // Check if it's likely a price (not a random number)
-                            const hasPrice = text.includes('$') && text.match(/\\d+\\.\\d{2}/);
-                            const isVisible = element.offsetWidth > 0 && element.offsetHeight > 0;
-                            if (hasPrice && isVisible) {
-                                results.push(text.trim());
+        # JavaScript fallback for name extraction
+        if not item_name:
+            print("🔧 Trying Roblox JavaScript fallback for name...")
+            try:
+                item_name = await page.evaluate('''
+                    () => {
+                        // Look for the specific class mentioned by user
+                        const nameRow = document.querySelector('.item-details-name-row h1');
+                        if (nameRow && nameRow.textContent.trim()) {
+                            return nameRow.textContent.trim();
+                        }
+                        
+                        // Fallback to other selectors
+                        const selectors = [
+                            '.item-details-name-row h1',
+                            '[data-testid="item-name"]',
+                            '.item-name-container h1',
+                            'h1[class*="item"]',
+                            'h1'
+                        ];
+                        
+                        for (const selector of selectors) {
+                            const element = document.querySelector(selector);
+                            if (element && element.textContent.trim() && element.offsetParent !== null) {
+                                return element.textContent.trim();
                             }
                         }
+                        
+                        return null;
                     }
-                    
-                    // Also check for data attributes
-                    const dataElements = document.querySelectorAll('[data-automation-id*="price"], [data-testid*="price"]');
-                    for (const element of dataElements) {
-                        const text = element.textContent || '';
-                        if (text.includes('$')) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    return results.slice(0, 10);
-                }
-            ''')
-            
-            print(f"🔍 Walmart JavaScript found candidates: {price_candidates[:3]}")
-            for price_text in price_candidates:
-                price = await self.extract_price_from_text(price_text)
-                if price and price > 0:
-                    return price
-        except Exception as e:
-            print(f"⚠️ Walmart JavaScript fallback failed: {e}")
-        
-        print("❌ Walmart price extraction failed")
-        return None
-    
-    async def extract_etsy_price(self, page) -> Optional[float]:
-        """Enhanced Etsy price extraction"""
-        config = self.platform_configs['etsy']
-        
-        print("🔍 Extracting Etsy price with enhanced selectors...")
-        
-        # Wait for Etsy page to fully load
-        await page.wait_for_timeout(4000)
-        
-        # Enhanced Etsy price extraction
-        enhanced_selectors = [
-            'p[data-testid="lp-price"] span.currency-value',
-            'p[data-test-id="lp-price"] span.currency-value',
-            'span[data-testid="currency-value"]',
-            'p.wt-text-title-larger span.currency-value',
-            'span.currency-value',
-            'p.wt-text-title-larger',
-            '.currency-symbol + .currency-value',
-            'span[class*="currency-value"]',
-            'div[data-test-id="price"] span'
-        ]
-        
-        for i, selector in enumerate(enhanced_selectors):
-            try:
-                elements = await page.query_selector_all(selector)
-                for element in elements:
-                    price_text = await element.text_content()
-                    if price_text:
-                        print(f"💰 Etsy price from selector #{i+1}: '{price_text}'")
-                        price = await self.extract_price_from_text(price_text)
-                        if price and price > 0:
-                            return price
+                ''')
+                if item_name:
+                    print(f"✅ JavaScript found Roblox name: '{item_name}'")
             except Exception as e:
-                print(f"⚠️ Etsy selector #{i+1} failed ({selector}): {str(e)[:50]}")
-                continue
+                print(f"⚠️ Roblox JavaScript name fallback failed: {e}")
         
-        # JavaScript fallback for Etsy
-        print("🔧 Trying Etsy JavaScript fallback...")
-        try:
-            price_candidates = await page.evaluate('''
-                () => {
-                    const results = [];
-                    
-                    // Look for currency values
-                    const currencyElements = document.querySelectorAll('.currency-value, [class*="currency-value"]');
-                    for (const element of currencyElements) {
-                        const text = element.textContent || '';
-                        if (text.match(/\\d+/) && element.offsetParent !== null) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    // Look for price patterns
-                    const allElements = document.querySelectorAll('*');
-                    for (const element of allElements) {
-                        const text = element.textContent || '';
-                        if (text.match(/\\$\\d+\\.\\d{2}/) && element.offsetParent !== null) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    return results.slice(0, 10);
-                }
-            ''')
-            
-            print(f"🔍 Etsy JavaScript found candidates: {price_candidates[:3]}")
-            for price_text in price_candidates:
-                price = await self.extract_price_from_text(price_text)
-                if price and price > 0:
-                    return price
-        except Exception as e:
-            print(f"⚠️ Etsy JavaScript fallback failed: {e}")
-        
-        print("❌ Etsy price extraction failed")
-        return None
-    
-    async def extract_roblox_price(self, page) -> Optional[float]:
-        """Extract Roblox UGC price (in Robux)"""
-        config = self.platform_configs['roblox']
-        
-        print("🔍 Extracting Roblox UGC price...")
-        
-        # Wait for Roblox page to load
-        await page.wait_for_timeout(4000)
-        
-        # Roblox-specific price extraction
-        roblox_selectors = [
+        # ROBLOX PRICE EXTRACTION
+        price = None
+        roblox_price_selectors = [
             'span[data-testid="price-label"]',
             'span.text-robux',
             'span.robux',
@@ -486,10 +410,11 @@ class MultiPlatformScraper:
             '.price-robux',
             'span.icon-robux + span',
             'div[class*="price"] span',
-            'span[class*="Price"]'
+            'span[class*="Price"]',
+            'div.item-card-price span'
         ]
         
-        for i, selector in enumerate(roblox_selectors):
+        for i, selector in enumerate(roblox_price_selectors):
             try:
                 elements = await page.query_selector_all(selector)
                 for element in elements:
@@ -498,113 +423,55 @@ class MultiPlatformScraper:
                         print(f"💰 Roblox price from selector #{i+1}: '{price_text}'")
                         price = await self.extract_robux_from_text(price_text)
                         if price and price > 0:
-                            return price
-            except Exception as e:
-                print(f"⚠️ Roblox selector #{i+1} failed ({selector}): {str(e)[:50]}")
-                continue
-        
-        # JavaScript fallback for Roblox
-        print("🔧 Trying Roblox JavaScript fallback...")
-        try:
-            price_candidates = await page.evaluate('''
-                () => {
-                    const results = [];
-                    
-                    // Look for Robux indicators
-                    const robuxElements = document.querySelectorAll('*');
-                    for (const element of robuxElements) {
-                        const text = element.textContent || '';
-                        if ((text.includes('Robux') || text.includes('R$') || text.match(/^\\d+$/)) && element.offsetParent !== null) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    return results.slice(0, 10);
-                }
-            ''')
-            
-            print(f"🔍 Roblox JavaScript found candidates: {price_candidates[:3]}")
-            for price_text in price_candidates:
-                price = await self.extract_robux_from_text(price_text)
+                            break
                 if price and price > 0:
-                    return price
-        except Exception as e:
-            print(f"⚠️ Roblox JavaScript fallback failed: {e}")
-        
-        print("❌ Roblox price extraction failed")
-        return None
-    
-    async def extract_flight_price(self, page) -> Optional[float]:
-        """Extract flight price from travel sites"""
-        config = self.platform_configs['flights']
-        
-        print("🔍 Extracting flight price...")
-        
-        # Wait for flight data to load
-        await page.wait_for_timeout(6000)
-        
-        # Flight-specific price extraction
-        flight_selectors = [
-            'span[data-testid="price"]',
-            '.price-text',
-            '.flight-price',
-            'span.price',
-            '.fare-price',
-            'div[class*="price"] span',
-            '.price-display',
-            '[data-testid="flight-price"]',
-            '.total-price'
-        ]
-        
-        for i, selector in enumerate(flight_selectors):
-            try:
-                elements = await page.query_selector_all(selector)
-                for element in elements:
-                    price_text = await element.text_content()
-                    if price_text and '$' in price_text:
-                        print(f"💰 Flight price from selector #{i+1}: '{price_text}'")
-                        price = await self.extract_price_from_text(price_text)
-                        if price and price > 0:
-                            return price
+                    break
             except Exception as e:
-                print(f"⚠️ Flight selector #{i+1} failed ({selector}): {str(e)[:50]}")
+                print(f"⚠️ Roblox price selector #{i+1} failed: {str(e)[:50]}")
                 continue
         
-        # JavaScript fallback for flights
-        print("🔧 Trying flight JavaScript fallback...")
-        try:
-            price_candidates = await page.evaluate('''
-                () => {
-                    const results = [];
-                    
-                    // Look for flight price patterns
-                    const priceElements = document.querySelectorAll('*');
-                    for (const element of priceElements) {
-                        const text = element.textContent || '';
-                        if (text.match(/\\$\\d{3,4}/) && element.offsetParent !== null) {
-                            const hasFlightContext = text.includes('total') || text.includes('price') || 
-                                                   element.className.includes('price') ||
-                                                   element.className.includes('fare');
-                            if (hasFlightContext) {
+        # JavaScript fallback for price
+        if not price:
+            print("🔧 Trying Roblox JavaScript fallback for price...")
+            try:
+                price_candidates = await page.evaluate('''
+                    () => {
+                        const results = [];
+                        
+                        // Look for Robux indicators
+                        const robuxElements = document.querySelectorAll('*');
+                        for (const element of robuxElements) {
+                            const text = element.textContent || '';
+                            if ((text.includes('Robux') || text.includes('R) || text.match(/^\\d+$/)) && element.offsetParent !== null) {
                                 results.push(text.trim());
                             }
                         }
+                        
+                        return results.slice(0, 10);
                     }
-                    
-                    return results.slice(0, 10);
-                }
-            ''')
-            
-            print(f"🔍 Flight JavaScript found candidates: {price_candidates[:3]}")
-            for price_text in price_candidates:
-                price = await self.extract_price_from_text(price_text)
-                if price and price > 0:
-                    return price
-        except Exception as e:
-            print(f"⚠️ Flight JavaScript fallback failed: {e}")
+                ''')
+                
+                print(f"🔍 Roblox JavaScript found price candidates: {price_candidates[:3]}")
+                for price_text in price_candidates:
+                    price = await self.extract_robux_from_text(price_text)
+                    if price and price > 0:
+                        break
+            except Exception as e:
+                print(f"⚠️ Roblox JavaScript price fallback failed: {e}")
         
-        print("❌ Flight price extraction failed")
-        return None
+        if not item_name:
+            print("❌ Roblox item name extraction failed")
+            return None
+        
+        if not price:
+            print("❌ Roblox price extraction failed")
+            return None
+        
+        print(f"✅ Successfully extracted Roblox UGC:")
+        print(f"   🎮 Item: {item_name}")
+        print(f"   💰 Price: {price:.0f} Robux")
+        
+        return item_name, price
     
     async def extract_robux_from_text(self, price_text: str) -> Optional[float]:
         """Extract Robux price from text"""
@@ -641,6 +508,140 @@ class MultiPlatformScraper:
         print(f"❌ Could not extract Robux from: '{price_text[:100]}'")
         return None
     
+    async def extract_flight_info(self, page) -> Optional[Tuple[str, float]]:
+        """Extract flight information and price"""
+        print("✈️ Extracting flight information...")
+        
+        # Wait for flight data to load
+        await page.wait_for_timeout(6000)
+        
+        # Enhanced flight title extraction
+        flight_title = None
+        flight_title_selectors = [
+            '.flight-info h3',
+            '.itinerary-title',
+            '.trip-summary',
+            'h1.flight-header',
+            'h2.flight-details',
+            '.flight-route',
+            '[data-testid="flight-summary"]',
+            'div[class*="route"] h2',
+            'div[class*="flight"] h1',
+            'h1', 'h2'  # Fallbacks
+        ]
+        
+        for i, selector in enumerate(flight_title_selectors):
+            try:
+                element = await page.wait_for_selector(selector, timeout=2000)
+                if element:
+                    title_text = await element.text_content()
+                    if title_text and len(title_text.strip()) > 5:  # Must be reasonably long
+                        flight_title = title_text.strip()
+                        print(f"✅ Found flight title: '{flight_title}' with selector #{i+1}")
+                        break
+            except Exception as e:
+                print(f"⚠️ Flight title selector #{i+1} failed: {str(e)[:50]}")
+                continue
+        
+        # JavaScript fallback for flight title
+        if not flight_title:
+            print("🔧 Trying flight JavaScript fallback for title...")
+            try:
+                flight_title = await page.evaluate('''
+                    () => {
+                        // Look for flight-related text
+                        const elements = document.querySelectorAll('h1, h2, h3, [class*="flight"], [class*="route"], [class*="trip"]');
+                        for (const element of elements) {
+                            const text = element.textContent || '';
+                            if (text.length > 10 && element.offsetParent !== null) {
+                                return text.trim();
+                            }
+                        }
+                        return document.title || 'Flight Search Result';
+                    }
+                ''')
+                if flight_title:
+                    print(f"✅ JavaScript found flight title: '{flight_title}'")
+            except Exception as e:
+                print(f"⚠️ Flight JavaScript title fallback failed: {e}")
+        
+        # Flight price extraction
+        price = None
+        flight_price_selectors = [
+            'span[data-testid="price"]',
+            '.price-text',
+            '.flight-price',
+            'span.price',
+            '.fare-price',
+            'div[class*="price"] span',
+            '.total-price',
+            '[data-testid="flight-price"]',
+            'div[class*="total"] span'
+        ]
+        
+        for i, selector in enumerate(flight_price_selectors):
+            try:
+                elements = await page.query_selector_all(selector)
+                for element in elements:
+                    price_text = await element.text_content()
+                    if price_text and ' in price_text:
+                        print(f"💰 Flight price from selector #{i+1}: '{price_text}'")
+                        price = await self.extract_price_from_text(price_text)
+                        if price and price > 0:
+                            break
+                if price and price > 0:
+                    break
+            except Exception as e:
+                print(f"⚠️ Flight price selector #{i+1} failed: {str(e)[:50]}")
+                continue
+        
+        # JavaScript fallback for flight price
+        if not price:
+            print("🔧 Trying flight JavaScript fallback for price...")
+            try:
+                price_candidates = await page.evaluate('''
+                    () => {
+                        const results = [];
+                        
+                        // Look for flight price patterns
+                        const priceElements = document.querySelectorAll('*');
+                        for (const element of priceElements) {
+                            const text = element.textContent || '';
+                            if (text.match(/\\$\\d{3,4}/) && element.offsetParent !== null) {
+                                const hasFlightContext = text.includes('total') || text.includes('price') || 
+                                                       element.className.includes('price') ||
+                                                       element.className.includes('fare');
+                                if (hasFlightContext) {
+                                    results.push(text.trim());
+                                }
+                            }
+                        }
+                        
+                        return results.slice(0, 10);
+                    }
+                ''')
+                
+                print(f"🔍 Flight JavaScript found price candidates: {price_candidates[:3]}")
+                for price_text in price_candidates:
+                    price = await self.extract_price_from_text(price_text)
+                    if price and price > 0:
+                        break
+            except Exception as e:
+                print(f"⚠️ Flight JavaScript price fallback failed: {e}")
+        
+        if not flight_title:
+            flight_title = "Flight Search Result"
+        
+        if not price:
+            print("❌ Flight price extraction failed")
+            return None
+        
+        print(f"✅ Successfully extracted flight:")
+        print(f"   ✈️ Route: {flight_title}")
+        print(f"   💰 Price: ${price:.2f}")
+        
+        return flight_title, price
+    
     async def extract_price_from_text(self, price_text: str) -> Optional[float]:
         """Enhanced price extraction with better regex patterns"""
         if not price_text:
@@ -657,7 +658,7 @@ class MultiPlatformScraper:
         price_patterns = [
             r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',  # US $135.00 format
             r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',  # $1,234.56
-            r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',  # 1,234.56$
+            r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\,  # 1,234.56$
             r'(\d{1,3}(?:,\d{3})*\.\d{2})',              # 1,234.56
             r'(\d{1,3}(?:,\d{3})*)',                     # 1,234 (whole numbers)
             r'(\d+\.\d{2})',                             # 123.45
@@ -670,7 +671,7 @@ class MultiPlatformScraper:
                 for match in matches:
                     try:
                         # Clean the matched price string
-                        price_str = match.replace(',', '').replace('$', '').strip()
+                        price_str = match.replace(',', '').replace(', '').strip()
                         price = float(price_str)
                         
                         # Validate price is reasonable (between $0.01 and $999,999)
@@ -758,7 +759,7 @@ class MultiPlatformScraper:
                 
                 page = await self.stealth_browser_setup(browser, platform)
                 
-                print(f"🔍 Scraping {platform.title()} product: {url[:60]}...")
+                print(f"🔍 Scraping {platform.title()}: {url[:60]}...")
                 
                 # Navigate with retries
                 max_retries = 3
@@ -779,88 +780,14 @@ class MultiPlatformScraper:
                 # Simulate human behavior
                 await self.human_like_behavior(page, platform)
                 
-                # Extract title with enhanced methods
-                print(f"📝 Extracting title for {platform}...")
-                title = await self.extract_with_fallbacks(page, config['title_selectors'])
-                
-                if not title:
-                    # Enhanced JavaScript fallback for title
-                    print(f"🔧 Trying enhanced JavaScript fallback for title...")
-                    title = await page.evaluate('''
-                        () => {
-                            // Try multiple methods to find title
-                            const selectors = ['h1', '[data-testid*="title"]', '[class*="title"]', '[id*="title"]'];
-                            for (const sel of selectors) {
-                                const element = document.querySelector(sel);
-                                if (element && element.textContent.trim()) {
-                                    return element.textContent.trim();
-                                }
-                            }
-                            // Fallback to page title
-                            return document.title.split(' - ')[0] || document.title.split(' | ')[0];
-                        }
-                    ''')
-                
-                # Platform-specific price extraction
-                print(f"💰 Extracting price for {platform}...")
-                price = None
-                
-                if platform == 'amazon':
-                    price = await self.extract_amazon_price(page)
-                elif platform == 'ebay':
-                    price = await self.extract_ebay_price(page)
-                elif platform == 'walmart':
-                    price = await self.extract_walmart_price(page)
-                elif platform == 'etsy':
-                    price = await self.extract_etsy_price(page)
-                elif platform == 'roblox':
-                    price = await self.extract_roblox_price(page)
-                elif platform == 'flights':
-                    price = await self.extract_flight_price(page)
-                else:
-                    # Standard price extraction for other platforms
-                    for i, selector in enumerate(config['price_selectors']):
-                        try:
-                            elements = await page.query_selector_all(selector)
-                            for element in elements:
-                                price_text = await element.text_content()
-                                if price_text:
-                                    print(f"📄 Price text from selector #{i+1}: '{price_text[:50]}'")
-                                    if platform == 'roblox':
-                                        price = await self.extract_robux_from_text(price_text)
-                                    else:
-                                        price = await self.extract_price_from_text(price_text)
-                                    if price and price > 0:
-                                        break
-                            if price and price > 0:
-                                break
-                        except Exception as e:
-                            print(f"⚠️ Price selector #{i+1} failed: {str(e)[:50]}")
-                            continue
-                
-                # Final validation
-                if not title:
-                    print(f"❌ Could not extract title for {platform}")
-                    return None
-                
-                if not price:
-                    print(f"❌ Could not extract price for {platform}")
-                    return None
-                
-                # Clean up title
-                title = title[:200]  # Limit title length
-                
-                # Format price display based on platform
+                # Platform-specific extraction
                 if platform == 'roblox':
-                    print(f"✅ Successfully scraped {platform.title()}:")
-                    print(f"   📝 Title: {title[:50]}...")
-                    print(f"   💰 Price: {price:.0f} Robux")
+                    return await self.extract_roblox_info(page)
+                elif platform == 'flights':
+                    return await self.extract_flight_info(page)
                 else:
-                    print(f"✅ Successfully scraped {platform.title()}:")
-                    print(f"   📝 Title: {title[:50]}...")
-                    print(f"   💰 Price: ${price:.2f}")
-                
-                return title, price
+                    # Standard extraction for other platforms
+                    return await self.extract_standard_product(page, platform, config)
                 
             except Exception as e:
                 print(f"❌ Error scraping {platform}: {str(e)}")
@@ -870,6 +797,79 @@ class MultiPlatformScraper:
                 if browser:
                     await browser.close()
     
+    async def extract_standard_product(self, page, platform: str, config: dict) -> Optional[Tuple[str, float]]:
+        """Standard product extraction for e-commerce platforms"""
+        # Extract title with enhanced methods
+        print(f"📝 Extracting title for {platform}...")
+        title = await self.extract_with_fallbacks(page, config['title_selectors'])
+        
+        if not title:
+            # Enhanced JavaScript fallback for title
+            print(f"🔧 Trying enhanced JavaScript fallback for title...")
+            title = await page.evaluate('''
+                () => {
+                    // Try multiple methods to find title
+                    const selectors = ['h1', '[data-testid*="title"]', '[class*="title"]', '[id*="title"]'];
+                    for (const sel of selectors) {
+                        const element = document.querySelector(sel);
+                        if (element && element.textContent.trim()) {
+                            return element.textContent.trim();
+                        }
+                    }
+                    // Fallback to page title
+                    return document.title.split(' - ')[0] || document.title.split(' | ')[0];
+                }
+            ''')
+        
+        # Platform-specific price extraction
+        print(f"💰 Extracting price for {platform}...")
+        price = None
+        
+        if platform == 'amazon':
+            price = await self.extract_amazon_price(page)
+        elif platform == 'ebay':
+            price = await self.extract_ebay_price(page)
+        elif platform == 'walmart':
+            price = await self.extract_walmart_price(page)
+        elif platform == 'etsy':
+            price = await self.extract_etsy_price(page)
+        else:
+            # Standard price extraction for other platforms
+            for i, selector in enumerate(config['price_selectors']):
+                try:
+                    elements = await page.query_selector_all(selector)
+                    for element in elements:
+                        price_text = await element.text_content()
+                        if price_text:
+                            print(f"📄 Price text from selector #{i+1}: '{price_text[:50]}'")
+                            price = await self.extract_price_from_text(price_text)
+                            if price and price > 0:
+                                break
+                    if price and price > 0:
+                        break
+                except Exception as e:
+                    print(f"⚠️ Price selector #{i+1} failed: {str(e)[:50]}")
+                    continue
+        
+        # Final validation
+        if not title:
+            print(f"❌ Could not extract title for {platform}")
+            return None
+        
+        if not price:
+            print(f"❌ Could not extract price for {platform}")
+            return None
+        
+        # Clean up title
+        title = title[:200]  # Limit title length
+        
+        print(f"✅ Successfully scraped {platform.title()}:")
+        print(f"   📝 Title: {title[:50]}...")
+        print(f"   💰 Price: ${price:.2f}")
+        
+        return title, price
+    
+    # Include existing platform-specific methods (Amazon, eBay, etc.)
     async def extract_amazon_price(self, page) -> Optional[float]:
         """Amazon price extraction with whole + fraction handling"""
         config = self.platform_configs['amazon']
@@ -965,7 +965,7 @@ class MultiPlatformScraper:
                 elements = await page.query_selector_all(selector)
                 for element in elements:
                     price_text = await element.text_content()
-                    if price_text and '$' in price_text:
+                    if price_text and ' in price_text:
                         print(f"💰 eBay price from selector #{i+1}: '{price_text}'")
                         price = await self.extract_price_from_text(price_text)
                         if price and price > 0:
@@ -974,42 +974,79 @@ class MultiPlatformScraper:
                 print(f"⚠️ eBay selector #{i+1} failed ({selector}): {str(e)[:50]}")
                 continue
         
-        # JavaScript fallback for eBay
-        print("🔧 Trying eBay JavaScript fallback...")
-        try:
-            price_candidates = await page.evaluate('''
-                () => {
-                    const results = [];
-                    
-                    const uxElements = document.querySelectorAll('span.ux-textspans');
-                    for (const element of uxElements) {
-                        const text = element.textContent || '';
-                        if (text.includes(') || text.includes('US') || text.match(/\\d+\\.\\d{2}/)) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    const priceElements = document.querySelectorAll('*');
-                    for (const element of priceElements) {
-                        const text = element.textContent || '';
-                        if (text.match(/US\\s*\\$\\d+\\.\\d{2}/) && element.offsetParent !== null) {
-                            results.push(text.trim());
-                        }
-                    }
-                    
-                    return results.slice(0, 10);
-                }
-            ''')
-            
-            print(f"🔍 eBay JavaScript found candidates: {price_candidates[:3]}")
-            for price_text in price_candidates:
-                price = await self.extract_price_from_text(price_text)
-                if price and price > 0:
-                    return price
-        except Exception as e:
-            print(f"⚠️ eBay JavaScript fallback failed: {e}")
-        
         print("❌ eBay price extraction failed")
+        return None
+    
+    async def extract_walmart_price(self, page) -> Optional[float]:
+        """Enhanced Walmart price extraction"""
+        config = self.platform_configs['walmart']
+        
+        print("🔍 Extracting Walmart price with enhanced selectors...")
+        
+        # Enhanced Walmart price extraction
+        enhanced_selectors = [
+            'span[data-automation-id="product-price"]',
+            'span[data-testid="product-price"]',
+            'div[data-testid="price-wrap"] span[itemprop="price"]',
+            'span[itemprop="price"]',
+            'div[data-testid="price-wrap"] span',
+            'span.price-current',
+            'span.price-display',
+            '[data-testid="price-current"]',
+            'div.price span'
+        ]
+        
+        for i, selector in enumerate(enhanced_selectors):
+            try:
+                elements = await page.query_selector_all(selector)
+                for element in elements:
+                    price_text = await element.text_content()
+                    if price_text and ' in price_text:
+                        print(f"💰 Walmart price from selector #{i+1}: '{price_text}'")
+                        price = await self.extract_price_from_text(price_text)
+                        if price and price > 0:
+                            return price
+            except Exception as e:
+                print(f"⚠️ Walmart selector #{i+1} failed ({selector}): {str(e)[:50]}")
+                continue
+        
+        print("❌ Walmart price extraction failed")
+        return None
+    
+    async def extract_etsy_price(self, page) -> Optional[float]:
+        """Enhanced Etsy price extraction"""
+        config = self.platform_configs['etsy']
+        
+        print("🔍 Extracting Etsy price with enhanced selectors...")
+        
+        # Enhanced Etsy price extraction
+        enhanced_selectors = [
+            'p[data-testid="lp-price"] span.currency-value',
+            'p[data-test-id="lp-price"] span.currency-value',
+            'span[data-testid="currency-value"]',
+            'p.wt-text-title-larger span.currency-value',
+            'span.currency-value',
+            'p.wt-text-title-larger',
+            '.currency-symbol + .currency-value',
+            'span[class*="currency-value"]',
+            'div[data-test-id="price"] span'
+        ]
+        
+        for i, selector in enumerate(enhanced_selectors):
+            try:
+                elements = await page.query_selector_all(selector)
+                for element in elements:
+                    price_text = await element.text_content()
+                    if price_text:
+                        print(f"💰 Etsy price from selector #{i+1}: '{price_text}'")
+                        price = await self.extract_price_from_text(price_text)
+                        if price and price > 0:
+                            return price
+            except Exception as e:
+                print(f"⚠️ Etsy selector #{i+1} failed ({selector}): {str(e)[:50]}")
+                continue
+        
+        print("❌ Etsy price extraction failed")
         return None
     
     def get_supported_platforms(self) -> Dict[str, Dict[str, str]]:
@@ -1054,13 +1091,14 @@ class MultiPlatformScraper:
                 'name': 'Roblox UGC',
                 'example_url': 'https://www.roblox.com/catalog/123456789/Item-Name',
                 'icon': '🎮',
-                'tips': 'Use the catalog URL for UGC items. Prices shown in Robux.'
+                'tips': 'Use the catalog URL for UGC items. Prices shown in Robux.',
+                'currency': 'robux'
             },
             'flights': {
                 'name': 'Flight Tickets',
                 'example_url': 'https://www.kayak.com/flights/NYC-LAX/2024-03-15',
                 'icon': '✈️',
-                'tips': 'Use flight search result URLs from Kayak, Expedia, or similar sites'
+                'tips': 'Use flight search result URLs from Kayak, Expedia, Booking.com, Priceline, or Momondo'
             }
         }
 
@@ -1070,14 +1108,15 @@ async def test_enhanced_scraper():
     """Test function to verify the enhanced scraper works"""
     scraper = MultiPlatformScraper()
     
-    print("Testing Enhanced Multi-Platform Scraper")
-    print("=" * 50)
+    print("Testing Enhanced Multi-Platform Scraper with Improved Roblox Extraction")
+    print("=" * 70)
     
     # Test URLs for different platforms
     test_urls = [
         "https://www.walmart.com/ip/Apple-iPhone-14-128GB-Blue/1234567890",
         "https://www.etsy.com/listing/123456789/handmade-ceramic-mug",
         "https://www.roblox.com/catalog/123456789/Cool-Hat",
+        "https://www.kayak.com/flights/NYC-LAX/2024-03-15"
     ]
     
     for url in test_urls:
