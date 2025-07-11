@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - FIXED VERSION WITH NO ERRORS
+# backend/multi_platform_scraper.py - FULLY FIXED VERSION
 import asyncio
 import re
 import random
@@ -175,15 +175,10 @@ class MultiPlatformScraper:
                     '[data-testid="flight-summary"]'
                 ],
                 'price_selectors': [
-                    # Kayak specific
                     'div.e2GB-price-text',
-                    # Booking.com specific  
                     'div.FlightCardPrice-module__priceContainer___nXXv2',
-                    # Priceline specific
                     'div.Text-sc-1xtb652-0.koHeTu',
-                    # Momondo specific
                     'div.e2GB-price-text',
-                    # General fallbacks
                     'span[data-testid="price"]',
                     '.price-text',
                     '.flight-price',
@@ -314,13 +309,13 @@ class MultiPlatformScraper:
             
             # Price patterns (order matters)
             patterns = [
-                r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',  # US $135.00
-                r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',       # $1,234.56
-                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',       # 1,234.56$
-                r'(\d{1,3}(?:,\d{3})*\.\d{2})',                   # 1,234.56
-                r'(\d{1,3}(?:,\d{3})*)',                          # 1,234
-                r'(\d+\.\d{2})',                                  # 123.45
-                r'(\d+)',                                         # 123
+                r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
+                r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
+                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',
+                r'(\d{1,3}(?:,\d{3})*\.\d{2})',
+                r'(\d{1,3}(?:,\d{3})*)',
+                r'(\d+\.\d{2})',
+                r'(\d+)',
             ]
             
             for pattern in patterns:
@@ -356,8 +351,8 @@ class MultiPlatformScraper:
             
             # Robux patterns
             patterns = [
-                r'(\d{1,3}(?:,\d{3})*)',  # 1,000 format
-                r'(\d+)',                 # Simple digits
+                r'(\d{1,3}(?:,\d{3})*)',
+                r'(\d+)',
             ]
             
             for pattern in patterns:
@@ -455,20 +450,17 @@ class MultiPlatformScraper:
         try:
             # Detect which flight site and parse accordingly
             if 'kayak.com' in url:
-                # Kayak format: /flights/HOU-CFU/2025-07-11/2025-07-14
                 match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date, ret_date = match.groups()
                     return f"Kayak: {from_code} → {to_code} ({dep_date} to {ret_date})"
                 
-                # One way format: /flights/HOU-CFU/2025-07-11
                 match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date = match.groups()
                     return f"Kayak: {from_code} → {to_code} ({dep_date})"
             
             elif 'booking.com' in url:
-                # Booking.com format: from=HOU&to=CFU&depart=2025-07-11&return=2025-07-14
                 from_match = re.search(r'from=([A-Z]{3})', url)
                 to_match = re.search(r'to=([A-Z]{3})', url)
                 dep_match = re.search(r'depart=(\d{4}-\d{2}-\d{2})', url)
@@ -486,32 +478,28 @@ class MultiPlatformScraper:
                         return f"Booking.com: {from_code} → {to_code} ({dep_date})"
             
             elif 'priceline.com' in url:
-                # Priceline format: /flights/search/HOU-CFU/2025-07-11/2025-07-14
                 match = re.search(r'/flights/search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date, ret_date = match.groups()
                     return f"Priceline: {from_code} → {to_code} ({dep_date} to {ret_date})"
                 
-                # One way format
                 match = re.search(r'/flights/search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date = match.groups()
                     return f"Priceline: {from_code} → {to_code} ({dep_date})"
             
             elif 'momondo.com' in url:
-                # Momondo format: /flight-search/HOU-CFU/2025-07-11/2025-07-14
                 match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date, ret_date = match.groups()
                     return f"Momondo: {from_code} → {to_code} ({dep_date} to {ret_date})"
                 
-                # One way format
                 match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})', url)
                 if match:
                     from_code, to_code, dep_date = match.groups()
                     return f"Momondo: {from_code} → {to_code} ({dep_date})"
             
-            # Generic fallback - try to extract any airport codes and dates
+            # Generic fallback
             airport_match = re.search(r'([A-Z]{3})-([A-Z]{3})', url)
             date_match = re.search(r'(\d{4}-\d{2}-\d{2})', url)
             
@@ -523,39 +511,42 @@ class MultiPlatformScraper:
                 else:
                     return f"Flight: {from_code} → {to_code}"
             
-            # Last resort - use domain name
             domain = urlparse(url).netloc.replace('www.', '').replace('.com', '').title()
             return f"{domain} Flight Search"
             
         except Exception as e:
             print(f"Error parsing flight route from URL: {e}")
             return "Flight Search Result"
+    
+    async def extract_flight_info(self, page, url: str) -> Optional[Tuple[str, float]]:
         """Extract flight information and price"""
         try:
             print("Extracting flight information...")
             await page.wait_for_timeout(6000)
             
-            # Extract title
-            title_selectors = [
-                '.flight-info h3',
-                '.itinerary-title',
-                '.trip-summary',
-                'h1.flight-header',
-                'h2.flight-details',
-                'h1', 'h2'
-            ]
+            # First, try to get a meaningful title from the URL
+            flight_title = self.parse_flight_route_from_url(url)
             
-            flight_title = await self.extract_text_content(page, title_selectors)
-            
-            if not flight_title:
-                flight_title = await page.evaluate('''
-                    () => {
-                        return document.title || 'Flight Search Result';
-                    }
-                ''')
+            # If we couldn't parse from URL, try to extract from page
+            if flight_title == "Flight Search Result":
+                title_selectors = [
+                    '.flight-info h3',
+                    '.itinerary-title',
+                    '.trip-summary',
+                    'h1.flight-header',
+                    'h2.flight-details',
+                    'h1', 'h2'
+                ]
+                
+                extracted_title = await self.extract_text_content(page, title_selectors)
+                if extracted_title:
+                    flight_title = extracted_title
             
             # Extract price
             price_selectors = [
+                'div.e2GB-price-text',
+                'div.FlightCardPrice-module__priceContainer___nXXv2',
+                'div.Text-sc-1xtb652-0.koHeTu',
                 'span[data-testid="price"]',
                 '.price-text',
                 '.flight-price',
@@ -601,7 +592,6 @@ class MultiPlatformScraper:
             try:
                 await page.evaluate('''
                     () => {
-                        // Scroll to the main product section
                         const productSection = document.querySelector('[data-test-id="listing-page-title"]') ||
                                              document.querySelector('h1[data-testid="listing-page-title"]') ||
                                              document.querySelector('h1');
@@ -616,13 +606,10 @@ class MultiPlatformScraper:
             
             # Enhanced selectors with priority for main product price
             enhanced_selectors = [
-                # Main product price (avoiding menu items)
-                'p.wt-text-title-larger.wt-mr-xs-1',  # Target the specific class
+                'p.wt-text-title-larger.wt-mr-xs-1',
                 'div[data-test-id="listing-page-cart"] p.wt-text-title-larger',
                 'div[data-testid="listing-page-cart"] p.wt-text-title-larger',
                 'section[data-test-id="shop-section"] p.wt-text-title-larger',
-                
-                # Fallback selectors
                 'p[data-testid="lp-price"] span.currency-value',
                 'p[data-test-id="lp-price"] span.currency-value',
                 'span[data-testid="currency-value"]',
@@ -639,21 +626,17 @@ class MultiPlatformScraper:
                         # Check if this element is in the main product area, not a menu
                         is_main_product = await page.evaluate('''
                             (element) => {
-                                // Check if element is within main product area
                                 const rect = element.getBoundingClientRect();
                                 
-                                // Skip elements that are too high up (likely menu items)
                                 if (rect.top < 300) {
                                     return false;
                                 }
                                 
-                                // Check if element is in a menu or navigation area
                                 let parent = element.parentElement;
                                 while (parent) {
                                     const className = parent.className || '';
                                     const id = parent.id || '';
                                     
-                                    // Skip if in menu, navigation, or related products
                                     if (className.includes('menu') || 
                                         className.includes('nav') ||
                                         className.includes('related') ||
@@ -674,7 +657,7 @@ class MultiPlatformScraper:
                             if price_text:
                                 print(f"Etsy main product price from selector #{i+1}: '{price_text}'")
                                 price = await self.extract_price_from_text(price_text)
-                                if price and price >= 1.0:  # Reasonable minimum for main products
+                                if price and price >= 1.0:
                                     print(f"Validated Etsy main product price: ${price:.2f}")
                                     return price
                                 
@@ -687,7 +670,6 @@ class MultiPlatformScraper:
             try:
                 main_price = await page.evaluate('''
                     () => {
-                        // Look for the main product price, avoiding menu items
                         const priceSelectors = [
                             'p.wt-text-title-larger.wt-mr-xs-1',
                             'div[data-test-id="listing-page-cart"] p.wt-text-title-larger',
@@ -698,14 +680,12 @@ class MultiPlatformScraper:
                             const element = document.querySelector(selector);
                             if (element) {
                                 const rect = element.getBoundingClientRect();
-                                // Make sure it's not in the top menu area
                                 if (rect.top > 300) {
                                     return element.textContent.trim();
                                 }
                             }
                         }
                         
-                        // Last resort: find all price elements and pick the most reasonable one
                         const allPrices = document.querySelectorAll('p.wt-text-title-larger, span.currency-value');
                         const prices = [];
                         
@@ -713,22 +693,18 @@ class MultiPlatformScraper:
                             const text = el.textContent || '';
                             const rect = el.getBoundingClientRect();
                             
-                            // Skip elements too high up (menu area)
                             if (rect.top < 300) continue;
                             
-                            // Extract price
                             const match = text.match(/\\$([\\d,]+\\.?\\d*)/);
                             if (match) {
                                 const price = parseFloat(match[1].replace(',', ''));
-                                if (price >= 1.0) {  // Reasonable minimum
-                                    prices.push({ price, text, element: el });
+                                if (price >= 1.0) {
+                                    prices.push({ price, text });
                                 }
                             }
                         }
                         
-                        // Return the first reasonable price found in main content area
                         if (prices.length > 0) {
-                            // Sort by price (higher prices are more likely to be main products)
                             prices.sort((a, b) => b.price - a.price);
                             return prices[0].text;
                         }
@@ -926,7 +902,7 @@ class MultiPlatformScraper:
                 'name': 'Flight Tickets',
                 'example_url': 'https://www.kayak.com/flights/NYC-LAX/2024-03-15',
                 'icon': '✈️',
-                'tips': 'Use flight search result URLs from Kayak, Booking.com, Priceline, or Momondo (Expedia removed)'
+                'tips': 'Use flight search result URLs from Kayak, Booking.com, Priceline, or Momondo'
             }
         }
 

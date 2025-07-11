@@ -1,7 +1,10 @@
-# backend/requirements.txt
+# backend/requirements.txt - Fixed version with proper versions
 Flask==2.3.3
 Flask-CORS==4.0.0
 playwright==1.38.0
 schedule==1.2.0
-asyncio
 python-dotenv==1.0.0
+
+# Note: asyncio is built into Python 3.7+, no need to install separately
+# To install Playwright browsers after pip install, run:
+# playwright install chromium
