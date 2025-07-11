@@ -9,6 +9,25 @@ import json
 from pathlib import Path
 import os
 
+def validate_and_clean_url(url: str) -> str:
+    """Validate and clean product URLs"""
+    url = url.strip()
+    
+    # Ensure URL has protocol
+    if not url.startswith(('http://', 'https://')):
+        url = 'https://' + url
+    
+    # Remove tracking parameters for cleaner URLs
+    if 'amazon.com' in url:
+        # Extract ASIN for Amazon URLs
+        import re
+        asin_match = re.search(r'/dp/([A-Z0-9]{10})', url)
+        if asin_match:
+            domain = urlparse(url).netloc
+            return f"https://{domain}/dp/{asin_match.group(1)}"
+    
+    return url
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 

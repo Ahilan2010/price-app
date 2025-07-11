@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - CLEAN VERSION
+# backend/multi_platform_scraper.py - COMPLETE FIXED VERSION
 import asyncio
 import re
 import random
@@ -374,6 +374,100 @@ class MultiPlatformScraper:
             print(f"Error extracting Robux: {e}")
             return None
     
+    def parse_flight_route_from_url(self, url: str) -> str:
+        """Parse flight route and dates from URL to create meaningful title"""
+        try:
+            # Detect which flight site and parse accordingly
+            if 'kayak.com' in url:
+                match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
+                if match:
+                    from_code, to_code, dep_date, ret_date = match.groups()
+                    return f"Kayak: {from_code} → {to_code} ({dep_date} to {ret_date})"
+            elif 'booking.com' in url:
+                return "Booking.com Flight Search"
+            elif 'priceline.com' in url:
+                return "Priceline Flight Search"
+            elif 'momondo.com' in url:
+                return "Momondo Flight Search"
+            
+            return "Flight Search"
+        except Exception as e:
+            print(f"Error parsing flight URL: {e}")
+            return "Flight Search"
+    
+    async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
+        """Main scraping method that detects platform and scrapes accordingly"""
+        platform = self.detect_platform(url)
+        if not platform:
+            print(f"Unsupported platform for URL: {url}")
+            return None
+        
+        print(f"Detected platform: {platform}")
+        
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process',
+                    '--disable-gpu'
+                ]
+            )
+            
+            try:
+                page = await self.setup_browser_page(browser, platform)
+                config = self.platform_configs[platform]
+                
+                print(f"Navigating to: {url}")
+                await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                await page.wait_for_timeout(config['wait_time'])
+                
+                # Simulate human behavior for anti-bot bypass
+                await self.simulate_human_behavior(page)
+                
+                # Special handling for Roblox
+                if platform == 'roblox':
+                    result = await self.extract_roblox_info(page)
+                    if result:
+                        return result
+                
+                # Special handling for flights
+                elif platform == 'flights':
+                    title = self.parse_flight_route_from_url(url)
+                    price_text = await self.extract_text_content(page, config['price_selectors'])
+                    if price_text:
+                        price = await self.extract_price_from_text(price_text)
+                        if price:
+                            return title, price
+                
+                # Standard e-commerce platforms
+                else:
+                    # Extract title
+                    title = await self.extract_text_content(page, config['title_selectors'])
+                    if not title:
+                        print(f"Could not extract title for {platform}")
+                        title = f"Product from {platform.title()}"
+                    
+                    # Extract price
+                    price_text = await self.extract_text_content(page, config['price_selectors'])
+                    if price_text:
+                        price = await self.extract_price_from_text(price_text)
+                        if price:
+                            print(f"Successfully scraped: {title[:50]}... - ${price:.2f}")
+                            return title, price
+                
+                print(f"Failed to extract complete product info for {url}")
+                return None
+                
+            except Exception as e:
+                print(f"Error scraping {url}: {str(e)}")
+                return None
+            finally:
+                await browser.close()
+    
     async def extract_roblox_info(self, page) -> Optional[Tuple[str, float]]:
         """Extract Roblox item name and price"""
         try:
@@ -445,12 +539,40 @@ class MultiPlatformScraper:
             print(f"Error extracting Roblox info: {e}")
             return None
     
-    def parse_flight_route_from_url(self, url: str) -> str:
-        """Parse flight route and dates from URL to create meaningful title"""
-        try:
-            # Detect which flight site and parse accordingly
-            if 'kayak.com' in url:
-                match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
-                if match:
-                    from_code, to_code, dep_date, ret_date = match.groups()
-                    return f"Kayak: {from_code} → {to_code} ({dep_date} to {ret_date})"
+    @staticmethod
+    def get_platform_info() -> Dict[str, Dict[str, str]]:
+        """Get information about supported platforms"""
+        return {
+            'amazon': {'name': 'Amazon', 'icon': '🛒'},
+            'ebay': {'name': 'eBay', 'icon': '🏷️'},
+            'etsy': {'name': 'Etsy', 'icon': '🎨'},
+            'walmart': {'name': 'Walmart', 'icon': '🏪'},
+            'storenvy': {'name': 'Storenvy', 'icon': '🏬'},
+            'roblox': {'name': 'Roblox', 'icon': '🎮'},
+            'flights': {'name': 'Flights', 'icon': '✈️'}
+        }
+
+
+# Test function
+async def test_scraper():
+    """Test the scraper with various URLs"""
+    scraper = MultiPlatformScraper()
+    
+    test_urls = [
+        "https://www.amazon.com/dp/B08N5WRWNW",
+        "https://www.etsy.com/listing/123456789/test-product",
+        "https://www.roblox.com/catalog/123456789/test-item"
+    ]
+    
+    for url in test_urls:
+        print(f"\nTesting: {url}")
+        result = await scraper.scrape_product(url)
+        if result:
+            title, price = result
+            print(f"Success: {title} - ${price:.2f}")
+        else:
+            print("Failed to scrape")
+
+
+if __name__ == "__main__":
+    asyncio.run(test_scraper())

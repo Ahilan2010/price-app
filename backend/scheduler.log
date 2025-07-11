@@ -1,0 +1,29 @@
+2025-07-11 06:10:10,743 - INFO - 📈 Starting stock price check...
+2025-07-11 06:10:10,746 - INFO - Email configuration loaded
+2025-07-11 06:10:13,822 - INFO - 📈 Starting stock price check...
+2025-07-11 06:10:13,822 - INFO - Email configuration loaded
+2025-07-11 06:10:50,339 - INFO - ✅ Stock price check completed
+2025-07-11 06:10:53,315 - INFO - ✅ Stock price check completed
+2025-07-11 06:15:53,324 - INFO - 📈 Starting stock price check...
+2025-07-11 06:15:53,326 - INFO - Email configuration loaded
+2025-07-11 06:16:20,372 - INFO - 📈 Starting stock price check...
+2025-07-11 06:16:20,374 - INFO - Email configuration loaded
+2025-07-11 06:16:33,025 - INFO - ✅ Stock price check completed
+2025-07-11 06:16:59,423 - INFO - ✅ Stock price check completed
+2025-07-11 06:17:58,591 - INFO - Email configuration loaded
+2025-07-11 06:17:58,591 - INFO - 🚀 Starting PriceTracker Scheduler Service...
+2025-07-11 06:17:58,591 - INFO - 📦 Products: Every 6 hours
+2025-07-11 06:17:58,591 - INFO - 📈 Stocks: Every 5 minutes
+2025-07-11 06:17:58,591 - INFO - 🚀 Product scheduler started - will check every 6 hours
+2025-07-11 06:17:58,591 - INFO - 🚀 Stock scheduler started - will check every 5 minutes
+2025-07-11 06:17:58,591 - INFO - 📦 Starting product price check...
+2025-07-11 06:17:58,591 - INFO - ✅ Scheduler service started successfully
+2025-07-11 06:17:58,591 - INFO - 📈 Starting stock price check...
+2025-07-11 06:17:58,591 - INFO - Email configuration loaded
+2025-07-11 06:17:58,591 - INFO - Email configuration loaded
+2025-07-11 06:18:14,739 - INFO - Email configuration loaded
+2025-07-11 06:18:14,794 - WARNING - Scheduler service is not running
+2025-07-11 06:18:19,762 - INFO - 127.0.0.1 - - [11/Jul/2025 06:18:19] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-11 06:18:19,819 - INFO - 127.0.0.1 - - [11/Jul/2025 06:18:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-11 06:18:20,292 - INFO - ✅ Product price check completed
+2025-07-11 06:18:39,447 - INFO - ✅ Stock price check completed
