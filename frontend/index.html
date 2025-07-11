@@ -1,51 +1,551 @@
-<!-- Updated Flight Section for frontend/index.html -->
-<!-- Replace the supported sites info section -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PriceTracker - Multi-Platform Price Monitoring</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div>
+                        <h1>TagTracker</h1>
+                        <p class="tagline">Track prices across all platforms</p>
+                    </div>
+                </div>
+                    
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon products">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalProducts">0</span>
+                            <span class="stat-label">Products</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon roblox">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalRobloxItems">0</span>
+                            <span class="stat-label">Roblox Items</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon flights">
+                            <i class="fas fa-plane"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalFlights">0</span>
+                            <span class="stat-label">Flights</span>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon stocks">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalStockAlerts">0</span>
+                            <span class="stat-label">Stock Alerts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<div class="supported-sites-info">
-    <h3><i class="fas fa-info-circle"></i> Supported Flight Search Sites</h3>
-    <div class="sites-grid">
-        <div class="site-card">
-            <div class="site-icon">✈️</div>
-            <div class="site-details">
-                <h4>Kayak</h4>
-                <p>Use search result URLs from kayak.com</p>
-                <small>Price class: div.e2GB-price-text</small>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Products Page -->
+            <div id="productsPage" class="page active">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-shopping-bag"></i> E-Commerce Products</h2>
+                        <p>Track products from Amazon, eBay, Etsy, Walmart & Storenvy</p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+                
+                <div id="productsList" class="content-grid"></div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3>No products tracked yet</h3>
+                    <p>Start tracking products to get notified when prices drop!</p>
+                    <button class="btn btn-primary btn-large" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Your First Product
+                    </button>
+                </div>
+            </div>
+
+            <!-- Roblox Page -->
+            <div id="robloxPage" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-gamepad"></i> Roblox UGC Items</h2>
+                        <p>Track Roblox user-generated content and get alerts for price drops</p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
+                        <i class="fas fa-plus"></i> Add Roblox Item
+                    </button>
+                </div>
+                
+                <div id="robloxList" class="content-grid"></div>
+                
+                <div id="robloxEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>No Roblox items tracked yet</h3>
+                    <p>Start tracking Roblox UGC items to get notified when prices drop!</p>
+                    <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
+                        <i class="fas fa-plus"></i> Add Your First Item
+                    </button>
+                </div>
+            </div>
+
+            <!-- Flights Page -->
+            <div id="flightsPage" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-plane"></i> Flight Deals</h2>
+                        <p>Track flight prices and get alerts when fares drop</p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="showAddFlightModal()">
+                        <i class="fas fa-plus"></i> Add Flight
+                    </button>
+                </div>
+                
+                <!-- Supported Sites Info -->
+                <div class="supported-sites-info">
+                    <h3><i class="fas fa-info-circle"></i> Supported Flight Search Sites</h3>
+                    <div class="sites-grid">
+                        <div class="site-card">
+                            <div class="site-icon">✈️</div>
+                            <div class="site-details">
+                                <h4>Kayak</h4>
+                                <p>Use search result URLs from kayak.com</p>
+                                <small>Price class: div.e2GB-price-text</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🏨</div>
+                            <div class="site-details">
+                                <h4>Booking.com</h4>
+                                <p>Use flight search pages from booking.com</p>
+                                <small>Price class: div.FlightCardPrice-module__priceContainer___nXXv2</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">💰</div>
+                            <div class="site-details">
+                                <h4>Priceline</h4>
+                                <p>Use search results from priceline.com</p>
+                                <small>Price class: div.Text-sc-1xtb652-0.koHeTu</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🔍</div>
+                            <div class="site-details">
+                                <h4>Momondo</h4>
+                                <p>Use flight search results from momondo.com</p>
+                                <small>Price class: div.e2GB-price-text</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="flightsList" class="content-grid"></div>
+                
+                <div id="flightsEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3>No flights tracked yet</h3>
+                    <p>Start tracking flights to get notified when prices drop!</p>
+                    <button class="btn btn-primary btn-large" onclick="showAddFlightModal()">
+                        <i class="fas fa-plus"></i> Add Your First Flight
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stocks Page -->
+            <div id="stocksPage" class="page">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2><i class="fas fa-chart-line"></i> Stock Alerts</h2>
+                        <p>Set price alerts for your favorite stocks</p>
+                    </div>
+                    <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
+                        <i class="fas fa-plus"></i> Add Stock Alert
+                    </button>
+                </div>
+                
+                <div id="stocksList" class="content-grid"></div>
+                
+                <div id="stocksEmptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>No stock alerts set</h3>
+                    <p>Create alerts to get notified when stocks hit your target prices!</p>
+                    <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
+                        <i class="fas fa-plus"></i> Create Your First Alert
+                    </button>
+                </div>
+            </div>
+
+            <!-- Monitor Page -->
+            <div id="monitorPage" class="page">
+                <div class="monitor-content">
+                    <div class="monitor-header">
+                        <div class="monitor-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h2>Price Monitoring</h2>
+                        <p>Check all prices manually or enable automatic background monitoring</p>
+                    </div>
+                    
+                    <div class="monitor-actions">
+                        <button id="checkPricesBtn" class="btn btn-primary btn-large" onclick="checkAllPrices()">
+                            <i class="fas fa-sync"></i> Check All Prices Now
+                        </button>
+                        
+                        <div id="checkingStatus" class="checking-status" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Checking prices across all platforms...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scheduler-panel">
+                        <h3><i class="fas fa-clock"></i> Background Monitoring</h3>
+                        
+                        <div class="scheduler-info">
+                            <div class="schedule-item">
+                                <div class="schedule-icon">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <div class="schedule-details">
+                                    <span class="schedule-type">Products</span>
+                                    <span class="schedule-interval">Every 6 hours</span>
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div class="schedule-details">
+                                    <span class="schedule-type">Stocks</span>
+                                    <span class="schedule-interval">Every 5 minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="scheduler-status">
+                            <div class="status-indicator">
+                                <span class="status-dot" id="statusDot"></span>
+                                <span id="statusText">Background monitoring is inactive</span>
+                            </div>
+                            
+                            <div class="scheduler-controls">
+                                <button id="startBtn" class="btn btn-success" onclick="startScheduler()">
+                                    <i class="fas fa-play"></i> Start Monitoring
+                                </button>
+                                <button id="stopBtn" class="btn btn-danger" onclick="stopScheduler()" style="display: none;">
+                                    <i class="fas fa-stop"></i> Stop Monitoring
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="page">
+                <div class="settings-container">
+                    <div class="settings-card">
+                        <div class="settings-header">
+                            <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
+                            <p>Configure email alerts for price drops</p>
+                        </div>
+                        
+                        <form id="emailForm">
+                            <div class="form-group">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="emailEnabled">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-label">Enable Email Notifications</span>
+                                </label>
+                            </div>
+                            
+                            <div id="emailSettings" style="display: none;">
+                                <div class="info-card">
+                                    <h4><i class="fas fa-info-circle"></i> Gmail Configuration</h4>
+                                    <p>For Gmail: Enable 2-factor authentication and generate an App Password. Use smtp.gmail.com as the server.</p>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>SMTP Server</label>
+                                        <input type="text" id="smtpServer" class="form-control" placeholder="smtp.gmail.com" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Port</label>
+                                        <input type="number" id="smtpPort" class="form-control" value="587" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>From Email</label>
+                                    <input type="email" id="fromEmail" class="form-control" placeholder="your-email@gmail.com" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Password / App Password</label>
+                                    <input type="password" id="password" class="form-control" placeholder="Your app password" required>
+                                    <span class="form-hint">For Gmail, use an App Password instead of your regular password</span>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Send Alerts To</label>
+                                    <input type="email" id="toEmail" class="form-control" placeholder="recipient@example.com" required>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Email Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="site-card">
-            <div class="site-icon">🏨</div>
-            <div class="site-details">
-                <h4>Booking.com</h4>
-                <p>Use flight search pages from booking.com</p>
-                <small>Price class: div.FlightCardPrice-module__priceContainer___nXXv2</small>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="showPage('productsPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-shopping-bag"></i>
             </div>
-        </div>
-        <div class="site-card">
-            <div class="site-icon">💰</div>
-            <div class="site-details">
-                <h4>Priceline</h4>
-                <p>Use search results from priceline.com</p>
-                <small>Price class: div.Text-sc-1xtb652-0.koHeTu</small>
+            <span>Products</span>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showPage('robloxPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-gamepad"></i>
             </div>
-        </div>
-        <div class="site-card">
-            <div class="site-icon">🔍</div>
-            <div class="site-details">
-                <h4>Momondo</h4>
-                <p>Use flight search results from momondo.com</p>
-                <small>Price class: div.e2GB-price-text</small>
+            <span>Roblox</span>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showPage('flightsPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-plane"></i>
             </div>
+            <span>Flights</span>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showPage('stocksPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <span>Stocks</span>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showPage('monitorPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+            <span>Monitor</span>
+        </a>
+        
+        <a href="#" class="nav-item" onclick="showPage('settingsPage', this)">
+            <div class="nav-icon">
+                <i class="fas fa-cog"></i>
+            </div>
+            <span>Settings</span>
+        </a>
+    </nav>
+
+    <!-- Modals -->
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-bag"></i> Add E-Commerce Product</h3>
+                <button class="modal-close" onclick="closeAddProductModal()">&times;</button>
+            </div>
+            <form id="addProductForm" onsubmit="addProduct(event)">
+                <div class="form-group">
+                    <label>Select Platform</label>
+                    <select id="platformSelect" class="form-control" onchange="updateUrlPlaceholder()" required>
+                        <option value="">Choose a platform...</option>
+                        <option value="amazon">Amazon</option>
+                        <option value="ebay">eBay</option>
+                        <option value="etsy">Etsy</option>
+                        <option value="walmart">Walmart</option>
+                        <option value="storenvy">Storenvy</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Product URL</label>
+                    <input type="url" id="productUrl" class="form-control" placeholder="Select a platform first..." required disabled>
+                    <span id="urlHint" class="form-hint"></span>
+                </div>
+                
+                <div id="platformInfo" class="info-card" style="display: none;">
+                    <h4><i class="fas fa-lightbulb"></i> Platform Tips</h4>
+                    <p id="platformTips"></p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Price ($)</label>
+                    <input type="number" id="targetPrice" class="form-control" placeholder="99.99" step="0.01" min="0.01" required>
+                    <span class="form-hint">You'll be notified when the price drops to or below this amount</span>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
-</div>
 
-<!-- Update the form hint text in the Add Flight Modal -->
-<script>
-// Update the flight modal hint text
-document.addEventListener('DOMContentLoaded', function() {
-    const flightHint = document.querySelector('#addFlightModal .form-hint');
-    if (flightHint) {
-        flightHint.textContent = 'Use search result URLs from Kayak, Booking.com, Priceline, or Momondo';
-    }
-});
-</script>
+    <!-- Add Roblox Modal -->
+    <div id="addRobloxModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-gamepad"></i> Add Roblox UGC Item</h3>
+                <button class="modal-close" onclick="closeAddRobloxModal()">&times;</button>
+            </div>
+            <form id="addRobloxForm" onsubmit="addRobloxItem(event)">
+                <div class="form-group">
+                    <label>Roblox Item URL</label>
+                    <input type="url" id="robloxUrl" class="form-control" placeholder="https://www.roblox.com/catalog/123456789/item-name" required>
+                    <span class="form-hint">Copy the URL from the Roblox catalog page</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Price (Robux)</label>
+                    <input type="number" id="robloxTargetPrice" class="form-control" placeholder="500" min="1" required>
+                    <span class="form-hint">You'll be notified when the price drops to or below this amount</span>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddRobloxModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Flight Modal -->
+    <div id="addFlightModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plane"></i> Add Flight to Track</h3>
+                <button class="modal-close" onclick="closeAddFlightModal()">&times;</button>
+            </div>
+            <form id="addFlightForm" onsubmit="addFlight(event)">
+                <div class="form-group">
+                    <label>Flight Search URL</label>
+                    <input type="url" id="flightUrl" class="form-control" placeholder="https://www.kayak.com/flights/..." required>
+                    <span class="form-hint">Use search result URLs from Kayak, Booking.com, Priceline, or Momondo</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Target Price ($)</label>
+                    <input type="number" id="flightTargetPrice" class="form-control" placeholder="299.99" step="0.01" min="0.01" required>
+                    <span class="form-hint">You'll be notified when the flight price drops to or below this amount</span>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddFlightModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Flight
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Stock Alert Modal -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> Create Stock Alert</h3>
+                <button class="modal-close" onclick="closeAddStockModal()">&times;</button>
+            </div>
+            <form id="addStockForm" onsubmit="addStockAlert(event)">
+                <div class="form-group">
+                    <label>Stock Symbol</label>
+                    <input type="text" id="stockSymbol" class="form-control" placeholder="AAPL" required>
+                    <span class="form-hint">Enter the stock ticker symbol (e.g., AAPL, GOOGL, TSLA)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label>Alert Type</label>
+                    <select id="alertType" class="form-control" required>
+                        <option value="price_above">Price rises above</option>
+                        <option value="price_below">Price drops below</option>
+                        <option value="percent_up">Daily gain exceeds</option>
+                        <option value="percent_down">Daily loss exceeds</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label id="thresholdLabel">Price Threshold ($)</label>
+                    <input type="number" id="alertThreshold" class="form-control" placeholder="150.00" step="0.01" min="0.01" required>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddStockModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-bell"></i> Create Alert
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
