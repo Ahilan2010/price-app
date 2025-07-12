@@ -1,4 +1,4 @@
-# backend/tracker.py - ENHANCED VERSION WITH FLIGHT SUPPORT AND EMAIL LINKS
+# backend/tracker.py - UPDATED WITH PLATFORM-SPECIFIC CHECK METHODS
 import asyncio
 import json
 import smtplib
@@ -16,7 +16,7 @@ from multi_platform_scraper import MultiPlatformScraper
 
 
 class StorenvyPriceTracker:
-    """Multi-platform price tracker with enhanced flight support and email links"""
+    """Multi-platform price tracker with enhanced flight support and platform-specific checking"""
     
     def __init__(self, db_path: str = "storenvy_tracker.db"):
         self.db_path = db_path
@@ -178,6 +178,63 @@ class StorenvyPriceTracker:
         except Exception as e:
             print(f"Error getting tracked products: {e}")
             return []
+
+    def get_products_by_platform(self, platforms: List[str]) -> List[Dict[str, Any]]:
+        """Get products filtered by specific platforms"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            platform_placeholders = ','.join(['?' for _ in platforms])
+            query = f'''
+                SELECT id, url, platform, title, target_price, last_price, last_checked
+                FROM tracked_products
+                WHERE platform IN ({platform_placeholders})
+                ORDER BY created_at DESC
+            '''
+            
+            cursor.execute(query, platforms)
+            
+            products = []
+            platform_info = MultiPlatformScraper.get_platform_info()
+            
+            for row in cursor.fetchall():
+                try:
+                    platform = row[2] or 'storenvy'
+                    platform_details = platform_info.get(platform, {
+                        'name': 'Unknown', 
+                        'icon': '🛒'
+                    })
+                    
+                    # Determine status
+                    status = 'waiting'
+                    if row[5] is not None and row[4] is not None:
+                        if row[5] <= row[4]:
+                            status = 'below_target'
+                    
+                    products.append({
+                        'id': row[0],
+                        'url': row[1],
+                        'platform': platform,
+                        'platform_name': platform_details['name'],
+                        'platform_icon': platform_details['icon'],
+                        'title': row[3],
+                        'target_price': row[4],
+                        'last_price': row[5],
+                        'last_checked': row[6],
+                        'status': status
+                    })
+                    
+                except Exception as e:
+                    print(f"Error processing product row: {e}")
+                    continue
+            
+            conn.close()
+            return products
+            
+        except Exception as e:
+            print(f"Error getting products by platform: {e}")
+            return []
     
     def update_product_info(self, product_id: int, title: str, price: float) -> None:
         """Update product information after scraping"""
@@ -225,19 +282,14 @@ class StorenvyPriceTracker:
                 domain = parsed_url.netloc.lower()
                 
                 if 'kayak.com' in domain:
-                    # Return the original Kayak URL but ensure it's clean
                     return original_url
                 elif 'booking.com' in domain:
-                    # Return the original Booking.com URL
                     return original_url
                 elif 'priceline.com' in domain:
-                    # Return the original Priceline URL
                     return original_url
                 elif 'momondo.com' in domain:
-                    # Return the original Momondo URL
                     return original_url
                 elif 'expedia.com' in domain:
-                    # Return the original Expedia URL
                     return original_url
                 else:
                     return original_url
@@ -370,15 +422,29 @@ Happy shopping! 🎉
             print(f"Failed to send email alert: {str(e)}")
     
     async def check_all_products(self, smtp_config: Optional[Dict[str, Any]] = None) -> None:
-        """Check all tracked products for price drops with enhanced flight support"""
+        """Check all tracked products for price drops - LEGACY METHOD"""
+        await self.check_products_by_platform(['amazon', 'ebay', 'etsy', 'walmart', 'storenvy', 'roblox', 'flights'], smtp_config)
+    
+    async def check_ecommerce_products_only(self, smtp_config: Optional[Dict[str, Any]] = None) -> None:
+        """Check only e-commerce products (excludes flights) for price drops"""
+        await self.check_products_by_platform(['amazon', 'ebay', 'etsy', 'walmart', 'storenvy', 'roblox'], smtp_config)
+    
+    async def check_flight_products_only(self, smtp_config: Optional[Dict[str, Any]] = None) -> None:
+        """Check only flight products for price drops"""
+        await self.check_products_by_platform(['flights'], smtp_config)
+
+    async def check_products_by_platform(self, platforms: List[str], smtp_config: Optional[Dict[str, Any]] = None) -> None:
+        """Check products for specific platforms with enhanced flight support"""
         try:
-            products = self.get_tracked_products()
+            products = self.get_products_by_platform(platforms)
             
             if not products:
-                print("No products to check")
+                platform_names = ', '.join(platforms)
+                print(f"No {platform_names} products to check")
                 return
             
-            print(f"🔄 Checking {len(products)} products across multiple platforms...")
+            platform_names = ', '.join(platforms)
+            print(f"🔄 Checking {len(products)} products from platforms: {platform_names}")
             
             for product in products:
                 try:
@@ -437,10 +503,10 @@ Happy shopping! 🎉
                 except Exception as e:
                     print(f"Error during delay: {e}")
             
-            print("✅ Finished checking all products")
+            print(f"✅ Finished checking {platform_names} products")
             
         except Exception as e:
-            print(f"Error in check_all_products: {e}")
+            print(f"Error in check_products_by_platform: {e}")
     
     def get_supported_platforms(self) -> Dict[str, Dict[str, str]]:
         """Get information about supported platforms"""

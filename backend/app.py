@@ -1,4 +1,4 @@
-# backend/app.py - COMPLETE VERSION WITH MULTI-PLATFORM SUPPORT AND REAL-TIME UPDATES
+# backend/app.py - UPDATED VERSION WITH AUTOMATIC SCHEDULING ONLY
 from flask import Flask, jsonify, request, send_file, send_from_directory
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
@@ -104,25 +104,6 @@ def delete_product(product_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/check-prices', methods=['POST'])
-def check_prices():
-    """Manually check all product prices with real-time response"""
-    try:
-        # Run the async function in a new event loop
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(tracker.check_all_products(email_config))
-        
-        # Return updated products for real-time frontend updates
-        products = tracker.get_tracked_products()
-        return jsonify({
-            'message': 'Price check completed',
-            'products': products,
-            'timestamp': str(asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 'now')
-        }), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 # NEW ROUTE: Get supported platforms
 @app.route('/api/platforms', methods=['GET'])
 def get_platforms():
@@ -168,25 +149,6 @@ def delete_stock_alert(alert_id):
     try:
         stock_tracker.delete_stock_alert(alert_id)
         return jsonify({'message': 'Stock alert deleted successfully'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/stocks/check', methods=['POST'])
-def check_stock_prices():
-    """Manually check all stock prices with real-time response"""
-    try:
-        # Run the async function in a new event loop
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.run_until_complete(stock_tracker.check_all_stock_alerts(email_config))
-        
-        # Return updated alerts for real-time frontend updates
-        alerts = stock_tracker.get_stock_alerts()
-        return jsonify({
-            'message': 'Stock price check completed',
-            'alerts': alerts,
-            'timestamp': str(asyncio.get_event_loop().time() if hasattr(asyncio, 'get_event_loop') else 'now')
-        }), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -325,9 +287,9 @@ if __name__ == '__main__':
     print("="*60)
     print("\n🚀 Web server starting...")
     print("🌐 Interface: http://localhost:5000")
-    print("📦 Products: Manual + Background service")
-    print("📈 Stocks: Manual + Background service")
-    print("🌍 Now supporting 7 major e-commerce platforms!")
+    print("📦 E-commerce Products: Auto-check every 6 hours")
+    print("✈️ Flights: Auto-check every 30 minutes")
+    print("📈 Stocks: Auto-check every 5 minutes")
     print("\n💡 For persistent background checking:")
     print("   Run: python scheduler_service.py")
     print("\n⏹️  Press Ctrl+C to stop the web server")

@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - UPDATED VERSION WITH IMPROVED FLIGHT SCRAPING
+# backend/multi_platform_scraper.py - ENHANCED WITH ALL FLIGHT SITES URL PARSING
 import asyncio
 import re
 import random
@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 class MultiPlatformScraper:
-    """Multi-platform e-commerce scraper with improved flight tracking"""
+    """Multi-platform e-commerce scraper with comprehensive flight URL parsing"""
     
     def __init__(self):
         self.platform_configs = {
@@ -233,6 +233,179 @@ class MultiPlatformScraper:
         ])
         return random.choice(user_agents)
     
+    def parse_flight_route_from_url(self, url: str) -> str:
+        """Enhanced flight route and dates parsing from URL - ALL FLIGHT SITES"""
+        try:
+            parsed_url = urlparse(url)
+            domain = parsed_url.netloc.lower()
+            path = parsed_url.pathname
+            query_params = parse_qs(parsed_url.query)
+            
+            print(f"Parsing flight info from URL: {url}")
+            
+            if 'kayak.com' in domain:
+                # Extract from Kayak URL path or query parameters
+                # Try path parsing first (e.g., /flights/LAX-NYC/2024-03-15/2024-03-22)
+                kayak_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
+                if kayak_match:
+                    from_code, to_code, dep_date, ret_date = kayak_match.groups()
+                    if ret_date:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                    else:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                
+                # Try query parameter parsing
+                if 'origin' in query_params and 'destination' in query_params:
+                    origin = query_params['origin'][0] if query_params['origin'] else 'Unknown'
+                    destination = query_params['destination'][0] if query_params['destination'] else 'Unknown'
+                    dep_date = query_params.get('depart_date', [''])[0]
+                    ret_date = query_params.get('return_date', [''])[0]
+                    
+                    if dep_date and ret_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
+                    elif dep_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
+                    else:
+                        return f"✈️ {origin} → {destination}"
+                
+                return "✈️ Kayak Flight Search"
+            
+            elif 'booking.com' in domain:
+                # Booking.com flight parsing
+                departure = query_params.get('ss', [''])[0] or query_params.get('departure_city', [''])[0]
+                arrival = query_params.get('arrival_city', [''])[0]
+                checkin = query_params.get('checkin', [''])[0]
+                checkout = query_params.get('checkout', [''])[0]
+                
+                # Try to extract from flight-specific parameters
+                from_airport = query_params.get('from_airport', [''])[0]
+                to_airport = query_params.get('to_airport', [''])[0]
+                departure_date = query_params.get('departure_date', [''])[0]
+                return_date = query_params.get('return_date', [''])[0]
+                
+                if from_airport and to_airport:
+                    if departure_date and return_date:
+                        return f"✈️ {from_airport} → {to_airport} | {departure_date} to {return_date}"
+                    elif departure_date:
+                        return f"✈️ {from_airport} → {to_airport} | {departure_date} (One-way)"
+                    else:
+                        return f"✈️ {from_airport} → {to_airport}"
+                
+                if departure and arrival:
+                    if checkin and checkout:
+                        return f"✈️ {departure} → {arrival} | {checkin} to {checkout}"
+                    else:
+                        return f"✈️ {departure} → {arrival}"
+                elif departure:
+                    return f"✈️ {departure} Flight Search"
+                
+                return "✈️ Booking.com Flight Search"
+            
+            elif 'priceline.com' in domain:
+                # Priceline flight parsing
+                from_code = query_params.get('from', [''])[0] or query_params.get('departure', [''])[0]
+                to_code = query_params.get('to', [''])[0] or query_params.get('arrival', [''])[0]
+                departure_date = query_params.get('departure_date', [''])[0] or query_params.get('dep_date', [''])[0]
+                return_date = query_params.get('return_date', [''])[0] or query_params.get('ret_date', [''])[0]
+                
+                # Try to extract from path as well
+                if not from_code or not to_code:
+                    priceline_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/', path)
+                    if priceline_match:
+                        from_code, to_code = priceline_match.groups()
+                
+                if from_code and to_code:
+                    if departure_date and return_date:
+                        return f"✈️ {from_code} → {to_code} | {departure_date} to {return_date}"
+                    elif departure_date:
+                        return f"✈️ {from_code} → {to_code} | {departure_date} (One-way)"
+                    else:
+                        return f"✈️ {from_code} → {to_code}"
+                
+                return "✈️ Priceline Flight Search"
+            
+            elif 'momondo.com' in domain:
+                # Momondo flight parsing
+                # Try path parsing first
+                momondo_match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
+                if momondo_match:
+                    from_code, to_code, dep_date, ret_date = momondo_match.groups()
+                    if ret_date:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                    else:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                
+                # Try another Momondo URL pattern
+                momondo_match2 = re.search(r'/flights/([A-Z]{3})/([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
+                if momondo_match2:
+                    from_code, to_code, dep_date, ret_date = momondo_match2.groups()
+                    if ret_date:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                    else:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                
+                # Try query parameters
+                origin = query_params.get('origin', [''])[0] or query_params.get('from', [''])[0]
+                destination = query_params.get('destination', [''])[0] or query_params.get('to', [''])[0]
+                departure_date = query_params.get('departure', [''])[0] or query_params.get('depart', [''])[0]
+                return_date = query_params.get('return', [''])[0]
+                
+                if origin and destination:
+                    if departure_date and return_date:
+                        return f"✈️ {origin} → {destination} | {departure_date} to {return_date}"
+                    elif departure_date:
+                        return f"✈️ {origin} → {destination} | {departure_date} (One-way)"
+                    else:
+                        return f"✈️ {origin} → {destination}"
+                
+                return "✈️ Momondo Flight Search"
+            
+            elif 'expedia.com' in domain:
+                # Expedia flight parsing
+                flight_1 = query_params.get('flight-1', [''])[0]
+                d1 = query_params.get('d1', [''])[0]
+                d2 = query_params.get('d2', [''])[0]
+                
+                # Try to extract from flight-1 parameter
+                if flight_1:
+                    flight_match = re.search(r'([A-Z]{3}),([A-Z]{3})', flight_1)
+                    if flight_match:
+                        from_code, to_code = flight_match.groups()
+                        if d1 and d2:
+                            return f"✈️ {from_code} → {to_code} | {d1} to {d2}"
+                        elif d1:
+                            return f"✈️ {from_code} → {to_code} | {d1} (One-way)"
+                        else:
+                            return f"✈️ {from_code} → {to_code}"
+                
+                # Try alternative Expedia parameters
+                departure_airport = query_params.get('departing', [''])[0] or query_params.get('from', [''])[0]
+                arrival_airport = query_params.get('arriving', [''])[0] or query_params.get('to', [''])[0]
+                departure_date = query_params.get('departing-date', [''])[0] or query_params.get('dep', [''])[0]
+                return_date = query_params.get('returning-date', [''])[0] or query_params.get('ret', [''])[0]
+                
+                if departure_airport and arrival_airport:
+                    if departure_date and return_date:
+                        return f"✈️ {departure_airport} → {arrival_airport} | {departure_date} to {return_date}"
+                    elif departure_date:
+                        return f"✈️ {departure_airport} → {arrival_airport} | {departure_date} (One-way)"
+                    else:
+                        return f"✈️ {departure_airport} → {arrival_airport}"
+                
+                # Try path parsing for Expedia
+                expedia_path_match = re.search(r'/Flights-Search.*?([A-Z]{3}).*?([A-Z]{3})', path)
+                if expedia_path_match:
+                    from_code, to_code = expedia_path_match.groups()
+                    return f"✈️ {from_code} → {to_code}"
+                
+                return "✈️ Expedia Flight Search"
+            
+            return "✈️ Flight Search"
+            
+        except Exception as e:
+            print(f"Error parsing flight URL: {e}")
+            return "✈️ Flight Search"
+
     async def setup_browser_page(self, browser, platform: str):
         """Set up browser page with stealth configuration"""
         try:
@@ -528,115 +701,6 @@ class MultiPlatformScraper:
             print(f"Error extracting Robux: {e}")
             return None
     
-    def parse_flight_route_from_url(self, url: str) -> str:
-        """Enhanced flight route and dates parsing from URL"""
-        try:
-            parsed_url = urlparse(url)
-            domain = parsed_url.netloc.lower()
-            
-            print(f"Parsing flight info from URL: {url}")
-            
-            if 'kayak.com' in domain:
-                # Extract from Kayak URL path or query parameters
-                path = parsed_url.path
-                query_params = parse_qs(parsed_url.query)
-                
-                # Try path parsing first (e.g., /flights/LAX-NYC/2024-03-15/2024-03-22)
-                kayak_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
-                if kayak_match:
-                    from_code, to_code, dep_date, ret_date = kayak_match.groups()
-                    if ret_date:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                    else:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                
-                # Try query parameter parsing
-                if 'origin' in query_params and 'destination' in query_params:
-                    origin = query_params['origin'][0] if query_params['origin'] else 'Unknown'
-                    destination = query_params['destination'][0] if query_params['destination'] else 'Unknown'
-                    dep_date = query_params.get('depart_date', [''])[0]
-                    ret_date = query_params.get('return_date', [''])[0]
-                    
-                    if dep_date and ret_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
-                    elif dep_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
-                    else:
-                        return f"✈️ {origin} → {destination}"
-                
-                return "✈️ Kayak Flight Search"
-            
-            elif 'booking.com' in domain:
-                query_params = parse_qs(parsed_url.query)
-                if 'ss' in query_params:  # departure city
-                    ss = query_params['ss'][0]
-                    checkin = query_params.get('checkin', [''])[0]
-                    checkout = query_params.get('checkout', [''])[0]
-                    
-                    if checkin and checkout:
-                        return f"✈️ {ss} Flight | {checkin} to {checkout}"
-                    else:
-                        return f"✈️ {ss} Flight Search"
-                
-                return "✈️ Booking.com Flight Search"
-            
-            elif 'priceline.com' in domain:
-                # Extract from Priceline query parameters
-                query_params = parse_qs(parsed_url.query)
-                origin = query_params.get('from', [''])[0]
-                destination = query_params.get('to', [''])[0]
-                dep_date = query_params.get('departure', [''])[0]
-                ret_date = query_params.get('return', [''])[0]
-                
-                if origin and destination:
-                    if dep_date and ret_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
-                    elif dep_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
-                    else:
-                        return f"✈️ {origin} → {destination}"
-                
-                return "✈️ Priceline Flight Search"
-            
-            elif 'momondo.com' in domain:
-                # Extract from Momondo URL structure
-                path = parsed_url.path
-                momondo_match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
-                if momondo_match:
-                    from_code, to_code, dep_date, ret_date = momondo_match.groups()
-                    if ret_date:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                    else:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                
-                return "✈️ Momondo Flight Search"
-            
-            elif 'expedia.com' in domain:
-                # Extract from Expedia query parameters
-                query_params = parse_qs(parsed_url.query)
-                flight_1 = query_params.get('flight-1', [''])[0]
-                dep_date = query_params.get('d1', [''])[0]
-                ret_date = query_params.get('d2', [''])[0]
-                
-                if flight_1:
-                    flight_match = re.search(r'([A-Z]{3}),([A-Z]{3})', flight_1)
-                    if flight_match:
-                        from_code, to_code = flight_match.groups()
-                        if dep_date and ret_date:
-                            return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                        elif dep_date:
-                            return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                        else:
-                            return f"✈️ {from_code} → {to_code}"
-                
-                return "✈️ Expedia Flight Search"
-            
-            return "✈️ Flight Search"
-            
-        except Exception as e:
-            print(f"Error parsing flight URL: {e}")
-            return "✈️ Flight Search"
-    
     async def scrape_flight_with_enhanced_detection(self, page, url: str) -> Optional[Tuple[str, float]]:
         """Enhanced flight scraping with improved price detection"""
         try:
@@ -825,13 +889,23 @@ async def test_updated_scraper():
         "https://www.amazon.com/dp/B08N5WRWNW",
         "https://www.etsy.com/listing/123456789/test-product",
         "https://www.roblox.com/catalog/123456789/test-item",
-        "https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22"
+        "https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22",
+        "https://www.booking.com/flights/search.html?from_airport=LAX&to_airport=JFK&departure_date=2024-03-15&return_date=2024-03-22",
+        "https://www.priceline.com/flights/search?from=LAX&to=NYC&departure_date=2024-03-15&return_date=2024-03-22",
+        "https://www.momondo.com/flight-search/LAX-NYC/2024-03-15/2024-03-22",
+        "https://www.expedia.com/Flights-Search?flight-1=LAX,NYC&d1=2024-03-15&d2=2024-03-22"
     ]
     
     for url in test_urls:
         print(f"\n{'='*60}")
         print(f"Testing: {url}")
         print('='*60)
+        
+        # Test URL parsing for flights
+        platform = scraper.detect_platform(url)
+        if platform == 'flights':
+            flight_info = scraper.parse_flight_route_from_url(url)
+            print(f"🛫 Parsed flight info: {flight_info}")
         
         result = await scraper.scrape_product(url)
         if result:

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PriceTracker - Multi-Platform Price Monitoring</title>
+    <title>PriceTracker - Multi-Platform Automatic Price Monitoring</title>
     
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
                     </div>
                     <div>
                         <h1>TagTracker</h1>
-                        <p class="tagline">Track prices across all platforms</p>
+                        <p class="tagline">Automatic price monitoring across all platforms</p>
                     </div>
                 </div>
                     
@@ -98,7 +98,7 @@
                         <i class="fas fa-shopping-cart"></i>
                     </div>
                     <h3>No products tracked yet</h3>
-                    <p>Start tracking products to get notified when prices drop!</p>
+                    <p>Start tracking products to get automatic notifications when prices drop!</p>
                     <button class="btn btn-primary btn-large" onclick="showAddProductModal()">
                         <i class="fas fa-plus"></i> Add Your First Product
                     </button>
@@ -110,7 +110,7 @@
                 <div class="page-header">
                     <div class="page-title">
                         <h2><i class="fas fa-gamepad"></i> Roblox UGC Items</h2>
-                        <p>Track Roblox user-generated content and get alerts for price drops</p>
+                        <p>Track Roblox user-generated content and get automatic alerts for price drops</p>
                     </div>
                     <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
                         <i class="fas fa-plus"></i> Add Roblox Item
@@ -124,7 +124,7 @@
                         <i class="fas fa-gamepad"></i>
                     </div>
                     <h3>No Roblox items tracked yet</h3>
-                    <p>Start tracking Roblox UGC items to get notified when prices drop!</p>
+                    <p>Start tracking Roblox UGC items to get automatic notifications when prices drop!</p>
                     <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
                         <i class="fas fa-plus"></i> Add Your First Item
                     </button>
@@ -136,7 +136,7 @@
                 <div class="page-header">
                     <div class="page-title">
                         <h2><i class="fas fa-plane"></i> Flight Deals</h2>
-                        <p>Track flight prices and get alerts when fares drop</p>
+                        <p>Track flight prices and get automatic alerts when fares drop</p>
                     </div>
                     <button class="btn btn-primary btn-large" onclick="showAddFlightModal()">
                         <i class="fas fa-plus"></i> Add Flight
@@ -152,7 +152,7 @@
                             <div class="site-details">
                                 <h4>Kayak</h4>
                                 <p>Use search result URLs from kayak.com</p>
-                                <small>Price class: div.e2GB-price-text</small>
+                                <small>Checks every 30 minutes automatically</small>
                             </div>
                         </div>
                         <div class="site-card">
@@ -160,7 +160,7 @@
                             <div class="site-details">
                                 <h4>Booking.com</h4>
                                 <p>Use flight search pages from booking.com</p>
-                                <small>Price class: div.FlightCardPrice-module__priceContainer___nXXv2</small>
+                                <small>Automatic monitoring every 30 minutes</small>
                             </div>
                         </div>
                         <div class="site-card">
@@ -168,7 +168,7 @@
                             <div class="site-details">
                                 <h4>Priceline</h4>
                                 <p>Use search results from priceline.com</p>
-                                <small>Price class: div.Text-sc-1xtb652-0.koHeTu</small>
+                                <small>Background checks every 30 minutes</small>
                             </div>
                         </div>
                         <div class="site-card">
@@ -176,7 +176,15 @@
                             <div class="site-details">
                                 <h4>Momondo</h4>
                                 <p>Use flight search results from momondo.com</p>
-                                <small>Price class: div.e2GB-price-text</small>
+                                <small>Automated price tracking every 30 min</small>
+                            </div>
+                        </div>
+                        <div class="site-card">
+                            <div class="site-icon">🌐</div>
+                            <div class="site-details">
+                                <h4>Expedia</h4>
+                                <p>Use flight search results from expedia.com</p>
+                                <small>Real-time monitoring every 30 minutes</small>
                             </div>
                         </div>
                     </div>
@@ -189,7 +197,7 @@
                         <i class="fas fa-plane"></i>
                     </div>
                     <h3>No flights tracked yet</h3>
-                    <p>Start tracking flights to get notified when prices drop!</p>
+                    <p>Start tracking flights to get automatic notifications when prices drop!</p>
                     <button class="btn btn-primary btn-large" onclick="showAddFlightModal()">
                         <i class="fas fa-plus"></i> Add Your First Flight
                     </button>
@@ -201,7 +209,7 @@
                 <div class="page-header">
                     <div class="page-title">
                         <h2><i class="fas fa-chart-line"></i> Stock Alerts</h2>
-                        <p>Set price alerts for your favorite stocks</p>
+                        <p>Set automatic price alerts for your favorite stocks</p>
                     </div>
                     <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
                         <i class="fas fa-plus"></i> Add Stock Alert
@@ -215,37 +223,26 @@
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h3>No stock alerts set</h3>
-                    <p>Create alerts to get notified when stocks hit your target prices!</p>
+                    <p>Create automatic alerts to get notified when stocks hit your target prices!</p>
                     <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
                         <i class="fas fa-plus"></i> Create Your First Alert
                     </button>
                 </div>
             </div>
 
-            <!-- Monitor Page -->
+            <!-- Monitor Page - Updated for Automatic Only -->
             <div id="monitorPage" class="page">
                 <div class="monitor-content">
                     <div class="monitor-header">
                         <div class="monitor-icon">
-                            <i class="fas fa-sync-alt"></i>
+                            <i class="fas fa-robot"></i>
                         </div>
-                        <h2>Price Monitoring</h2>
-                        <p>Check all prices manually or enable automatic background monitoring</p>
-                    </div>
-                    
-                    <div class="monitor-actions">
-                        <button id="checkPricesBtn" class="btn btn-primary btn-large" onclick="checkAllPrices()">
-                            <i class="fas fa-sync"></i> Check All Prices Now
-                        </button>
-                        
-                        <div id="checkingStatus" class="checking-status" style="display: none;">
-                            <div class="spinner"></div>
-                            <p>Checking prices across all platforms...</p>
-                        </div>
+                        <h2>Automatic Monitoring</h2>
+                        <p>Manage your background monitoring service with different check intervals for each platform</p>
                     </div>
                     
                     <div class="scheduler-panel">
-                        <h3><i class="fas fa-clock"></i> Background Monitoring</h3>
+                        <h3><i class="fas fa-clock"></i> Automatic Check Intervals</h3>
                         
                         <div class="scheduler-info">
                             <div class="schedule-item">
@@ -253,8 +250,18 @@
                                     <i class="fas fa-shopping-bag"></i>
                                 </div>
                                 <div class="schedule-details">
-                                    <span class="schedule-type">Products</span>
+                                    <span class="schedule-type">E-commerce Products</span>
                                     <span class="schedule-interval">Every 6 hours</span>
+                                </div>
+                            </div>
+                            
+                            <div class="schedule-item">
+                                <div class="schedule-icon">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                <div class="schedule-details">
+                                    <span class="schedule-type">Flight Prices</span>
+                                    <span class="schedule-interval">Every 30 minutes</span>
                                 </div>
                             </div>
                             
@@ -263,7 +270,7 @@
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                                 <div class="schedule-details">
-                                    <span class="schedule-type">Stocks</span>
+                                    <span class="schedule-type">Stock Alerts</span>
                                     <span class="schedule-interval">Every 5 minutes</span>
                                 </div>
                             </div>
@@ -272,15 +279,15 @@
                         <div class="scheduler-status">
                             <div class="status-indicator">
                                 <span class="status-dot" id="statusDot"></span>
-                                <span id="statusText">Background monitoring is inactive</span>
+                                <span id="statusText">Automatic monitoring is inactive</span>
                             </div>
                             
                             <div class="scheduler-controls">
                                 <button id="startBtn" class="btn btn-success" onclick="startScheduler()">
-                                    <i class="fas fa-play"></i> Start Monitoring
+                                    <i class="fas fa-play"></i> Start Automatic Monitoring
                                 </button>
                                 <button id="stopBtn" class="btn btn-danger" onclick="stopScheduler()" style="display: none;">
-                                    <i class="fas fa-stop"></i> Stop Monitoring
+                                    <i class="fas fa-stop"></i> Stop Automatic Monitoring
                                 </button>
                             </div>
                         </div>
@@ -294,7 +301,7 @@
                     <div class="settings-card">
                         <div class="settings-header">
                             <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
-                            <p>Configure email alerts for price drops</p>
+                            <p>Configure automatic email alerts for price drops</p>
                         </div>
                         
                         <form id="emailForm">
@@ -302,7 +309,7 @@
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="emailEnabled">
                                     <span class="toggle-slider"></span>
-                                    <span class="toggle-label">Enable Email Notifications</span>
+                                    <span class="toggle-label">Enable Automatic Email Notifications</span>
                                 </label>
                             </div>
                             
@@ -382,7 +389,7 @@
         
         <a href="#" class="nav-item" onclick="showPage('monitorPage', this)">
             <div class="nav-icon">
-                <i class="fas fa-sync-alt"></i>
+                <i class="fas fa-robot"></i>
             </div>
             <span>Monitor</span>
         </a>
@@ -430,7 +437,7 @@
                 <div class="form-group">
                     <label>Target Price ($)</label>
                     <input type="number" id="targetPrice" class="form-control" placeholder="99.99" step="0.01" min="0.01" required>
-                    <span class="form-hint">You'll be notified when the price drops to or below this amount</span>
+                    <span class="form-hint">You'll be automatically notified when the price drops to or below this amount</span>
                 </div>
                 
                 <div class="modal-footer">
@@ -460,7 +467,7 @@
                 <div class="form-group">
                     <label>Target Price (Robux)</label>
                     <input type="number" id="robloxTargetPrice" class="form-control" placeholder="500" min="1" required>
-                    <span class="form-hint">You'll be notified when the price drops to or below this amount</span>
+                    <span class="form-hint">You'll be automatically notified when the price drops to or below this amount</span>
                 </div>
                 
                 <div class="modal-footer">
@@ -484,13 +491,13 @@
                 <div class="form-group">
                     <label>Flight Search URL</label>
                     <input type="url" id="flightUrl" class="form-control" placeholder="https://www.kayak.com/flights/..." required>
-                    <span class="form-hint">Use search result URLs from Kayak, Booking.com, Priceline, or Momondo</span>
+                    <span class="form-hint">Use search result URLs from Kayak, Booking.com, Priceline, Momondo, or Expedia</span>
                 </div>
                 
                 <div class="form-group">
                     <label>Target Price ($)</label>
                     <input type="number" id="flightTargetPrice" class="form-control" placeholder="299.99" step="0.01" min="0.01" required>
-                    <span class="form-hint">You'll be notified when the flight price drops to or below this amount</span>
+                    <span class="form-hint">You'll be automatically notified when the flight price drops to or below this amount</span>
                 </div>
                 
                 <div class="modal-footer">

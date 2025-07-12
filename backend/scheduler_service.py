@@ -1,4 +1,4 @@
-# backend/scheduler_service.py - PERSISTENT BACKGROUND SERVICE
+# backend/scheduler_service.py - UPDATED WITH FLIGHT-SPECIFIC INTERVALS
 import asyncio
 import json
 import time
@@ -33,6 +33,7 @@ class PersistentSchedulerService:
         self.email_config = {}
         self.product_thread = None
         self.stock_thread = None
+        self.flight_thread = None
         
         # Load email config
         self.load_email_config()
@@ -62,19 +63,34 @@ class PersistentSchedulerService:
         sys.exit(0)
     
     def product_scheduler_worker(self):
-        """Worker for product price checking every 6 hours."""
+        """Worker for e-commerce product price checking every 6 hours."""
         # Schedule product checks every 6 hours
-        schedule.every(6).hours.do(self.check_products_job)
+        schedule.every(6).hours.do(self.check_ecommerce_products_job)
         
         # Also run immediately on startup
-        logger.info("🚀 Product scheduler started - will check every 6 hours")
-        self.check_products_job()
+        logger.info("🚀 E-commerce product scheduler started - will check every 6 hours")
+        self.check_ecommerce_products_job()
         
         while self.running:
             schedule.run_pending()
             time.sleep(60)  # Check every minute
         
-        logger.info("📦 Product scheduler stopped")
+        logger.info("📦 E-commerce product scheduler stopped")
+    
+    def flight_scheduler_worker(self):
+        """Worker for flight price checking every 30 minutes."""
+        # Schedule flight checks every 30 minutes
+        schedule.every(30).minutes.do(self.check_flight_prices_job)
+        
+        # Also run immediately on startup
+        logger.info("🚀 Flight scheduler started - will check every 30 minutes")
+        self.check_flight_prices_job()
+        
+        while self.running:
+            schedule.run_pending()
+            time.sleep(60)  # Check every minute
+        
+        logger.info("✈️ Flight scheduler stopped")
     
     def stock_scheduler_worker(self):
         """Worker for stock price checking every 5 minutes."""
@@ -91,10 +107,10 @@ class PersistentSchedulerService:
         
         logger.info("📈 Stock scheduler stopped")
     
-    def check_products_job(self):
-        """Job to check product prices."""
+    def check_ecommerce_products_job(self):
+        """Job to check e-commerce product prices (excludes flights)."""
         try:
-            logger.info("📦 Starting product price check...")
+            logger.info("📦 Starting e-commerce product price check...")
             
             # Reload email config in case it changed
             self.load_email_config()
@@ -102,13 +118,32 @@ class PersistentSchedulerService:
             # Run async function in event loop
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(self.product_tracker.check_all_products(self.email_config))
+            loop.run_until_complete(self.product_tracker.check_ecommerce_products_only(self.email_config))
             loop.close()
             
-            logger.info("✅ Product price check completed")
+            logger.info("✅ E-commerce product price check completed")
             
         except Exception as e:
-            logger.error(f"❌ Error in product price check: {e}")
+            logger.error(f"❌ Error in e-commerce product price check: {e}")
+    
+    def check_flight_prices_job(self):
+        """Job to check flight prices only."""
+        try:
+            logger.info("✈️ Starting flight price check...")
+            
+            # Reload email config in case it changed
+            self.load_email_config()
+            
+            # Run async function in event loop
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(self.product_tracker.check_flight_products_only(self.email_config))
+            loop.close()
+            
+            logger.info("✅ Flight price check completed")
+            
+        except Exception as e:
+            logger.error(f"❌ Error in flight price check: {e}")
     
     def check_stocks_job(self):
         """Job to check stock prices."""
@@ -137,24 +172,33 @@ class PersistentSchedulerService:
         
         self.running = True
         logger.info("🚀 Starting PriceTracker Scheduler Service...")
-        logger.info("📦 Products: Every 6 hours")
+        logger.info("📦 E-commerce Products: Every 6 hours")
+        logger.info("✈️ Flights: Every 30 minutes")
         logger.info("📈 Stocks: Every 5 minutes")
         
-        # Start product scheduler in separate thread
+        # Start e-commerce product scheduler in separate thread
         self.product_thread = threading.Thread(
             target=self.product_scheduler_worker, 
-            daemon=False,  # Don't make daemon so it keeps running
-            name="ProductScheduler"
+            daemon=False,
+            name="EcommerceProductScheduler"
+        )
+        
+        # Start flight scheduler in separate thread
+        self.flight_thread = threading.Thread(
+            target=self.flight_scheduler_worker, 
+            daemon=False,
+            name="FlightScheduler"
         )
         
         # Start stock scheduler in separate thread
         self.stock_thread = threading.Thread(
             target=self.stock_scheduler_worker, 
-            daemon=False,  # Don't make daemon so it keeps running
+            daemon=False,
             name="StockScheduler"
         )
         
         self.product_thread.start()
+        self.flight_thread.start()
         self.stock_thread.start()
         
         logger.info("✅ Scheduler service started successfully")
@@ -175,6 +219,9 @@ class PersistentSchedulerService:
         if self.product_thread and self.product_thread.is_alive():
             self.product_thread.join(timeout=5)
         
+        if self.flight_thread and self.flight_thread.is_alive():
+            self.flight_thread.join(timeout=5)
+        
         if self.stock_thread and self.stock_thread.is_alive():
             self.stock_thread.join(timeout=5)
         
@@ -185,9 +232,11 @@ class PersistentSchedulerService:
         return {
             'running': self.running,
             'product_thread_alive': self.product_thread.is_alive() if self.product_thread else False,
+            'flight_thread_alive': self.flight_thread.is_alive() if self.flight_thread else False,
             'stock_thread_alive': self.stock_thread.is_alive() if self.stock_thread else False,
             'email_configured': bool(self.email_config.get('enabled')),
-            'products_interval': '6 hours',
+            'ecommerce_interval': '6 hours',
+            'flights_interval': '30 minutes',
             'stocks_interval': '5 minutes'
         }
     
@@ -211,7 +260,8 @@ if __name__ == "__main__":
     print("🛍️  PRICETRACKER SCHEDULER SERVICE")
     print("="*60)
     print("\n🚀 Starting persistent background service...")
-    print("📦 Products: Auto-check every 6 hours")
+    print("📦 E-commerce Products: Auto-check every 6 hours")
+    print("✈️ Flights: Auto-check every 30 minutes")
     print("📈 Stocks: Auto-check every 5 minutes")
     print("\n💡 This service runs independently of the web app")
     print("⏹️  Press Ctrl+C to stop the service")
