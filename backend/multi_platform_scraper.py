@@ -1,4 +1,4 @@
-# backend/multi_platform_scraper.py - FIXED FLIGHT TRACKING VERSION
+# backend/multi_platform_scraper.py - UPDATED VERSION WITH IMPROVED FLIGHT SCRAPING
 import asyncio
 import re
 import random
@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 class MultiPlatformScraper:
-    """Multi-platform e-commerce scraper with fixed flight tracking"""
+    """Multi-platform e-commerce scraper with improved flight tracking"""
     
     def __init__(self):
         self.platform_configs = {
@@ -165,40 +165,45 @@ class MultiPlatformScraper:
             },
             'flights': {
                 'domain_patterns': ['kayak.com', 'booking.com', 'priceline.com', 'momondo.com', 'expedia.com'],
-                'title_selectors': [
-                    '.flight-info h3',
-                    '.itinerary-title',
-                    '.trip-summary',
-                    'h1.flight-header',
-                    'h2.flight-details',
-                    '.flight-route',
-                    '[data-testid="flight-summary"]'
-                ],
                 'price_selectors': [
-                    # Kayak updated selectors - targeting the ACTUAL cheapest available price
-                    'div[data-testid="cheapest-total-price"]',
-                    'div[data-testid="result-price"] span[role="text"]',
-                    'div.r99X-price-text',
-                    'div.r99X span[role="text"]',
-                    'span[data-testid="price-text"]',
-                    'div[data-testid="price"] span',
-                    # Fallback selectors for other sites
-                    'div.e2GB-price-text',
-                    'div.FlightCardPrice-module__priceContainer___nXXv2',
-                    'div.Text-sc-1xtb652-0.koHeTu',
-                    'span[data-testid="price"]',
-                    '.price-text',
-                    '.flight-price',
-                    'span.price',
+                    # Updated 2024 Kayak selectors - MOST CURRENT
+                    'div[data-resultid] span.price-text',
+                    'div[data-resultid] .price-text', 
+                    'div.resultWrapper span.price-text',
+                    'div.price-text',
+                    'span.price-text',
+                    '[data-testid="price-text"]',
+                    'div[class*="price"] span[role="text"]',
+                    'div.bottom span.price-text',
+                    'div.above-button span.price-text',
+                    '.result-price .price-text',
+                    '.booking-link .price-text',
+                    
+                    # Alternative Kayak selectors
+                    'div[class*="FlightsTicket"] span[class*="price"]',
+                    'a[class*="FlightsTicket"] span.price-text',
+                    'div.flight-card .price-text',
+                    '[data-testid="flight-card"] .price-text',
+                    
+                    # Other flight sites
+                    'div[data-testid="flight-card-segment"] .bui-price-display__value',
+                    '.bui-price-display__value',
+                    '.price-amount',
+                    '.flight-price .price',
+                    '[data-test-id="price"]',
                     '.fare-price',
-                    'div[class*="price"] span',
-                    '.total-price',
-                    '[data-testid="flight-price"]',
-                    # Additional Kayak selectors
-                    'div[class*="price-display"]',
-                    'span[class*="price-text"]'
+                    '.flight-result-price'
                 ],
-                'wait_time': 8000,  # Increased wait time for flights
+                'wait_selectors': [
+                    'div[data-resultid]',
+                    'div.resultWrapper', 
+                    '.result-price',
+                    'div[class*="FlightsTicket"]',
+                    '[data-testid="flight-card-segment"]',
+                    '.flight-result'
+                ],
+                'wait_time': 15000,  # Longer wait for flights
+                'scroll_time': 8000,
                 'user_agents': [
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
                 ]
@@ -239,18 +244,21 @@ class MultiPlatformScraper:
                 timezone_id='America/New_York',
                 user_agent=user_agent,
                 extra_http_headers={
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
                     'Accept-Encoding': 'gzip, deflate, br',
                     'DNT': '1',
                     'Connection': 'keep-alive',
-                    'Upgrade-Insecure-Requests': '1'
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none'
                 }
             )
             
             page = await context.new_page()
             
-            # Add stealth script
+            # Enhanced stealth script for flight sites
             await page.add_init_script("""
                 Object.defineProperty(navigator, 'webdriver', {
                     get: () => undefined,
@@ -263,6 +271,16 @@ class MultiPlatformScraper:
                 Object.defineProperty(navigator, 'languages', {
                     get: () => ['en-US', 'en'],
                 });
+                
+                // Mock chrome runtime
+                window.chrome = {
+                    runtime: {}
+                };
+                
+                // Remove automation indicators
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;
+                delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;
             """)
             
             return page
@@ -270,9 +288,11 @@ class MultiPlatformScraper:
             print(f"Error setting up browser page: {e}")
             raise
     
-    async def simulate_human_behavior(self, page):
-        """Simulate human-like behavior"""
+    async def simulate_human_behavior(self, page, platform: str):
+        """Enhanced human behavior simulation"""
         try:
+            config = self.platform_configs.get(platform, {})
+            
             # Random wait
             await asyncio.sleep(random.uniform(1, 3))
             
@@ -283,13 +303,72 @@ class MultiPlatformScraper:
                 await page.mouse.move(x, y)
                 await asyncio.sleep(random.uniform(0.1, 0.3))
             
-            # Random scrolling
-            scroll_positions = [200, 400, 600, 300, 100]
-            for position in scroll_positions[:random.randint(2, 4)]:
-                await page.evaluate(f"window.scrollTo({{top: {position}, behavior: 'smooth'}})")
-                await asyncio.sleep(random.uniform(0.5, 1.2))
+            # Enhanced scrolling for flight sites
+            if platform == 'flights':
+                # More aggressive scrolling to load all content
+                scroll_steps = random.randint(4, 8)
+                for i in range(scroll_steps):
+                    scroll_y = 400 * (i + 1) + random.randint(-100, 100)
+                    await page.evaluate(f"window.scrollTo({{top: {scroll_y}, behavior: 'smooth'}})")
+                    await asyncio.sleep(random.uniform(1, 2.5))
+                
+                # Wait for scroll time
+                scroll_time = config.get('scroll_time', 5000)
+                await asyncio.sleep(scroll_time / 1000)
+            else:
+                # Standard scrolling for other platforms
+                scroll_positions = [200, 400, 600, 300, 100]
+                for position in scroll_positions[:random.randint(2, 4)]:
+                    await page.evaluate(f"window.scrollTo({{top: {position}, behavior: 'smooth'}})")
+                    await asyncio.sleep(random.uniform(0.5, 1.2))
         except Exception as e:
             print(f"Error simulating human behavior: {e}")
+    
+    async def wait_for_content_load(self, page, platform: str):
+        """Wait for platform-specific content to load"""
+        try:
+            config = self.platform_configs.get(platform, {})
+            wait_selectors = config.get('wait_selectors', [])
+            wait_time = config.get('wait_time', 10000)
+            
+            if platform == 'flights':
+                print("Waiting for flight results to load...")
+                
+                # Try each wait selector
+                for selector in wait_selectors:
+                    try:
+                        await page.wait_for_selector(selector, timeout=wait_time)
+                        print(f"Found flight content with selector: {selector}")
+                        break
+                    except Exception:
+                        continue
+                else:
+                    print("No specific flight selectors found, using general wait...")
+                
+                # Additional wait for JavaScript to finish
+                await asyncio.sleep(3)
+                
+                # Check if we can see any price elements
+                price_selectors = config.get('price_selectors', [])
+                for selector in price_selectors[:5]:  # Check first 5 selectors
+                    try:
+                        element = await page.query_selector(selector)
+                        if element:
+                            print(f"Price elements detected with selector: {selector}")
+                            return True
+                    except Exception:
+                        continue
+                
+                print("Flight results may not have loaded completely")
+                return False
+            else:
+                # Standard wait for other platforms
+                await page.wait_for_timeout(wait_time)
+                return True
+                
+        except Exception as e:
+            print(f"Error waiting for content load: {e}")
+            return True  # Continue anyway
     
     async def extract_text_content(self, page, selectors: List[str]) -> Optional[str]:
         """Extract text content using multiple selectors"""
@@ -305,6 +384,71 @@ class MultiPlatformScraper:
                 continue
         return None
     
+    async def extract_all_prices(self, page, platform: str) -> List[float]:
+        """Extract all available prices from the page"""
+        try:
+            config = self.platform_configs.get(platform, {})
+            price_selectors = config.get('price_selectors', [])
+            
+            all_prices = []
+            
+            print(f"Extracting prices for {platform} using {len(price_selectors)} selectors...")
+            
+            for i, selector in enumerate(price_selectors):
+                try:
+                    elements = await page.query_selector_all(selector)
+                    print(f"Selector {i+1} ({selector}): Found {len(elements)} elements")
+                    
+                    for element in elements:
+                        try:
+                            price_text = await element.text_content()
+                            if price_text:
+                                if platform == 'roblox':
+                                    price = await self.extract_robux_from_text(price_text)
+                                else:
+                                    price = await self.extract_price_from_text(price_text)
+                                
+                                if price and self.is_valid_price(price, platform):
+                                    all_prices.append(price)
+                                    print(f"Extracted price: {price} from text: '{price_text.strip()}'")
+                        except Exception:
+                            continue
+                    
+                    # If we found prices with this selector, we can stop
+                    if all_prices:
+                        print(f"Successfully extracted {len(all_prices)} prices with selector: {selector}")
+                        break
+                        
+                except Exception as e:
+                    print(f"Selector {selector} failed: {e}")
+                    continue
+            
+            # Remove duplicates and sort
+            unique_prices = list(set(all_prices))
+            unique_prices.sort()
+            
+            print(f"Total unique prices found: {len(unique_prices)}")
+            if unique_prices:
+                if platform == 'roblox':
+                    print(f"Price range: {min(unique_prices)} - {max(unique_prices)} Robux")
+                else:
+                    print(f"Price range: ${min(unique_prices)} - ${max(unique_prices)}")
+            
+            return unique_prices
+            
+        except Exception as e:
+            print(f"Error extracting prices: {e}")
+            return []
+    
+    def is_valid_price(self, price: float, platform: str) -> bool:
+        """Check if price is within valid range for platform"""
+        if platform == 'roblox':
+            return 1 <= price <= 999999
+        elif platform == 'flights':
+            return 10 <= price <= 50000
+        else:
+            return 0.01 <= price <= 999999
+    
     async def extract_price_from_text(self, price_text: str) -> Optional[float]:
         """Extract price from text with improved regex"""
         if not price_text:
@@ -317,11 +461,11 @@ class MultiPlatformScraper:
             cleaned_text = re.sub(r'[^\d.,\-\s$€£¥₹]', ' ', price_text)
             cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
             
-            # Price patterns (order matters)
+            # Enhanced price patterns
             patterns = [
                 r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
                 r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
-                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',
+                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\)',
                 r'(\d{1,3}(?:,\d{3})*\.\d{2})',
                 r'(\d{1,3}(?:,\d{3})*)',
                 r'(\d+\.\d{2})',
@@ -493,95 +637,38 @@ class MultiPlatformScraper:
             print(f"Error parsing flight URL: {e}")
             return "✈️ Flight Search"
     
-    async def scrape_flight_with_enhanced_selectors(self, page, url: str) -> Optional[Tuple[str, float]]:
-        """Enhanced flight scraping with better price detection"""
+    async def scrape_flight_with_enhanced_detection(self, page, url: str) -> Optional[Tuple[str, float]]:
+        """Enhanced flight scraping with improved price detection"""
         try:
             print("Enhanced flight scraping starting...")
             
             # Parse title from URL
             title = self.parse_flight_route_from_url(url)
             
-            # Wait longer for flight pages to load completely
-            await page.wait_for_timeout(10000)
+            # Wait for content to load
+            await self.wait_for_content_load(page, 'flights')
             
-            # Try to find the lowest available price
-            price = None
-            domain = urlparse(url).netloc.lower()
+            # Extract all available prices
+            prices = await self.extract_all_prices(page, 'flights')
             
-            if 'kayak.com' in domain:
-                print("Scraping Kayak with enhanced selectors...")
-                
-                # Enhanced Kayak price extraction
-                kayak_price_selectors = [
-                    # Primary cheapest price selectors
-                    'div[data-testid="cheapest-total-price"]',
-                    'div[data-testid="result-price"] span[role="text"]',
-                    'div[aria-label*="price"] span[role="text"]',
-                    'div[data-testid="price-text"]',
-                    'span[data-testid="price-text"]',
-                    
-                    # Result list price selectors
-                    'div.r99X-price-text',
-                    'div.r99X span[role="text"]',
-                    'div[class*="price-display"] span',
-                    'span[class*="price-text"]',
-                    
-                    # Fallback selectors
-                    'div.e2GB-price-text',
-                    'div[data-testid="price"] span',
-                    'span[data-testid="price"]',
-                    '.price-text',
-                    'div[class*="price"] span[role="text"]',
-                    
-                    # Additional selectors for different Kayak layouts
-                    'div[data-testid="result-item"] span[role="text"]',
-                    'div[class*="result-price"] span',
-                    'span[aria-label*="price"]'
-                ]
-                
-                # Try each selector and collect all prices
-                all_prices = []
-                
-                for selector in kayak_price_selectors:
-                    try:
-                        elements = await page.query_selector_all(selector)
-                        print(f"Found {len(elements)} elements with selector: {selector}")
-                        
-                        for element in elements:
-                            price_text = await element.text_content()
-                            if price_text:
-                                extracted_price = await self.extract_price_from_text(price_text)
-                                if extracted_price and extracted_price > 10:  # Reasonable minimum
-                                    all_prices.append(extracted_price)
-                                    print(f"Found price: ${extracted_price} from selector: {selector}")
-                        
-                        if all_prices:
-                            break  # Found prices, use them
-                            
-                    except Exception as e:
-                        print(f"Selector {selector} failed: {e}")
-                        continue
-                
-                # If we found multiple prices, take the lowest available one
-                if all_prices:
-                    price = min(all_prices)
-                    print(f"Selected lowest price from {len(all_prices)} options: ${price}")
-                else:
-                    print("No valid prices found on Kayak")
-                
+            if prices:
+                # Use the lowest price found
+                lowest_price = min(prices)
+                print(f"Successfully scraped flight: {title} - ${lowest_price:.2f}")
+                print(f"Found {len(prices)} total prices, selected lowest: ${lowest_price:.2f}")
+                return title, lowest_price
             else:
-                # For other flight sites, use the existing selectors
-                config = self.platform_configs['flights']
-                price_text = await self.extract_text_content(page, config['price_selectors'])
+                print(f"No valid prices found for flight")
                 
-                if price_text:
-                    price = await self.extract_price_from_text(price_text)
-            
-            if price:
-                print(f"Successfully scraped flight: {title} - ${price:.2f}")
-                return title, price
-            else:
-                print(f"Failed to extract price for flight: {title}")
+                # Debug: Save page content for analysis
+                try:
+                    content = await page.content()
+                    with open(f'debug_flight_{int(time.time())}.html', 'w', encoding='utf-8') as f:
+                        f.write(content)
+                    print("Saved debug HTML for flight")
+                except Exception:
+                    pass
+                
                 return None
                 
         except Exception as e:
@@ -606,7 +693,10 @@ class MultiPlatformScraper:
                     '--disable-dev-shm-usage',
                     '--disable-web-security',
                     '--disable-features=IsolateOrigins,site-per-process',
-                    '--disable-gpu'
+                    '--disable-gpu',
+                    '--disable-extensions',
+                    '--disable-plugins',
+                    '--memory-pressure-off'
                 ]
             )
             
@@ -615,11 +705,16 @@ class MultiPlatformScraper:
                 config = self.platform_configs[platform]
                 
                 print(f"Navigating to: {url}")
-                await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                response = await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                
+                if not response or response.status >= 400:
+                    print(f"Failed to load page, status: {response.status if response else 'None'}")
+                    return None
+                
                 await page.wait_for_timeout(config['wait_time'])
                 
                 # Simulate human behavior for anti-bot bypass
-                await self.simulate_human_behavior(page)
+                await self.simulate_human_behavior(page, platform)
                 
                 # Special handling for Roblox
                 if platform == 'roblox':
@@ -629,7 +724,7 @@ class MultiPlatformScraper:
                 
                 # Special handling for flights with enhanced scraping
                 elif platform == 'flights':
-                    result = await self.scrape_flight_with_enhanced_selectors(page, url)
+                    result = await self.scrape_flight_with_enhanced_detection(page, url)
                     if result:
                         return result
                 
@@ -642,12 +737,11 @@ class MultiPlatformScraper:
                         title = f"Product from {platform.title()}"
                     
                     # Extract price
-                    price_text = await self.extract_text_content(page, config['price_selectors'])
-                    if price_text:
-                        price = await self.extract_price_from_text(price_text)
-                        if price:
-                            print(f"Successfully scraped: {title[:50]}... - ${price:.2f}")
-                            return title, price
+                    prices = await self.extract_all_prices(page, platform)
+                    if prices:
+                        price = min(prices)  # Use lowest price
+                        print(f"Successfully scraped: {title[:50]}... - ${price:.2f}")
+                        return title, price
                 
                 print(f"Failed to extract complete product info for {url}")
                 return None
@@ -695,32 +789,11 @@ class MultiPlatformScraper:
                     }
                 ''')
             
-            # Extract price
-            price_selectors = [
-                'span[data-testid="price-label"]',
-                'span.text-robux',
-                'span.robux',
-                'span[class*="robux"]',
-                '.price-robux',
-                'div[class*="price"] span'
-            ]
+            # Extract price using the enhanced method
+            prices = await self.extract_all_prices(page, 'roblox')
             
-            price = None
-            for selector in price_selectors:
-                try:
-                    elements = await page.query_selector_all(selector)
-                    for element in elements:
-                        price_text = await element.text_content()
-                        if price_text and ('robux' in price_text.lower() or price_text.strip().isdigit()):
-                            price = await self.extract_robux_from_text(price_text)
-                            if price and price > 0:
-                                break
-                    if price and price > 0:
-                        break
-                except Exception:
-                    continue
-            
-            if item_name and price:
+            if item_name and prices:
+                price = min(prices)  # Use lowest price
                 print(f"Successfully extracted Roblox item: {item_name} - {price:.0f} Robux")
                 return item_name, price
             
@@ -744,8 +817,8 @@ class MultiPlatformScraper:
 
 
 # Test function
-async def test_scraper():
-    """Test the scraper with various URLs"""
+async def test_updated_scraper():
+    """Test the updated scraper with various URLs"""
     scraper = MultiPlatformScraper()
     
     test_urls = [
@@ -756,14 +829,17 @@ async def test_scraper():
     ]
     
     for url in test_urls:
-        print(f"\nTesting: {url}")
+        print(f"\n{'='*60}")
+        print(f"Testing: {url}")
+        print('='*60)
+        
         result = await scraper.scrape_product(url)
         if result:
             title, price = result
-            print(f"Success: {title} - ${price:.2f}")
+            print(f"✅ SUCCESS: {title} - ${price:.2f}")
         else:
-            print("Failed to scrape")
+            print("❌ FAILED to scrape")
 
 
 if __name__ == "__main__":
-    asyncio.run(test_scraper())
+    asyncio.run(test_updated_scraper())
