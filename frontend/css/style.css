@@ -1374,3 +1374,45 @@ select.form-control {
 .platform-badge span:first-child[data-platform="flights"] {
     animation: flightBounce 2s ease-in-out infinite;
 }
+/* Flight-specific styles */
+.flight-route-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 16px 0;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.route-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.route-badge i {
+    color: var(--flights);
+}
+
+.flight-dates {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.flight-dates i {
+    color: var(--flights);
+}

@@ -303,13 +303,19 @@ def get_product_current_price(product_id):
         if not product:
             return jsonify({'error': 'Product not found'}), 404
         
-        return jsonify({
+        response_data = {
             'id': product['id'],
             'current_price': product['last_price'],
             'target_price': product['target_price'],
             'last_checked': product['last_checked'],
             'status': product['status']
-        })
+        }
+        
+        # Include metadata for flights
+        if product.get('platform') == 'flights' and product.get('metadata'):
+            response_data['metadata'] = product['metadata']
+        
+        return jsonify(response_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

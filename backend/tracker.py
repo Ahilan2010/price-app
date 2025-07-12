@@ -1,4 +1,4 @@
-# backend/tracker.py - CORRECTLY CODED VERSION
+# backend/tracker.py - ENHANCED VERSION WITH FLIGHT SUPPORT AND EMAIL LINKS
 import asyncio
 import json
 import smtplib
@@ -10,12 +10,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
+from urllib.parse import urlparse
 
 from multi_platform_scraper import MultiPlatformScraper
 
 
 class StorenvyPriceTracker:
-    """Multi-platform price tracker with proper error handling"""
+    """Multi-platform price tracker with enhanced flight support and email links"""
     
     def __init__(self, db_path: str = "storenvy_tracker.db"):
         self.db_path = db_path
@@ -212,8 +213,44 @@ class StorenvyPriceTracker:
             print(f"Error scraping product {url}: {e}")
             return None
     
+    def generate_clickable_link(self, product: Dict[str, Any]) -> str:
+        """Generate a more user-friendly clickable link based on platform"""
+        try:
+            platform = product.get('platform', 'unknown')
+            original_url = product['url']
+            
+            # For flights, try to create a more direct search link
+            if platform == 'flights':
+                parsed_url = urlparse(original_url)
+                domain = parsed_url.netloc.lower()
+                
+                if 'kayak.com' in domain:
+                    # Return the original Kayak URL but ensure it's clean
+                    return original_url
+                elif 'booking.com' in domain:
+                    # Return the original Booking.com URL
+                    return original_url
+                elif 'priceline.com' in domain:
+                    # Return the original Priceline URL
+                    return original_url
+                elif 'momondo.com' in domain:
+                    # Return the original Momondo URL
+                    return original_url
+                elif 'expedia.com' in domain:
+                    # Return the original Expedia URL
+                    return original_url
+                else:
+                    return original_url
+            
+            # For other platforms, return the original URL
+            return original_url
+            
+        except Exception as e:
+            print(f"Error generating clickable link: {e}")
+            return product['url']
+    
     def send_email_alert(self, product: Dict[str, Any], smtp_config: Dict[str, Any]) -> None:
-        """Send email alert for price drop"""
+        """Send email alert for price drop with enhanced flight support"""
         if not smtp_config.get('enabled'):
             return
         
@@ -222,38 +259,101 @@ class StorenvyPriceTracker:
             msg = MIMEMultipart()
             msg['From'] = smtp_config['from_email']
             msg['To'] = smtp_config['to_email']
-            msg['Subject'] = f"🛍️ Price Drop Alert: {product['title'][:50]}..."
             
-            # Determine currency based on platform
             platform = product.get('platform', 'storenvy')
+            platform_name = product.get('platform_name', 'Unknown Platform')
+            
+            # Enhanced subject line based on platform
+            if platform == 'flights':
+                msg['Subject'] = f"✈️ Flight Deal Alert: {product['title'][:40]}..."
+            elif platform == 'roblox':
+                msg['Subject'] = f"🎮 Roblox Deal Alert: {product['title'][:40]}..."
+            else:
+                msg['Subject'] = f"🛍️ Price Drop Alert: {product['title'][:40]}..."
+            
+            # Generate clickable link
+            clickable_link = self.generate_clickable_link(product)
+            
+            # Determine currency and format prices based on platform
             is_robux = platform == 'roblox'
             
-            # Format prices
             if is_robux:
                 current_price_str = f"{int(product['last_price'])} Robux"
                 target_price_str = f"{int(product['target_price'])} Robux"
                 savings_str = f"{int(product['target_price'] - product['last_price'])} Robux"
+                currency_emoji = "🎮"
             else:
                 current_price_str = f"${product['last_price']:.2f}"
                 target_price_str = f"${product['target_price']:.2f}"
                 savings_str = f"${product['target_price'] - product['last_price']:.2f}"
+                currency_emoji = "💰"
             
-            # Create email body
-            body = f"""
-🛍️ Great news! A product you're tracking has dropped to or below your target price!
+            # Enhanced email body with platform-specific content
+            if platform == 'flights':
+                body = f"""
+✈️ FLIGHT DEAL ALERT! ✈️
 
-Platform: {product['platform_icon']} {product['platform_name']}
-Product: {product['title']}
+Great news! A flight you're tracking has dropped to or below your target price!
+
+🛫 Flight Details:
+{product['title']}
+
+💰 Price Information:
 Current Price: {current_price_str}
 Target Price: {target_price_str}
 You Save: {savings_str}
 
-View Product: {product['url']}
+🔗 Book This Flight:
+{clickable_link}
 
-Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Don't wait - flight prices change frequently! ✈️
+
+Happy travels! 🌍
+                """
+            elif platform == 'roblox':
+                body = f"""
+🎮 ROBLOX UGC DEAL ALERT! 🎮
+
+Great news! A Roblox item you're tracking has dropped to or below your target price!
+
+🎯 Item Details:
+{product['title']}
+
+💎 Price Information:
+Current Price: {current_price_str}
+Target Price: {target_price_str}
+You Save: {savings_str}
+
+🔗 Get This Item:
+{clickable_link}
+
+📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Happy gaming! 🎮
+                """
+            else:
+                body = f"""
+🛍️ PRICE DROP ALERT! 🛍️
+
+Great news! A product you're tracking has dropped to or below your target price!
+
+🏪 Platform: {product['platform_icon']} {platform_name}
+📦 Product: {product['title']}
+
+{currency_emoji} Price Information:
+Current Price: {current_price_str}
+Target Price: {target_price_str}
+You Save: {savings_str}
+
+🔗 Buy This Product:
+{clickable_link}
+
+📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 Happy shopping! 🎉
-            """
+                """
             
             msg.attach(MIMEText(body, 'plain'))
             
@@ -264,13 +364,13 @@ Happy shopping! 🎉
             server.send_message(msg)
             server.quit()
             
-            print(f"📧 Email alert sent for {product['title'][:30]}...")
+            print(f"📧 Email alert sent for {platform_name}: {product['title'][:30]}...")
             
         except Exception as e:
             print(f"Failed to send email alert: {str(e)}")
     
     async def check_all_products(self, smtp_config: Optional[Dict[str, Any]] = None) -> None:
-        """Check all tracked products for price drops"""
+        """Check all tracked products for price drops with enhanced flight support"""
         try:
             products = self.get_tracked_products()
             
@@ -283,6 +383,7 @@ Happy shopping! 🎉
             for product in products:
                 try:
                     platform_name = product.get('platform_name', 'Unknown')
+                    platform = product.get('platform', 'unknown')
                     print(f"📦 Checking {platform_name} product: {product['url'][:50]}...")
                     
                     # Scrape product
@@ -294,11 +395,20 @@ Happy shopping! 🎉
                         # Update database
                         self.update_product_info(product['id'], title, current_price)
                         
-                        print(f"✅ Updated {platform_name} product: {title[:30]}... - Price: {current_price}")
+                        # Enhanced logging based on platform
+                        if platform == 'roblox':
+                            print(f"✅ Updated {platform_name}: {title[:30]}... - Price: {int(current_price)} Robux")
+                        else:
+                            print(f"✅ Updated {platform_name}: {title[:30]}... - Price: ${current_price:.2f}")
                         
                         # Check if price dropped below target
                         if current_price <= product['target_price']:
-                            print(f"🎉 TARGET HIT! {title[:30]}... is now at/below target price!")
+                            if platform == 'flights':
+                                print(f"✈️ FLIGHT DEAL! {title[:30]}... is now at/below target price!")
+                            elif platform == 'roblox':
+                                print(f"🎮 ROBLOX DEAL! {title[:30]}... is now at/below target price!")
+                            else:
+                                print(f"🎉 TARGET HIT! {title[:30]}... is now at/below target price!")
                             
                             # Update product info for email
                             product['title'] = title
@@ -314,9 +424,14 @@ Happy shopping! 🎉
                     print(f"Error checking product {product.get('id', 'unknown')}: {str(e)}")
                     continue
                 
-                # Rate limiting - be respectful to servers
+                # Rate limiting - be respectful to servers, longer delay for flight sites
                 try:
-                    delay = 3 + (2 * random.random())
+                    platform = product.get('platform', 'unknown')
+                    if platform == 'flights':
+                        delay = 5 + (3 * random.random())  # Longer delay for flight sites
+                    else:
+                        delay = 3 + (2 * random.random())
+                    
                     print(f"⏳ Waiting {delay:.1f}s before next check...")
                     await asyncio.sleep(delay)
                 except Exception as e:
@@ -338,17 +453,18 @@ Happy shopping! 🎉
 
 # Test function
 async def test_tracker():
-    """Test the tracker functionality"""
+    """Test the tracker functionality with flight support"""
     try:
         tracker = StorenvyPriceTracker()
         
-        print("Testing Multi-Platform Price Tracker")
+        print("Testing Enhanced Multi-Platform Price Tracker")
         print("=" * 50)
         
         # Test platform detection
         test_urls = [
             ("https://www.amazon.com/dp/B08N5WRWNW", 100.00),
-            ("https://www.etsy.com/listing/123456789/test", 25.00),
+            ("https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22", 350.00),
+            ("https://www.roblox.com/catalog/123456789/test", 500),
         ]
         
         for url, target_price in test_urls:
@@ -358,7 +474,13 @@ async def test_tracker():
                 
                 # Add product
                 tracker.add_product(url, target_price)
-                print(f"✅ Added {platform} product with target price ${target_price}")
+                
+                if platform == 'flights':
+                    print(f"✅ Added {platform} with target price ${target_price}")
+                elif platform == 'roblox':
+                    print(f"✅ Added {platform} item with target price {target_price} Robux")
+                else:
+                    print(f"✅ Added {platform} product with target price ${target_price}")
                 
             except Exception as e:
                 print(f"❌ Failed to add {url}: {e}")
@@ -370,7 +492,7 @@ async def test_tracker():
             platform_name = product.get('platform_name', 'Unknown')
             print(f"  - {platform_name}: {product['url'][:50]}...")
             
-        print("\n✅ Tracker test completed successfully")
+        print("\n✅ Enhanced tracker test completed successfully")
         
     except Exception as e:
         print(f"❌ Error in test_tracker: {e}")

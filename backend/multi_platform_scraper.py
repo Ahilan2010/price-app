@@ -1,17 +1,17 @@
-# backend/multi_platform_scraper.py - COMPLETE FIXED VERSION
+# backend/multi_platform_scraper.py - FIXED FLIGHT TRACKING VERSION
 import asyncio
 import re
 import random
 import json
 from typing import Optional, Tuple, Dict, List
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from playwright.async_api import async_playwright
 import time
 from datetime import datetime
 
 
 class MultiPlatformScraper:
-    """Multi-platform e-commerce scraper with proper error handling"""
+    """Multi-platform e-commerce scraper with fixed flight tracking"""
     
     def __init__(self):
         self.platform_configs = {
@@ -164,7 +164,7 @@ class MultiPlatformScraper:
                 'currency': 'robux'
             },
             'flights': {
-                'domain_patterns': ['kayak.com', 'booking.com', 'priceline.com', 'momondo.com'],
+                'domain_patterns': ['kayak.com', 'booking.com', 'priceline.com', 'momondo.com', 'expedia.com'],
                 'title_selectors': [
                     '.flight-info h3',
                     '.itinerary-title',
@@ -175,10 +175,17 @@ class MultiPlatformScraper:
                     '[data-testid="flight-summary"]'
                 ],
                 'price_selectors': [
+                    # Kayak updated selectors - targeting the ACTUAL cheapest available price
+                    'div[data-testid="cheapest-total-price"]',
+                    'div[data-testid="result-price"] span[role="text"]',
+                    'div.r99X-price-text',
+                    'div.r99X span[role="text"]',
+                    'span[data-testid="price-text"]',
+                    'div[data-testid="price"] span',
+                    # Fallback selectors for other sites
                     'div.e2GB-price-text',
                     'div.FlightCardPrice-module__priceContainer___nXXv2',
                     'div.Text-sc-1xtb652-0.koHeTu',
-                    'div.e2GB-price-text',
                     'span[data-testid="price"]',
                     '.price-text',
                     '.flight-price',
@@ -186,9 +193,12 @@ class MultiPlatformScraper:
                     '.fare-price',
                     'div[class*="price"] span',
                     '.total-price',
-                    '[data-testid="flight-price"]'
+                    '[data-testid="flight-price"]',
+                    # Additional Kayak selectors
+                    'div[class*="price-display"]',
+                    'span[class*="price-text"]'
                 ],
-                'wait_time': 6000,
+                'wait_time': 8000,  # Increased wait time for flights
                 'user_agents': [
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
                 ]
@@ -375,25 +385,208 @@ class MultiPlatformScraper:
             return None
     
     def parse_flight_route_from_url(self, url: str) -> str:
-        """Parse flight route and dates from URL to create meaningful title"""
+        """Enhanced flight route and dates parsing from URL"""
         try:
-            # Detect which flight site and parse accordingly
-            if 'kayak.com' in url:
-                match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})', url)
-                if match:
-                    from_code, to_code, dep_date, ret_date = match.groups()
-                    return f"Kayak: {from_code} → {to_code} ({dep_date} to {ret_date})"
-            elif 'booking.com' in url:
-                return "Booking.com Flight Search"
-            elif 'priceline.com' in url:
-                return "Priceline Flight Search"
-            elif 'momondo.com' in url:
-                return "Momondo Flight Search"
+            parsed_url = urlparse(url)
+            domain = parsed_url.netloc.lower()
             
-            return "Flight Search"
+            print(f"Parsing flight info from URL: {url}")
+            
+            if 'kayak.com' in domain:
+                # Extract from Kayak URL path or query parameters
+                path = parsed_url.path
+                query_params = parse_qs(parsed_url.query)
+                
+                # Try path parsing first (e.g., /flights/LAX-NYC/2024-03-15/2024-03-22)
+                kayak_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
+                if kayak_match:
+                    from_code, to_code, dep_date, ret_date = kayak_match.groups()
+                    if ret_date:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                    else:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                
+                # Try query parameter parsing
+                if 'origin' in query_params and 'destination' in query_params:
+                    origin = query_params['origin'][0] if query_params['origin'] else 'Unknown'
+                    destination = query_params['destination'][0] if query_params['destination'] else 'Unknown'
+                    dep_date = query_params.get('depart_date', [''])[0]
+                    ret_date = query_params.get('return_date', [''])[0]
+                    
+                    if dep_date and ret_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
+                    elif dep_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
+                    else:
+                        return f"✈️ {origin} → {destination}"
+                
+                return "✈️ Kayak Flight Search"
+            
+            elif 'booking.com' in domain:
+                query_params = parse_qs(parsed_url.query)
+                if 'ss' in query_params:  # departure city
+                    ss = query_params['ss'][0]
+                    checkin = query_params.get('checkin', [''])[0]
+                    checkout = query_params.get('checkout', [''])[0]
+                    
+                    if checkin and checkout:
+                        return f"✈️ {ss} Flight | {checkin} to {checkout}"
+                    else:
+                        return f"✈️ {ss} Flight Search"
+                
+                return "✈️ Booking.com Flight Search"
+            
+            elif 'priceline.com' in domain:
+                # Extract from Priceline query parameters
+                query_params = parse_qs(parsed_url.query)
+                origin = query_params.get('from', [''])[0]
+                destination = query_params.get('to', [''])[0]
+                dep_date = query_params.get('departure', [''])[0]
+                ret_date = query_params.get('return', [''])[0]
+                
+                if origin and destination:
+                    if dep_date and ret_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
+                    elif dep_date:
+                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
+                    else:
+                        return f"✈️ {origin} → {destination}"
+                
+                return "✈️ Priceline Flight Search"
+            
+            elif 'momondo.com' in domain:
+                # Extract from Momondo URL structure
+                path = parsed_url.path
+                momondo_match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
+                if momondo_match:
+                    from_code, to_code, dep_date, ret_date = momondo_match.groups()
+                    if ret_date:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                    else:
+                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                
+                return "✈️ Momondo Flight Search"
+            
+            elif 'expedia.com' in domain:
+                # Extract from Expedia query parameters
+                query_params = parse_qs(parsed_url.query)
+                flight_1 = query_params.get('flight-1', [''])[0]
+                dep_date = query_params.get('d1', [''])[0]
+                ret_date = query_params.get('d2', [''])[0]
+                
+                if flight_1:
+                    flight_match = re.search(r'([A-Z]{3}),([A-Z]{3})', flight_1)
+                    if flight_match:
+                        from_code, to_code = flight_match.groups()
+                        if dep_date and ret_date:
+                            return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
+                        elif dep_date:
+                            return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
+                        else:
+                            return f"✈️ {from_code} → {to_code}"
+                
+                return "✈️ Expedia Flight Search"
+            
+            return "✈️ Flight Search"
+            
         except Exception as e:
             print(f"Error parsing flight URL: {e}")
-            return "Flight Search"
+            return "✈️ Flight Search"
+    
+    async def scrape_flight_with_enhanced_selectors(self, page, url: str) -> Optional[Tuple[str, float]]:
+        """Enhanced flight scraping with better price detection"""
+        try:
+            print("Enhanced flight scraping starting...")
+            
+            # Parse title from URL
+            title = self.parse_flight_route_from_url(url)
+            
+            # Wait longer for flight pages to load completely
+            await page.wait_for_timeout(10000)
+            
+            # Try to find the lowest available price
+            price = None
+            domain = urlparse(url).netloc.lower()
+            
+            if 'kayak.com' in domain:
+                print("Scraping Kayak with enhanced selectors...")
+                
+                # Enhanced Kayak price extraction
+                kayak_price_selectors = [
+                    # Primary cheapest price selectors
+                    'div[data-testid="cheapest-total-price"]',
+                    'div[data-testid="result-price"] span[role="text"]',
+                    'div[aria-label*="price"] span[role="text"]',
+                    'div[data-testid="price-text"]',
+                    'span[data-testid="price-text"]',
+                    
+                    # Result list price selectors
+                    'div.r99X-price-text',
+                    'div.r99X span[role="text"]',
+                    'div[class*="price-display"] span',
+                    'span[class*="price-text"]',
+                    
+                    # Fallback selectors
+                    'div.e2GB-price-text',
+                    'div[data-testid="price"] span',
+                    'span[data-testid="price"]',
+                    '.price-text',
+                    'div[class*="price"] span[role="text"]',
+                    
+                    # Additional selectors for different Kayak layouts
+                    'div[data-testid="result-item"] span[role="text"]',
+                    'div[class*="result-price"] span',
+                    'span[aria-label*="price"]'
+                ]
+                
+                # Try each selector and collect all prices
+                all_prices = []
+                
+                for selector in kayak_price_selectors:
+                    try:
+                        elements = await page.query_selector_all(selector)
+                        print(f"Found {len(elements)} elements with selector: {selector}")
+                        
+                        for element in elements:
+                            price_text = await element.text_content()
+                            if price_text:
+                                extracted_price = await self.extract_price_from_text(price_text)
+                                if extracted_price and extracted_price > 10:  # Reasonable minimum
+                                    all_prices.append(extracted_price)
+                                    print(f"Found price: ${extracted_price} from selector: {selector}")
+                        
+                        if all_prices:
+                            break  # Found prices, use them
+                            
+                    except Exception as e:
+                        print(f"Selector {selector} failed: {e}")
+                        continue
+                
+                # If we found multiple prices, take the lowest available one
+                if all_prices:
+                    price = min(all_prices)
+                    print(f"Selected lowest price from {len(all_prices)} options: ${price}")
+                else:
+                    print("No valid prices found on Kayak")
+                
+            else:
+                # For other flight sites, use the existing selectors
+                config = self.platform_configs['flights']
+                price_text = await self.extract_text_content(page, config['price_selectors'])
+                
+                if price_text:
+                    price = await self.extract_price_from_text(price_text)
+            
+            if price:
+                print(f"Successfully scraped flight: {title} - ${price:.2f}")
+                return title, price
+            else:
+                print(f"Failed to extract price for flight: {title}")
+                return None
+                
+        except Exception as e:
+            print(f"Error in enhanced flight scraping: {e}")
+            return None
     
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
         """Main scraping method that detects platform and scrapes accordingly"""
@@ -434,14 +627,11 @@ class MultiPlatformScraper:
                     if result:
                         return result
                 
-                # Special handling for flights
+                # Special handling for flights with enhanced scraping
                 elif platform == 'flights':
-                    title = self.parse_flight_route_from_url(url)
-                    price_text = await self.extract_text_content(page, config['price_selectors'])
-                    if price_text:
-                        price = await self.extract_price_from_text(price_text)
-                        if price:
-                            return title, price
+                    result = await self.scrape_flight_with_enhanced_selectors(page, url)
+                    if result:
+                        return result
                 
                 # Standard e-commerce platforms
                 else:
@@ -561,7 +751,8 @@ async def test_scraper():
     test_urls = [
         "https://www.amazon.com/dp/B08N5WRWNW",
         "https://www.etsy.com/listing/123456789/test-product",
-        "https://www.roblox.com/catalog/123456789/test-item"
+        "https://www.roblox.com/catalog/123456789/test-item",
+        "https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22"
     ]
     
     for url in test_urls:

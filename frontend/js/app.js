@@ -1,347 +1,4 @@
-// Enhanced TagTracker JavaScript with Separate Platform Pages
-
-const API_URL = 'http://localhost:5000/api';
-
-// Updated platform configurations - separated by category
-const platformConfigs = {
-    // E-commerce platforms (Products page)
-    amazon: {
-        name: 'Amazon',
-        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
-        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
-        icon: '🛒'
-    },
-    ebay: {
-        name: 'eBay',
-        exampleUrl: 'https://www.ebay.com/itm/123456789012',
-        tips: 'Use the item URL that contains /itm/ followed by the item number',
-        icon: '🏷️'
-    },
-    etsy: {
-        name: 'Etsy',
-        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
-        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
-        icon: '🎨'
-    },
-    walmart: {
-        name: 'Walmart',
-        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
-        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
-        icon: '🏪'
-    },
-    storenvy: {
-        name: 'Storenvy',
-        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
-        tips: 'Copy the full product URL from the product page',
-        icon: '🏬'
-    }
-};
-
-// Auto-refresh state
-let autoRefreshInterval = null;
-let isChecking = false;
-
-// Page Management
-function showPage(pageId, navItem) {
-    // Hide all pages
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-    
-    // Show selected page
-    document.getElementById(pageId).classList.add('active');
-    
-    // Update nav
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
-    navItem.classList.add('active');
-    
-    // Load page-specific data
-    if (pageId === 'productsPage') {
-        loadProducts();
-        loadStats();
-    } else if (pageId === 'robloxPage') {
-        loadRobloxItems();
-        loadStats();
-    } else if (pageId === 'flightsPage') {
-        loadFlights();
-        loadStats();
-    } else if (pageId === 'stocksPage') {
-        loadStockAlerts();
-        loadStats();
-    } else if (pageId === 'monitorPage') {
-        loadSchedulerStatus();
-        loadStats();
-    } else if (pageId === 'settingsPage') {
-        loadEmailConfig();
-    }
-}
-
-// Auto-refresh functionality
-function startAutoRefresh() {
-    if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-    }
-    
-    // Refresh stats every 5 seconds, data every 30 seconds
-    autoRefreshInterval = setInterval(() => {
-        if (!isChecking) {
-            loadStats();
-            
-            // Refresh current page data
-            const activePage = document.querySelector('.page.active');
-            if (activePage) {
-                const pageId = activePage.id;
-                if (pageId === 'productsPage') {
-                    loadProducts();
-                } else if (pageId === 'robloxPage') {
-                    loadRobloxItems();
-                } else if (pageId === 'flightsPage') {
-                    loadFlights();
-                } else if (pageId === 'stocksPage') {
-                    loadStockAlerts();
-                } else if (pageId === 'monitorPage') {
-                    loadSchedulerStatus();
-                }
-            }
-        }
-    }, 30000); // 30 seconds
-    
-    // Faster stats refresh
-    setInterval(loadStats, 5000); // 5 seconds for stats only
-}
-
-function stopAutoRefresh() {
-    if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
-        autoRefreshInterval = null;
-    }
-}
-
-// Toast Notifications
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast ${type}`;
-    toast.classList.add('show');
-    
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 4000);
-}
-
-// Utility Functions
-function truncateUrl(url) {
-    if (url.length <= 50) return url;
-    return url.substring(0, 47) + '...';
-}
-
-function formatPrice(price, platform) {
-    if (platform === 'roblox') {
-        return `${Math.round(price)} R$`;
-    }
-    return `$${price.toFixed(2)}`;
-}
-
-function validatePlatformUrl(url, platform) {
-    const domainPatterns = {
-        amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
-        ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
-        etsy: /etsy\.com/i,
-        walmart: /walmart\.com/i,
-        storenvy: /storenvy\.com/i,
-        roblox: /roblox\.com/i,
-        flights: /(kayak|expedia|booking|priceline|momondo)\.com/i
-    };
-    
-    if (!platform || !domainPatterns[platform]) {
-        return false;
-    }
-    
-    return domainPatterns[platform].test(url);
-}
-
-// ===== PRODUCTS MANAGEMENT (Amazon, eBay, Etsy, Walmart, Storenvy) =====
-
-async function loadProducts() {
-    try {
-        const response = await fetch(`${API_URL}/products`);
-        const allProducts = await response.json();
-        
-        // Filter for e-commerce platforms only
-        const ecommerceProducts = allProducts.filter(product => 
-            ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(product.platform)
-        );
-        
-        const productsList = document.getElementById('productsList');
-        const emptyState = document.getElementById('emptyState');
-        
-        if (ecommerceProducts.length === 0) {
-            productsList.style.display = 'none';
-            emptyState.style.display = 'block';
-        } else {
-            productsList.style.display = 'grid';
-            emptyState.style.display = 'none';
-            
-            productsList.innerHTML = ecommerceProducts.map(product => {
-                const platform = product.platform || 'storenvy';
-                const config = platformConfigs[platform] || {};
-                
-                return `
-                <div class="card" data-platform="${platform}" id="product-${product.id}">
-                    <div class="platform-badge">
-                        <span>${product.platform_icon || config.icon || '🛒'}</span>
-                        <span style="font-weight: 500;">${product.platform_name || config.name || 'Unknown'}</span>
-                    </div>
-                    <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
-                    <p class="card-subtitle">${truncateUrl(product.url)}</p>
-                    
-                    <div class="price-info">
-                        <div class="price-item">
-                            <span class="price-label">Current Price</span>
-                            <span class="price-value" id="current-price-${product.id}">
-                                ${product.last_price ? formatPrice(product.last_price, platform) : '--'}
-                            </span>
-                        </div>
-                        <div class="price-item">
-                            <span class="price-label">Target Price</span>
-                            <span class="price-value">${formatPrice(product.target_price, platform)}</span>
-                        </div>
-                    </div>
-                    
-                    <div id="status-${product.id}">
-                        ${renderProductStatus(product, platform)}
-                    </div>
-                    
-                    <div class="card-actions">
-                        <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
-                            <i class="fas fa-external-link-alt"></i> View Product
-                        </a>
-                        <button onclick="deleteProduct(${product.id})" class="btn btn-secondary btn-icon">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                </div>
-            `;
-            }).join('');
-        }
-    } catch (error) {
-        showToast('Failed to load products', 'error');
-        console.error('Error loading products:', error);
-    }
-}
-
-function showAddProductModal() {
-    document.getElementById('addProductModal').classList.add('show');
-    document.getElementById('platformSelect').focus();
-}
-
-function closeAddProductModal() {
-    document.getElementById('addProductModal').classList.remove('show');
-    document.getElementById('addProductForm').reset();
-    document.getElementById('productUrl').disabled = true;
-    document.getElementById('productUrl').placeholder = 'Select a platform first...';
-    document.getElementById('urlHint').textContent = '';
-    document.getElementById('platformInfo').style.display = 'none';
-}
-
-function updateUrlPlaceholder() {
-    const platformSelect = document.getElementById('platformSelect');
-    const urlInput = document.getElementById('productUrl');
-    const urlHint = document.getElementById('urlHint');
-    const platformInfo = document.getElementById('platformInfo');
-    const platformTips = document.getElementById('platformTips');
-    
-    const selectedPlatform = platformSelect.value;
-    
-    if (selectedPlatform && platformConfigs[selectedPlatform]) {
-        const config = platformConfigs[selectedPlatform];
-        urlInput.placeholder = config.exampleUrl;
-        urlHint.textContent = `Example: ${config.exampleUrl}`;
-        platformTips.textContent = config.tips;
-        platformInfo.style.display = 'block';
-        urlInput.disabled = false;
-        urlInput.value = '';
-    } else {
-        urlInput.placeholder = 'Select a platform first...';
-        urlHint.textContent = '';
-        platformInfo.style.display = 'none';
-        urlInput.disabled = true;
-    }
-}
-
-async function addProduct(event) {
-    event.preventDefault();
-    
-    const platform = document.getElementById('platformSelect').value;
-    const url = document.getElementById('productUrl').value.trim();
-    const targetPrice = parseFloat(document.getElementById('targetPrice').value);
-    
-    if (!platform) {
-        showToast('Please select an e-commerce platform', 'error');
-        return;
-    }
-    
-    if (!url || !targetPrice || targetPrice <= 0) {
-        showToast('Please enter a valid URL and target price', 'error');
-        return;
-    }
-    
-    if (!validatePlatformUrl(url, platform)) {
-        showToast(`This URL doesn't appear to be from ${platformConfigs[platform].name}. Please check the URL and platform selection.`, 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url, target_price: targetPrice })
-        });
-        
-        if (response.ok) {
-            const platformName = platformConfigs[platform].name;
-            showToast(`✅ ${platformName} product added successfully! Monitoring will begin shortly.`);
-            closeAddProductModal();
-            loadProducts();
-            loadStats();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Failed to add product', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to add product', 'error');
-        console.error('Error adding product:', error);
-    }
-}
-
-async function deleteProduct(productId) {
-    if (!confirm('Are you sure you want to stop tracking this product?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products/${productId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('Product removed from tracking');
-            loadProducts();
-            loadStats();
-        } else {
-            showToast('Failed to remove product', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to remove product', 'error');
-        console.error('Error deleting product:', error);
-    }
-}
-
-// ===== ROBLOX UGC MANAGEMENT =====
+// ===== REMAINING FUNCTIONS (Roblox, Stocks, etc.) =====
 
 async function loadRobloxItems() {
     try {
@@ -374,7 +31,7 @@ async function loadRobloxItems() {
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
                             <span class="price-value robux" id="roblox-price-${item.id}">
-                                ${item.last_price ? `${Math.round(item.last_price)} R$` : '--'}
+                                ${item.last_price ? `${Math.round(item.last_price)} R : '--'}
                             </span>
                         </div>
                         <div class="price-item">
@@ -477,142 +134,6 @@ async function deleteRobloxItem(itemId) {
     }
 }
 
-// ===== FLIGHTS MANAGEMENT =====
-
-async function loadFlights() {
-    try {
-        const response = await fetch(`${API_URL}/products`);
-        const allProducts = await response.json();
-        
-        // Filter for flight items only
-        const flights = allProducts.filter(product => product.platform === 'flights');
-        
-        const flightsList = document.getElementById('flightsList');
-        const emptyState = document.getElementById('flightsEmptyState');
-        
-        if (flights.length === 0) {
-            flightsList.style.display = 'none';
-            emptyState.style.display = 'block';
-        } else {
-            flightsList.style.display = 'grid';
-            emptyState.style.display = 'none';
-            
-            flightsList.innerHTML = flights.map(flight => `
-                <div class="card" data-platform="flights" id="flight-${flight.id}">
-                    <div class="platform-badge">
-                        <span>✈️</span>
-                        <span style="font-weight: 500;">Flight Deal</span>
-                    </div>
-                    <h3 class="card-title">${flight.title || 'Loading flight details...'}</h3>
-                    <p class="card-subtitle">${truncateUrl(flight.url)}</p>
-                    
-                    <div class="price-info">
-                        <div class="price-item">
-                            <span class="price-label">Current Price</span>
-                            <span class="price-value" id="flight-price-${flight.id}">
-                                ${flight.last_price ? `$${flight.last_price.toFixed(2)}` : '--'}
-                            </span>
-                        </div>
-                        <div class="price-item">
-                            <span class="price-label">Target Price</span>
-                            <span class="price-value">$${flight.target_price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                    
-                    <div id="flight-status-${flight.id}">
-                        ${renderProductStatus(flight, 'flights')}
-                    </div>
-                    
-                    <div class="card-actions">
-                        <a href="${flight.url}" target="_blank" class="btn btn-primary btn-icon">
-                            <i class="fas fa-external-link-alt"></i> View Flight
-                        </a>
-                        <button onclick="deleteFlight(${flight.id})" class="btn btn-secondary btn-icon">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        showToast('Failed to load flights', 'error');
-        console.error('Error loading flights:', error);
-    }
-}
-
-function showAddFlightModal() {
-    document.getElementById('addFlightModal').classList.add('show');
-    document.getElementById('flightUrl').focus();
-}
-
-function closeAddFlightModal() {
-    document.getElementById('addFlightModal').classList.remove('show');
-    document.getElementById('addFlightForm').reset();
-}
-
-async function addFlight(event) {
-    event.preventDefault();
-    
-    const url = document.getElementById('flightUrl').value.trim();
-    const targetPrice = parseFloat(document.getElementById('flightTargetPrice').value);
-    
-    if (!url || !targetPrice || targetPrice <= 0) {
-        showToast('Please enter a valid flight URL and target price', 'error');
-        return;
-    }
-    
-    if (!validatePlatformUrl(url, 'flights')) {
-        showToast('This URL doesn\'t appear to be from a supported flight site. Please use URLs from Kayak, Expedia, Booking.com, Priceline, or Momondo.', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url, target_price: targetPrice })
-        });
-        
-        if (response.ok) {
-            showToast('✈️ Flight added successfully! Monitoring will begin shortly.');
-            closeAddFlightModal();
-            loadFlights();
-            loadStats();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Failed to add flight', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to add flight', 'error');
-        console.error('Error adding flight:', error);
-    }
-}
-
-async function deleteFlight(flightId) {
-    if (!confirm('Are you sure you want to stop tracking this flight?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products/${flightId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('Flight removed from tracking');
-            loadFlights();
-            loadStats();
-        } else {
-            showToast('Failed to remove flight', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to remove flight', 'error');
-        console.error('Error deleting flight:', error);
-    }
-}
-
 // ===== SHARED FUNCTIONS =====
 
 function renderProductStatus(product, platform = null) {
@@ -627,19 +148,39 @@ function renderProductStatus(product, platform = null) {
     
     if (product.status === 'below_target') {
         const savings = product.target_price - product.last_price;
-        const savingsText = platform === 'roblox' ? `${Math.round(savings)} R$` : `$${savings.toFixed(2)}`;
+        let savingsText;
+        let emoji;
+        
+        if (platform === 'roblox') {
+            savingsText = `${Math.round(savings)} R;
+            emoji = '🎮';
+        } else if (platform === 'flights') {
+            savingsText = `${savings.toFixed(2)}`;
+            emoji = '✈️';
+        } else {
+            savingsText = `${savings.toFixed(2)}`;
+            emoji = '💰';
+        }
+        
         return `
             <div class="status-badge status-triggered">
                 <i class="fas fa-check-circle"></i>
-                Target Hit! Save ${savingsText}
+                ${emoji} Target Hit! Save ${savingsText}
             </div>
         `;
+    }
+    
+    let statusText = 'Monitoring Price';
+    if (platform === 'flights') {
+        statusText = 'Watching Flight Prices';
+    } else if (platform === 'roblox') {
+        statusText = 'Watching Robux Price';
     }
     
     return `
         <div class="status-badge status-waiting">
             <i class="fas fa-eye"></i>
-            Monitoring Price
+            ${statusText}
         </div>
     `;
 }
@@ -667,7 +208,14 @@ function updateProductPrice(productId, newPrice, targetPrice, platform = null) {
     
     // Add visual feedback for price updates
     if (cardElement) {
-        cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+        if (platform === 'flights') {
+            cardElement.style.boxShadow = '0 0 20px rgba(52, 152, 219, 0.3)';
+        } else if (platform === 'roblox') {
+            cardElement.style.boxShadow = '0 0 20px rgba(0, 162, 255, 0.3)';
+        } else {
+            cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
+        }
+        
         setTimeout(() => {
             cardElement.style.boxShadow = '';
         }, 2000);
@@ -1220,4 +768,833 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('beforeunload', function() {
         stopAutoRefresh();
     });
-});
+});// Enhanced TagTracker JavaScript with Fixed Flight Support
+
+const API_URL = 'http://localhost:5000/api';
+
+// Updated platform configurations - separated by category
+const platformConfigs = {
+    // E-commerce platforms (Products page)
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
+    }
+};
+
+// Flight site configurations
+const flightSiteConfigs = {
+    'kayak.com': {
+        name: 'Kayak',
+        exampleUrl: 'https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22',
+        tips: 'Use the search result URL from Kayak flight search. URL should contain origin and destination airports.',
+        icon: '✈️'
+    },
+    'booking.com': {
+        name: 'Booking.com',
+        exampleUrl: 'https://www.booking.com/flights/...',
+        tips: 'Use the flight search result URL from Booking.com',
+        icon: '🏨'
+    },
+    'priceline.com': {
+        name: 'Priceline',
+        exampleUrl: 'https://www.priceline.com/flights/...',
+        tips: 'Use the flight search result URL from Priceline',
+        icon: '💰'
+    },
+    'momondo.com': {
+        name: 'Momondo',
+        exampleUrl: 'https://www.momondo.com/flights/...',
+        tips: 'Use the flight search result URL from Momondo',
+        icon: '🔍'
+    },
+    'expedia.com': {
+        name: 'Expedia',
+        exampleUrl: 'https://www.expedia.com/Flights/...',
+        tips: 'Use the flight search result URL from Expedia',
+        icon: '🌐'
+    }
+};
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+let isChecking = false;
+
+// Page Management
+function showPage(pageId, navItem) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Show selected page
+    document.getElementById(pageId).classList.add('active');
+    
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    navItem.classList.add('active');
+    
+    // Load page-specific data
+    if (pageId === 'productsPage') {
+        loadProducts();
+        loadStats();
+    } else if (pageId === 'robloxPage') {
+        loadRobloxItems();
+        loadStats();
+    } else if (pageId === 'flightsPage') {
+        loadFlights();
+        loadStats();
+    } else if (pageId === 'stocksPage') {
+        loadStockAlerts();
+        loadStats();
+    } else if (pageId === 'monitorPage') {
+        loadSchedulerStatus();
+        loadStats();
+    } else if (pageId === 'settingsPage') {
+        loadEmailConfig();
+    }
+}
+
+// Auto-refresh functionality
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Refresh stats every 5 seconds, data every 30 seconds
+    autoRefreshInterval = setInterval(() => {
+        if (!isChecking) {
+            loadStats();
+            
+            // Refresh current page data
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                if (pageId === 'productsPage') {
+                    loadProducts();
+                } else if (pageId === 'robloxPage') {
+                    loadRobloxItems();
+                } else if (pageId === 'flightsPage') {
+                    loadFlights();
+                } else if (pageId === 'stocksPage') {
+                    loadStockAlerts();
+                } else if (pageId === 'monitorPage') {
+                    loadSchedulerStatus();
+                }
+            }
+        }
+    }, 30000); // 30 seconds
+    
+    // Faster stats refresh
+    setInterval(loadStats, 5000); // 5 seconds for stats only
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Toast Notifications
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+// Utility Functions
+function truncateUrl(url) {
+    if (url.length <= 50) return url;
+    return url.substring(0, 47) + '...';
+}
+
+function formatPrice(price, platform) {
+    if (platform === 'roblox') {
+        return `${Math.round(price)} R// Enhanced TagTracker JavaScript with Fixed Flight Support
+
+const API_URL = 'http://localhost:5000/api';
+
+// Updated platform configurations - separated by category
+const platformConfigs = {
+    // E-commerce platforms (Products page)
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
+    }
+};
+
+// Flight site configurations
+const flightSiteConfigs = {
+    'kayak.com': {
+        name: 'Kayak',
+        exampleUrl: 'https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22',
+        tips: 'Use the search result URL from Kayak flight search. URL should contain origin and destination airports.',
+        icon: '✈️'
+    },
+    'booking.com': {
+        name: 'Booking.com',
+        exampleUrl: 'https://www.booking.com/flights/...',
+        tips: 'Use the flight search result URL from Booking.com',
+        icon: '🏨'
+    },
+    'priceline.com': {
+        name: 'Priceline',
+        exampleUrl: 'https://www.priceline.com/flights/...',
+        tips: 'Use the flight search result URL from Priceline',
+        icon: '💰'
+    },
+    'momondo.com': {
+        name: 'Momondo',
+        exampleUrl: 'https://www.momondo.com/flights/...',
+        tips: 'Use the flight search result URL from Momondo',
+        icon: '🔍'
+    },
+    'expedia.com': {
+        name: 'Expedia',
+        exampleUrl: 'https://www.expedia.com/Flights/...',
+        tips: 'Use the flight search result URL from Expedia',
+        icon: '🌐'
+    }
+};
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+let isChecking = false;
+
+// Page Management
+function showPage(pageId, navItem) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Show selected page
+    document.getElementById(pageId).classList.add('active');
+    
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    navItem.classList.add('active');
+    
+    // Load page-specific data
+    if (pageId === 'productsPage') {
+        loadProducts();
+        loadStats();
+    } else if (pageId === 'robloxPage') {
+        loadRobloxItems();
+        loadStats();
+    } else if (pageId === 'flightsPage') {
+        loadFlights();
+        loadStats();
+    } else if (pageId === 'stocksPage') {
+        loadStockAlerts();
+        loadStats();
+    } else if (pageId === 'monitorPage') {
+        loadSchedulerStatus();
+        loadStats();
+    } else if (pageId === 'settingsPage') {
+        loadEmailConfig();
+    }
+}
+
+// Auto-refresh functionality
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Refresh stats every 5 seconds, data every 30 seconds
+    autoRefreshInterval = setInterval(() => {
+        if (!isChecking) {
+            loadStats();
+            
+            // Refresh current page data
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                if (pageId === 'productsPage') {
+                    loadProducts();
+                } else if (pageId === 'robloxPage') {
+                    loadRobloxItems();
+                } else if (pageId === 'flightsPage') {
+                    loadFlights();
+                } else if (pageId === 'stocksPage') {
+                    loadStockAlerts();
+                } else if (pageId === 'monitorPage') {
+                    loadSchedulerStatus();
+                }
+            }
+        }
+    }, 30000); // 30 seconds
+    
+    // Faster stats refresh
+    setInterval(loadStats, 5000); // 5 seconds for stats only
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// Toast Notifications
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+// Utility Functions
+function truncateUrl(url) {
+    if (url.length <= 50) return url;
+    return url.substring(0, 47) + '...';
+}
+
+;
+    }
+    return `${price.toFixed(2)}`;
+}
+
+function validatePlatformUrl(url, platform) {
+    const domainPatterns = {
+        amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
+        ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
+        etsy: /etsy\.com/i,
+        walmart: /walmart\.com/i,
+        storenvy: /storenvy\.com/i,
+        roblox: /roblox\.com/i,
+        flights: /(kayak|expedia|booking|priceline|momondo)\.com/i
+    };
+    
+    if (!platform || !domainPatterns[platform]) {
+        return false;
+    }
+    
+    return domainPatterns[platform].test(url);
+}
+
+function validateFlightUrl(url) {
+    const flightPatterns = [
+        /kayak\.com/i,
+        /booking\.com/i,
+        /priceline\.com/i,
+        /momondo\.com/i,
+        /expedia\.com/i
+    ];
+    
+    return flightPatterns.some(pattern => pattern.test(url));
+}
+
+function getFlightSiteFromUrl(url) {
+    const domain = new URL(url).hostname.toLowerCase();
+    
+    for (const [siteDomain, config] of Object.entries(flightSiteConfigs)) {
+        if (domain.includes(siteDomain)) {
+            return config;
+        }
+    }
+    
+    return { name: 'Unknown Flight Site', icon: '✈️' };
+}
+
+function parseFlightInfoFromUrl(url) {
+    try {
+        const urlObj = new URL(url);
+        const domain = urlObj.hostname.toLowerCase();
+        const path = urlObj.pathname;
+        const params = urlObj.searchParams;
+        
+        // Enhanced flight parsing for different sites
+        if (domain.includes('kayak.com')) {
+            // Parse Kayak URLs: /flights/LAX-NYC/2024-03-15/2024-03-22
+            const kayakMatch = path.match(/\/flights\/([A-Z]{3})-([A-Z]{3})\/(\d{4}-\d{2}-\d{2})(?:\/(\d{4}-\d{2}-\d{2}))?/);
+            if (kayakMatch) {
+                const [, from, to, depDate, retDate] = kayakMatch;
+                if (retDate) {
+                    return `${from} → ${to} | ${depDate} to ${retDate}`;
+                } else {
+                    return `${from} → ${to} | ${depDate} (One-way)`;
+                }
+            }
+            
+            // Try query parameters
+            const origin = params.get('origin');
+            const destination = params.get('destination');
+            const departDate = params.get('depart_date');
+            const returnDate = params.get('return_date');
+            
+            if (origin && destination) {
+                if (departDate && returnDate) {
+                    return `${origin} → ${destination} | ${departDate} to ${returnDate}`;
+                } else if (departDate) {
+                    return `${origin} → ${destination} | ${departDate} (One-way)`;
+                } else {
+                    return `${origin} → ${destination}`;
+                }
+            }
+        }
+        
+        if (domain.includes('booking.com')) {
+            const departure = params.get('ss') || params.get('departure_city');
+            const arrival = params.get('arrival_city');
+            const checkin = params.get('checkin');
+            const checkout = params.get('checkout');
+            
+            if (departure && arrival) {
+                if (checkin && checkout) {
+                    return `${departure} → ${arrival} | ${checkin} to ${checkout}`;
+                } else {
+                    return `${departure} → ${arrival}`;
+                }
+            } else if (departure) {
+                return `${departure} Flight Search`;
+            }
+        }
+        
+        if (domain.includes('priceline.com')) {
+            const from = params.get('from');
+            const to = params.get('to');
+            const departure = params.get('departure');
+            const returnParam = params.get('return');
+            
+            if (from && to) {
+                if (departure && returnParam) {
+                    return `${from} → ${to} | ${departure} to ${returnParam}`;
+                } else if (departure) {
+                    return `${from} → ${to} | ${departure} (One-way)`;
+                } else {
+                    return `${from} → ${to}`;
+                }
+            }
+        }
+        
+        if (domain.includes('momondo.com')) {
+            // Parse Momondo URLs
+            const momondoMatch = path.match(/\/flight-search\/([A-Z]{3})-([A-Z]{3})\/(\d{4}-\d{2}-\d{2})(?:\/(\d{4}-\d{2}-\d{2}))?/);
+            if (momondoMatch) {
+                const [, from, to, depDate, retDate] = momondoMatch;
+                if (retDate) {
+                    return `${from} → ${to} | ${depDate} to ${retDate}`;
+                } else {
+                    return `${from} → ${to} | ${depDate} (One-way)`;
+                }
+            }
+        }
+        
+        if (domain.includes('expedia.com')) {
+            const flight1 = params.get('flight-1');
+            const d1 = params.get('d1');
+            const d2 = params.get('d2');
+            
+            if (flight1) {
+                const flightMatch = flight1.match(/([A-Z]{3}),([A-Z]{3})/);
+                if (flightMatch) {
+                    const [, from, to] = flightMatch;
+                    if (d1 && d2) {
+                        return `${from} → ${to} | ${d1} to ${d2}`;
+                    } else if (d1) {
+                        return `${from} → ${to} | ${d1} (One-way)`;
+                    } else {
+                        return `${from} → ${to}`;
+                    }
+                }
+            }
+        }
+        
+        // Fallback to site name
+        const siteConfig = getFlightSiteFromUrl(url);
+        return `${siteConfig.name} Flight Search`;
+        
+    } catch (error) {
+        console.error('Error parsing flight URL:', error);
+        return 'Flight Search';
+    }
+}
+
+// ===== PRODUCTS MANAGEMENT (Amazon, eBay, Etsy, Walmart, Storenvy) =====
+
+async function loadProducts() {
+    try {
+        const response = await fetch(`${API_URL}/products`);
+        const allProducts = await response.json();
+        
+        // Filter for e-commerce platforms only
+        const ecommerceProducts = allProducts.filter(product => 
+            ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(product.platform)
+        );
+        
+        const productsList = document.getElementById('productsList');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (ecommerceProducts.length === 0) {
+            productsList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            productsList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            productsList.innerHTML = ecommerceProducts.map(product => {
+                const platform = product.platform || 'storenvy';
+                const config = platformConfigs[platform] || {};
+                
+                return `
+                <div class="card" data-platform="${platform}" id="product-${product.id}">
+                    <div class="platform-badge">
+                        <span>${product.platform_icon || config.icon || '🛒'}</span>
+                        <span style="font-weight: 500;">${product.platform_name || config.name || 'Unknown'}</span>
+                    </div>
+                    <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
+                    <p class="card-subtitle">${truncateUrl(product.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value" id="current-price-${product.id}">
+                                ${product.last_price ? formatPrice(product.last_price, platform) : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value">${formatPrice(product.target_price, platform)}</span>
+                        </div>
+                    </div>
+                    
+                    <div id="status-${product.id}">
+                        ${renderProductStatus(product, platform)}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-external-link-alt"></i> View Product
+                        </a>
+                        <button onclick="deleteProduct(${product.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load products', 'error');
+        console.error('Error loading products:', error);
+    }
+}
+
+function showAddProductModal() {
+    document.getElementById('addProductModal').classList.add('show');
+    document.getElementById('platformSelect').focus();
+}
+
+function closeAddProductModal() {
+    document.getElementById('addProductModal').classList.remove('show');
+    document.getElementById('addProductForm').reset();
+    document.getElementById('productUrl').disabled = true;
+    document.getElementById('productUrl').placeholder = 'Select a platform first...';
+    document.getElementById('urlHint').textContent = '';
+    document.getElementById('platformInfo').style.display = 'none';
+}
+
+function updateUrlPlaceholder() {
+    const platformSelect = document.getElementById('platformSelect');
+    const urlInput = document.getElementById('productUrl');
+    const urlHint = document.getElementById('urlHint');
+    const platformInfo = document.getElementById('platformInfo');
+    const platformTips = document.getElementById('platformTips');
+    
+    const selectedPlatform = platformSelect.value;
+    
+    if (selectedPlatform && platformConfigs[selectedPlatform]) {
+        const config = platformConfigs[selectedPlatform];
+        urlInput.placeholder = config.exampleUrl;
+        urlHint.textContent = `Example: ${config.exampleUrl}`;
+        platformTips.textContent = config.tips;
+        platformInfo.style.display = 'block';
+        urlInput.disabled = false;
+        urlInput.value = '';
+    } else {
+        urlInput.placeholder = 'Select a platform first...';
+        urlHint.textContent = '';
+        platformInfo.style.display = 'none';
+        urlInput.disabled = true;
+    }
+}
+
+async function addProduct(event) {
+    event.preventDefault();
+    
+    const platform = document.getElementById('platformSelect').value;
+    const url = document.getElementById('productUrl').value.trim();
+    const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+    
+    if (!platform) {
+        showToast('Please select an e-commerce platform', 'error');
+        return;
+    }
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid URL and target price', 'error');
+        return;
+    }
+    
+    if (!validatePlatformUrl(url, platform)) {
+        showToast(`This URL doesn't appear to be from ${platformConfigs[platform].name}. Please check the URL and platform selection.`, 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        if (response.ok) {
+            const platformName = platformConfigs[platform].name;
+            showToast(`✅ ${platformName} product added successfully! Monitoring will begin shortly.`);
+            closeAddProductModal();
+            loadProducts();
+            loadStats();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to add product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add product', 'error');
+        console.error('Error adding product:', error);
+    }
+}
+
+async function deleteProduct(productId) {
+    if (!confirm('Are you sure you want to stop tracking this product?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Product removed from tracking');
+            loadProducts();
+            loadStats();
+        } else {
+            showToast('Failed to remove product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove product', 'error');
+        console.error('Error deleting product:', error);
+    }
+}
+
+// ===== FLIGHTS MANAGEMENT WITH ENHANCED SUPPORT =====
+
+async function loadFlights() {
+    try {
+        const response = await fetch(`${API_URL}/products`);
+        const allProducts = await response.json();
+        
+        // Filter for flight items only
+        const flights = allProducts.filter(product => product.platform === 'flights');
+        
+        const flightsList = document.getElementById('flightsList');
+        const emptyState = document.getElementById('flightsEmptyState');
+        
+        if (flights.length === 0) {
+            flightsList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            flightsList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            flightsList.innerHTML = flights.map(flight => {
+                // Enhanced flight display with parsed route info
+                const flightInfo = flight.title || parseFlightInfoFromUrl(flight.url);
+                const siteConfig = getFlightSiteFromUrl(flight.url);
+                
+                return `
+                <div class="card" data-platform="flights" id="flight-${flight.id}">
+                    <div class="platform-badge">
+                        <span>${siteConfig.icon}</span>
+                        <span style="font-weight: 500;">${siteConfig.name}</span>
+                    </div>
+                    <h3 class="card-title">${flightInfo}</h3>
+                    <p class="card-subtitle">${truncateUrl(flight.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value" id="flight-price-${flight.id}">
+                                ${flight.last_price ? `${flight.last_price.toFixed(2)}` : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value">${flight.target_price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    
+                    <div id="flight-status-${flight.id}">
+                        ${renderProductStatus(flight, 'flights')}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${flight.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-plane"></i> View Flight
+                        </a>
+                        <button onclick="deleteFlight(${flight.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load flights', 'error');
+        console.error('Error loading flights:', error);
+    }
+}
+
+function showAddFlightModal() {
+    document.getElementById('addFlightModal').classList.add('show');
+    document.getElementById('flightUrl').focus();
+}
+
+function closeAddFlightModal() {
+    document.getElementById('addFlightModal').classList.remove('show');
+    document.getElementById('addFlightForm').reset();
+}
+
+async function addFlight(event) {
+    event.preventDefault();
+    
+    const url = document.getElementById('flightUrl').value.trim();
+    const targetPrice = parseFloat(document.getElementById('flightTargetPrice').value);
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid flight URL and target price', 'error');
+        return;
+    }
+    
+    if (!validateFlightUrl(url)) {
+        showToast('This URL doesn\'t appear to be from a supported flight site. Please use URLs from Kayak, Booking.com, Priceline, Momondo, or Expedia.', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        if (response.ok) {
+            const siteConfig = getFlightSiteFromUrl(url);
+            showToast(`✈️ Flight from ${siteConfig.name} added successfully! Monitoring will begin shortly.`);
+            closeAddFlightModal();
+            loadFlights();
+            loadStats();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Failed to add flight', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add flight', 'error');
+        console.error('Error adding flight:', error);
+    }
+}
+
+async function deleteFlight(flightId) {
+    if (!confirm('Are you sure you want to stop tracking this flight?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${flightId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            showToast('Flight removed from tracking');
+            loadFlights();
+            loadStats();
+        } else {
+            showToast('Failed to remove flight', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove flight', 'error');
+        console.error('Error deleting flight:', error);
+    }
+}
