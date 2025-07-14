@@ -1,7 +1,7 @@
-// PriceTracker JavaScript - Complete Implementation with Auth
+// TagTracker JavaScript - Complete Implementation with Auth
 // frontend/js/app.js
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.origin + '/api';  // Dynamic API URL based on current host
 
 // User state
 let currentUser = null;
@@ -43,9 +43,42 @@ const platformConfigs = {
 // Auto-refresh state
 let autoRefreshInterval = null;
 
+// ===== BACKEND CONNECTIVITY CHECK =====
+async function checkBackendConnection() {
+    try {
+        console.log('Checking backend connection at:', API_URL);
+        const response = await fetch(`${API_URL}/auth/session`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+        
+        console.log('Backend check response status:', response.status);
+        
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            console.error('Backend is not returning JSON, might be a 404 or server error');
+            showToast('Backend server issue: Please make sure you are running "python backend/app.py" and the server is accessible.', 'error');
+            return false;
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Backend connection failed:', error);
+        showToast('Cannot connect to backend. Please start the Flask server with: python backend/app.py', 'error');
+        return false;
+    }
+}
+
 // ===== AUTH FUNCTIONS =====
 async function checkSession() {
     try {
+        // First check if backend is reachable
+        const backendOk = await checkBackendConnection();
+        if (!backendOk) {
+            showAuth();
+            return;
+        }
+        
         const response = await fetch(`${API_URL}/auth/session`, {
             credentials: 'include'
         });
@@ -102,6 +135,15 @@ async function handleLogin(event) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
+    // Validate fields
+    if (!email || !password) {
+        showToast('Please enter both email and password', 'error');
+        return;
+    }
+    
+    console.log('Attempting login for email:', email);
+    console.log('API URL:', API_URL);
+    
     try {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
@@ -112,6 +154,18 @@ async function handleLogin(event) {
             body: JSON.stringify({ email, password })
         });
         
+        console.log('Login response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        // Check if response is actually JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response received:', responseText.substring(0, 200));
+            showToast('Server error: Backend is not responding with JSON. Please check if the Flask server is running correctly.', 'error');
+            return;
+        }
+        
         if (response.ok) {
             const data = await response.json();
             currentUser = data.user;
@@ -120,11 +174,18 @@ async function handleLogin(event) {
             document.getElementById('loginForm').querySelector('form').reset();
         } else {
             const error = await response.json();
+            console.error('Login error response:', error);
             showToast(error.error || 'Login failed', 'error');
         }
     } catch (error) {
-        showToast('Network error: Failed to login', 'error');
-        console.error('Login error:', error);
+        console.error('Network error during login:', error);
+        if (error.message.includes('JSON')) {
+            showToast('Backend server error: Received HTML instead of JSON. Please ensure the Flask backend server is running properly on port 5000.', 'error');
+        } else if (error.message.includes('fetch')) {
+            showToast('Cannot connect to backend server. Please make sure the Flask app is running: python backend/app.py', 'error');
+        } else {
+            showToast(`Network error: ${error.message}`, 'error');
+        }
     }
 }
 
@@ -139,6 +200,20 @@ async function handleSignup(event) {
         smtp_password: document.getElementById('signupSmtpPassword').value
     };
     
+    // Validate required fields
+    if (!data.first_name || !data.email || !data.password) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    if (data.password.length < 6) {
+        showToast('Password must be at least 6 characters long', 'error');
+        return;
+    }
+    
+    console.log('Attempting signup with data:', { ...data, password: '[HIDDEN]', smtp_password: '[HIDDEN]' });
+    console.log('API URL:', API_URL);
+    
     try {
         const response = await fetch(`${API_URL}/auth/signup`, {
             method: 'POST',
@@ -149,21 +224,41 @@ async function handleSignup(event) {
             body: JSON.stringify(data)
         });
         
+        console.log('Signup response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        // Check if response is actually JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response received:', responseText.substring(0, 200));
+            showToast('Server error: Backend is not responding with JSON. Please check if the Flask server is running correctly.', 'error');
+            return;
+        }
+        
         if (response.ok) {
             const responseData = await response.json();
             currentUser = responseData.user;
-            showToast('Welcome to PriceTracker, ' + currentUser.first_name + '!');
+            showToast('Welcome to TagTracker, ' + currentUser.first_name + '!');
             showApp();
             document.getElementById('signupForm').querySelector('form').reset();
         } else {
             const error = await response.json();
+            console.error('Signup error response:', error);
             showToast(error.error || 'Signup failed', 'error');
         }
     } catch (error) {
-        showToast('Network error: Failed to sign up', 'error');
-        console.error('Signup error:', error);
+        console.error('Network error during signup:', error);
+        if (error.message.includes('JSON')) {
+            showToast('Backend server error: Received HTML instead of JSON. Please ensure the Flask backend server is running properly on port 5000.', 'error');
+        } else if (error.message.includes('fetch')) {
+            showToast('Cannot connect to backend server. Please make sure the Flask app is running: python backend/app.py', 'error');
+        } else {
+            showToast(`Network error: ${error.message}`, 'error');
+        }
     }
 }
+
 
 async function handleLogout() {
     if (!confirm('Are you sure you want to sign out?')) {

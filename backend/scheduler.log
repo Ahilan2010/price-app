@@ -7316,3 +7316,84 @@
 2025-07-13 15:39:24,167 - INFO - ✅ Product price check completed
 2025-07-13 15:39:34,527 - INFO - 📈 Stock scheduler stopped
 2025-07-13 15:40:24,263 - INFO - 📦 Product scheduler stopped
+2025-07-14 16:05:38,325 - INFO - 127.0.0.1 - - [14/Jul/2025 16:05:38] "GET / HTTP/1.1" 200 -
+2025-07-14 16:05:38,350 - INFO - 127.0.0.1 - - [14/Jul/2025 16:05:38] "GET /css/style.css HTTP/1.1" 200 -
+2025-07-14 16:05:38,351 - INFO - 127.0.0.1 - - [14/Jul/2025 16:05:38] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-14 16:05:38,360 - INFO - 127.0.0.1 - - [14/Jul/2025 16:05:38] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:05:38,995 - INFO - 127.0.0.1 - - [14/Jul/2025 16:05:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-14 16:07:20,448 - INFO - 127.0.0.1 - - [14/Jul/2025 16:07:20] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:07:29,708 - INFO - 127.0.0.1 - - [14/Jul/2025 16:07:29] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:07:42,659 - INFO - 127.0.0.1 - - [14/Jul/2025 16:07:42] "[33mPOST /api/auth/login HTTP/1.1[0m" 404 -
+2025-07-14 16:07:44,010 - INFO - 127.0.0.1 - - [14/Jul/2025 16:07:44] "[33mPOST /api/auth/login HTTP/1.1[0m" 404 -
+2025-07-14 16:08:11,502 - INFO - 🚀 Starting PriceTracker Scheduler Service...
+2025-07-14 16:08:11,502 - INFO - 📦 E-commerce & Roblox Products: Every 6 hours
+2025-07-14 16:08:11,502 - INFO - 📈 Stocks: Every 5 minutes
+2025-07-14 16:08:11,502 - INFO - 🚀 Product scheduler started - will check every 6 hours
+2025-07-14 16:08:11,502 - INFO - 🚀 Stock scheduler started - will check every 5 minutes
+2025-07-14 16:08:11,502 - INFO - 📦 Starting product price check...
+2025-07-14 16:08:11,502 - INFO - ✅ Scheduler service started successfully
+2025-07-14 16:08:11,502 - INFO - 📈 Starting stock price check...
+2025-07-14 16:08:11,503 - INFO - ✅ Product price check completed
+2025-07-14 16:08:23,499 - WARNING - Scheduler service is not running
+2025-07-14 16:08:29,604 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:29] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:08:29,639 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:29] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:08:29,640 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:29] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:08:29,703 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:29] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:08:29,704 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:29] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-14 16:08:42,079 - INFO - 127.0.0.1 - - [14/Jul/2025 16:08:42] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:09:29,651 - INFO - 127.0.0.1 - - [14/Jul/2025 16:09:29] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:10:50,058 - INFO - ✅ Stock price check completed
+2025-07-14 16:13:11,516 - INFO - 📈 Starting stock price check...
+2025-07-14 16:13:20,073 - INFO - 📈 Starting stock price check...
+2025-07-14 16:15:15,248 - INFO - ✅ Stock price check completed
+2025-07-14 16:15:17,669 - INFO - ✅ Stock price check completed
+2025-07-14 16:20:17,704 - INFO - 📈 Starting stock price check...
+2025-07-14 16:21:15,262 - INFO - 📈 Starting stock price check...
+2025-07-14 16:22:17,253 - INFO - ✅ Stock price check completed
+2025-07-14 16:23:13,634 - INFO - ✅ Stock price check completed
+2025-07-14 16:23:25,773 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:25] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:23:25,854 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:25] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:23:25,856 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:25] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-14 16:23:25,913 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:25] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:23:50,752 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:50] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:23:56,227 - INFO - 127.0.0.1 - - [14/Jul/2025 16:23:56] "[33mPOST /api/auth/signup HTTP/1.1[0m" 404 -
+2025-07-14 16:24:02,175 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:02] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:24:02,196 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:02] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:24:02,197 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:02] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:24:02,202 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:02] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:24:14,973 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:14] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:24:14,994 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:14] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:24:14,995 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:14] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:24:14,999 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:14] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:24:22,446 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:22] "[33mPOST /api/auth/login HTTP/1.1[0m" 404 -
+2025-07-14 16:24:27,644 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:27] "[33mPOST /api/auth/login HTTP/1.1[0m" 404 -
+2025-07-14 16:24:32,563 - INFO - 127.0.0.1 - - [14/Jul/2025 16:24:32] "[33mPOST /api/auth/login HTTP/1.1[0m" 404 -
+2025-07-14 16:28:13,652 - INFO - 📈 Starting stock price check...
+2025-07-14 16:28:17,294 - INFO - 📈 Starting stock price check...
+2025-07-14 16:29:07,476 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:07] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:29:07,553 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:07] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:29:07,586 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:07] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-14 16:29:07,637 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:07] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:29:08,343 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:08] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:29:08,354 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:08] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:29:08,355 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:08] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:29:08,359 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:08] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:29:22,302 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:22] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:29:22,325 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:22] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:29:22,326 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:22] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:29:22,330 - INFO - 127.0.0.1 - - [14/Jul/2025 16:29:22] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:29:46,091 - INFO - 🚀 Starting PriceTracker Scheduler Service...
+2025-07-14 16:29:46,091 - INFO - 📦 E-commerce & Roblox Products: Every 6 hours
+2025-07-14 16:29:46,091 - INFO - 📈 Stocks: Every 5 minutes
+2025-07-14 16:29:46,091 - INFO - 🚀 Product scheduler started - will check every 6 hours
+2025-07-14 16:29:46,091 - INFO - 📦 Starting product price check...
+2025-07-14 16:29:46,091 - INFO - 🚀 Stock scheduler started - will check every 5 minutes
+2025-07-14 16:29:46,091 - INFO - ✅ Scheduler service started successfully
+2025-07-14 16:29:46,091 - INFO - 📈 Starting stock price check...
+2025-07-14 16:29:46,092 - INFO - ✅ Product price check completed
+2025-07-14 16:30:02,760 - WARNING - Scheduler service is not running
+2025-07-14 16:30:08,840 - INFO - 127.0.0.1 - - [14/Jul/2025 16:30:08] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 16:30:08,953 - INFO - 127.0.0.1 - - [14/Jul/2025 16:30:08] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 16:30:08,954 - INFO - 127.0.0.1 - - [14/Jul/2025 16:30:08] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 16:30:08,984 - INFO - 127.0.0.1 - - [14/Jul/2025 16:30:08] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 16:30:08,986 - INFO - 127.0.0.1 - - [14/Jul/2025 16:30:08] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
