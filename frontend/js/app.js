@@ -1,11 +1,13 @@
-// Enhanced TagTracker JavaScript - AUTOMATIC SCHEDULING ONLY
+// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
 // frontend/js/app.js
 
 const API_URL = 'http://localhost:5000/api';
 
-// Updated platform configurations - separated by category
+// User state
+let currentUser = null;
+
+// Platform configurations
 const platformConfigs = {
-    // E-commerce platforms (Products page)
     amazon: {
         name: 'Amazon',
         exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
@@ -38,42 +40,115 @@ const platformConfigs = {
     }
 };
 
-// Flight site configurations - Enhanced with all 5 sites
-const flightSiteConfigs = {
-    'kayak.com': {
-        name: 'Kayak',
-        exampleUrl: 'https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22',
-        tips: 'Use the search result URL from Kayak flight search. URL should contain origin and destination airports.',
-        icon: '✈️'
-    },
-    'booking.com': {
-        name: 'Booking.com',
-        exampleUrl: 'https://www.booking.com/flights/search.html?from_airport=LAX&to_airport=JFK&departure_date=2024-03-15',
-        tips: 'Use the flight search result URL from Booking.com with airport codes',
-        icon: '🏨'
-    },
-    'priceline.com': {
-        name: 'Priceline',
-        exampleUrl: 'https://www.priceline.com/flights/search?from=LAX&to=NYC&departure_date=2024-03-15',
-        tips: 'Use the flight search result URL from Priceline with from/to parameters',
-        icon: '💰'
-    },
-    'momondo.com': {
-        name: 'Momondo',
-        exampleUrl: 'https://www.momondo.com/flight-search/LAX-NYC/2024-03-15/2024-03-22',
-        tips: 'Use the flight search result URL from Momondo with route and dates',
-        icon: '🔍'
-    },
-    'expedia.com': {
-        name: 'Expedia',
-        exampleUrl: 'https://www.expedia.com/Flights-Search?flight-1=LAX,NYC&d1=2024-03-15&d2=2024-03-22',
-        tips: 'Use the flight search result URL from Expedia with flight-1 and date parameters',
-        icon: '🌐'
-    }
-};
-
 // Auto-refresh state
 let autoRefreshInterval = null;
+
+// ===== AUTH FUNCTIONS =====
+async function checkSession() {
+    try {
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.logged_in) {
+            currentUser = data.user;
+            showApp();
+        } else {
+            showAuth();
+        }
+    } catch (error) {
+        console.error('Session check failed:', error);
+        showAuth();
+    }
+}
+
+function showAuth() {
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    stopAutoRefresh();
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    
+    // Update user name
+    document.getElementById('userName').textContent = currentUser.first_name;
+    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
+    document.getElementById('accountEmail').textContent = currentUser.email;
+    
+    // Load initial data
+    loadProducts();
+    loadStats();
+    
+    // Start auto-refresh
+    startAutoRefresh();
+}
+
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+}
+
+function showSignupForm() {
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            showToast('Welcome back, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('loginForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to sign up', 'error');
+        console.error('Signup error:', error);
+    }
+}
+
+async function handleLogout() {
+    if (!confirm('Are you sure you want to sign out?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            currentUser = null;
+            showAuth();
+            showToast('Signed out successfully');
+        }
+    } catch (error) {
+        showToast('Failed to sign out', 'error');
+        console.error('Logout error:', error);
+    }
+}
 
 // ===== PAGE MANAGEMENT =====
 function showPage(pageId, navItem) {
@@ -98,14 +173,8 @@ function showPage(pageId, navItem) {
     } else if (pageId === 'robloxPage') {
         loadRobloxItems();
         loadStats();
-    } else if (pageId === 'flightsPage') {
-        loadFlights();
-        loadStats();
     } else if (pageId === 'stocksPage') {
         loadStockAlerts();
-        loadStats();
-    } else if (pageId === 'monitorPage') {
-        loadSchedulerStatus();
         loadStats();
     } else if (pageId === 'settingsPage') {
         loadEmailConfig();
@@ -118,7 +187,7 @@ function startAutoRefresh() {
         clearInterval(autoRefreshInterval);
     }
     
-    // Refresh stats every 5 seconds, data every 30 seconds
+    // Refresh data every 30 seconds
     autoRefreshInterval = setInterval(() => {
         loadStats();
         
@@ -130,18 +199,11 @@ function startAutoRefresh() {
                 loadProducts();
             } else if (pageId === 'robloxPage') {
                 loadRobloxItems();
-            } else if (pageId === 'flightsPage') {
-                loadFlights();
             } else if (pageId === 'stocksPage') {
                 loadStockAlerts();
-            } else if (pageId === 'monitorPage') {
-                loadSchedulerStatus();
             }
         }
     }, 30000); // 30 seconds
-    
-    // Faster stats refresh
-    setInterval(loadStats, 5000); // 5 seconds for stats only
 }
 
 function stopAutoRefresh() {
@@ -171,9 +233,134 @@ function truncateUrl(url) {
 
 function formatPrice(price, platform) {
     if (platform === 'roblox') {
-        return `${Math.round(price)} R$`;
+        return `${Math.round(price)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
+// frontend/js/app.js
+
+const API_URL = 'http://localhost:5000/api';
+
+// User state
+let currentUser = null;
+
+// Platform configurations
+const platformConfigs = {
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
     }
-    return `$${price.toFixed(2)}`;
+};
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+
+// ===== AUTH FUNCTIONS =====
+async function checkSession() {
+    try {
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.logged_in) {
+            currentUser = data.user;
+            showApp();
+        } else {
+            showAuth();
+        }
+    } catch (error) {
+        console.error('Session check failed:', error);
+        showAuth();
+    }
+}
+
+function showAuth() {
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    stopAutoRefresh();
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    
+    // Update user name
+    document.getElementById('userName').textContent = currentUser.first_name;
+    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
+    document.getElementById('accountEmail').textContent = currentUser.email;
+    
+    // Load initial data
+    loadProducts();
+    loadStats();
+    
+    // Start auto-refresh
+    startAutoRefresh();
+}
+
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+}
+
+function showSignupForm() {
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            showToast('Welcome back, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('loginForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+;
+    }
+    return `${price.toFixed(2)}`;
 }
 
 function validatePlatformUrl(url, platform) {
@@ -183,8 +370,7 @@ function validatePlatformUrl(url, platform) {
         etsy: /etsy\.com/i,
         walmart: /walmart\.com/i,
         storenvy: /storenvy\.com/i,
-        roblox: /roblox\.com/i,
-        flights: /(kayak|expedia|booking|priceline|momondo)\.com/i
+        roblox: /roblox\.com/i
     };
     
     if (!platform || !domainPatterns[platform]) {
@@ -192,216 +378,6 @@ function validatePlatformUrl(url, platform) {
     }
     
     return domainPatterns[platform].test(url);
-}
-
-function validateFlightUrl(url) {
-    const flightPatterns = [
-        /kayak\.com/i,
-        /booking\.com/i,
-        /priceline\.com/i,
-        /momondo\.com/i,
-        /expedia\.com/i
-    ];
-    
-    return flightPatterns.some(pattern => pattern.test(url));
-}
-
-function getFlightSiteFromUrl(url) {
-    try {
-        const domain = new URL(url).hostname.toLowerCase();
-        
-        for (const [siteDomain, config] of Object.entries(flightSiteConfigs)) {
-            if (domain.includes(siteDomain)) {
-                return config;
-            }
-        }
-    } catch (error) {
-        console.error('Error parsing flight URL:', error);
-    }
-    
-    return { name: 'Unknown Flight Site', icon: '✈️' };
-}
-
-function parseFlightInfoFromUrl(url) {
-    try {
-        const urlObj = new URL(url);
-        const domain = urlObj.hostname.toLowerCase();
-        const path = urlObj.pathname;
-        const params = urlObj.searchParams;
-        
-        // Enhanced flight parsing for all 5 sites
-        if (domain.includes('kayak.com')) {
-            // Parse Kayak URLs: /flights/LAX-NYC/2024-03-15/2024-03-22
-            const kayakMatch = path.match(/\/flights\/([A-Z]{3})-([A-Z]{3})\/(\d{4}-\d{2}-\d{2})(?:\/(\d{4}-\d{2}-\d{2}))?/);
-            if (kayakMatch) {
-                const [, from, to, depDate, retDate] = kayakMatch;
-                if (retDate) {
-                    return `${from} → ${to} | ${depDate} to ${retDate}`;
-                } else {
-                    return `${from} → ${to} | ${depDate} (One-way)`;
-                }
-            }
-            
-            // Try query parameters
-            const origin = params.get('origin');
-            const destination = params.get('destination');
-            const departDate = params.get('depart_date');
-            const returnDate = params.get('return_date');
-            
-            if (origin && destination) {
-                if (departDate && returnDate) {
-                    return `${origin} → ${destination} | ${departDate} to ${returnDate}`;
-                } else if (departDate) {
-                    return `${origin} → ${destination} | ${departDate} (One-way)`;
-                } else {
-                    return `${origin} → ${destination}`;
-                }
-            }
-        }
-        
-        if (domain.includes('booking.com')) {
-            const fromAirport = params.get('from_airport');
-            const toAirport = params.get('to_airport');
-            const departureDate = params.get('departure_date');
-            const returnDate = params.get('return_date');
-            
-            // Alternative parameter names
-            const departure = params.get('ss') || params.get('departure_city') || fromAirport;
-            const arrival = params.get('arrival_city') || toAirport;
-            const checkin = params.get('checkin') || departureDate;
-            const checkout = params.get('checkout') || returnDate;
-            
-            if (departure && arrival) {
-                if (checkin && checkout) {
-                    return `${departure} → ${arrival} | ${checkin} to ${checkout}`;
-                } else if (checkin) {
-                    return `${departure} → ${arrival} | ${checkin} (One-way)`;
-                } else {
-                    return `${departure} → ${arrival}`;
-                }
-            } else if (departure) {
-                return `${departure} Flight Search`;
-            }
-        }
-        
-        if (domain.includes('priceline.com')) {
-            const from = params.get('from') || params.get('departure');
-            const to = params.get('to') || params.get('arrival');
-            const departure = params.get('departure_date') || params.get('dep_date');
-            const returnParam = params.get('return_date') || params.get('ret_date');
-            
-            // Try to extract from path as well
-            if (!from || !to) {
-                const pricelineMatch = path.match(/\/flights\/([A-Z]{3})-([A-Z]{3})\//);
-                if (pricelineMatch) {
-                    const [, fromCode, toCode] = pricelineMatch;
-                    return `${fromCode} → ${toCode}`;
-                }
-            }
-            
-            if (from && to) {
-                if (departure && returnParam) {
-                    return `${from} → ${to} | ${departure} to ${returnParam}`;
-                } else if (departure) {
-                    return `${from} → ${to} | ${departure} (One-way)`;
-                } else {
-                    return `${from} → ${to}`;
-                }
-            }
-        }
-        
-        if (domain.includes('momondo.com')) {
-            // Parse Momondo URLs
-            const momondoMatch = path.match(/\/flight-search\/([A-Z]{3})-([A-Z]{3})\/(\d{4}-\d{2}-\d{2})(?:\/(\d{4}-\d{2}-\d{2}))?/);
-            if (momondoMatch) {
-                const [, from, to, depDate, retDate] = momondoMatch;
-                if (retDate) {
-                    return `${from} → ${to} | ${depDate} to ${retDate}`;
-                } else {
-                    return `${from} → ${to} | ${depDate} (One-way)`;
-                }
-            }
-            
-            // Alternative Momondo pattern
-            const momondoMatch2 = path.match(/\/flights\/([A-Z]{3})\/([A-Z]{3})\/(\d{4}-\d{2}-\d{2})(?:\/(\d{4}-\d{2}-\d{2}))?/);
-            if (momondoMatch2) {
-                const [, from, to, depDate, retDate] = momondoMatch2;
-                if (retDate) {
-                    return `${from} → ${to} | ${depDate} to ${retDate}`;
-                } else {
-                    return `${from} → ${to} | ${depDate} (One-way)`;
-                }
-            }
-            
-            // Try query parameters
-            const origin = params.get('origin') || params.get('from');
-            const destination = params.get('destination') || params.get('to');
-            const departure = params.get('departure') || params.get('depart');
-            const returnDate = params.get('return');
-            
-            if (origin && destination) {
-                if (departure && returnDate) {
-                    return `${origin} → ${destination} | ${departure} to ${returnDate}`;
-                } else if (departure) {
-                    return `${origin} → ${destination} | ${departure} (One-way)`;
-                } else {
-                    return `${origin} → ${destination}`;
-                }
-            }
-        }
-        
-        if (domain.includes('expedia.com')) {
-            const flight1 = params.get('flight-1');
-            const d1 = params.get('d1');
-            const d2 = params.get('d2');
-            
-            // Try to extract from flight-1 parameter
-            if (flight1) {
-                const flightMatch = flight1.match(/([A-Z]{3}),([A-Z]{3})/);
-                if (flightMatch) {
-                    const [, from, to] = flightMatch;
-                    if (d1 && d2) {
-                        return `${from} → ${to} | ${d1} to ${d2}`;
-                    } else if (d1) {
-                        return `${from} → ${to} | ${d1} (One-way)`;
-                    } else {
-                        return `${from} → ${to}`;
-                    }
-                }
-            }
-            
-            // Try alternative Expedia parameters
-            const departing = params.get('departing') || params.get('from');
-            const arriving = params.get('arriving') || params.get('to');
-            const departingDate = params.get('departing-date') || params.get('dep');
-            const returningDate = params.get('returning-date') || params.get('ret');
-            
-            if (departing && arriving) {
-                if (departingDate && returningDate) {
-                    return `${departing} → ${arriving} | ${departingDate} to ${returningDate}`;
-                } else if (departingDate) {
-                    return `${departing} → ${arriving} | ${departingDate} (One-way)`;
-                } else {
-                    return `${departing} → ${arriving}`;
-                }
-            }
-            
-            // Try path parsing for Expedia
-            const expeditaPathMatch = path.match(/\/Flights-Search.*?([A-Z]{3}).*?([A-Z]{3})/);
-            if (expeditaPathMatch) {
-                const [, from, to] = expeditaPathMatch;
-                return `${from} → ${to}`;
-            }
-        }
-        
-        // Fallback to site name
-        const siteConfig = getFlightSiteFromUrl(url);
-        return `${siteConfig.name} Flight Search`;
-        
-    } catch (error) {
-        console.error('Error parsing flight URL:', error);
-        return 'Flight Search';
-    }
 }
 
 // ===== SHARED FUNCTIONS =====
@@ -421,13 +397,135 @@ function renderProductStatus(product, platform = null) {
         let emoji;
         
         if (platform === 'roblox') {
-            savingsText = `${Math.round(savings)} R$`;
-            emoji = '🎮';
-        } else if (platform === 'flights') {
-            savingsText = `$${savings.toFixed(2)}`;
-            emoji = '✈️';
+            savingsText = `${Math.round(savings)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
+// frontend/js/app.js
+
+const API_URL = 'http://localhost:5000/api';
+
+// User state
+let currentUser = null;
+
+// Platform configurations
+const platformConfigs = {
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
+    }
+};
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+
+// ===== AUTH FUNCTIONS =====
+async function checkSession() {
+    try {
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.logged_in) {
+            currentUser = data.user;
+            showApp();
         } else {
-            savingsText = `$${savings.toFixed(2)}`;
+            showAuth();
+        }
+    } catch (error) {
+        console.error('Session check failed:', error);
+        showAuth();
+    }
+}
+
+function showAuth() {
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    stopAutoRefresh();
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    
+    // Update user name
+    document.getElementById('userName').textContent = currentUser.first_name;
+    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
+    document.getElementById('accountEmail').textContent = currentUser.email;
+    
+    // Load initial data
+    loadProducts();
+    loadStats();
+    
+    // Start auto-refresh
+    startAutoRefresh();
+}
+
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+}
+
+function showSignupForm() {
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            showToast('Welcome back, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('loginForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+;
+            emoji = '🎮';
+        } else {
+            savingsText = `${savings.toFixed(2)}`;
             emoji = '💰';
         }
         
@@ -440,9 +538,7 @@ function renderProductStatus(product, platform = null) {
     }
     
     let statusText = 'Monitoring Price';
-    if (platform === 'flights') {
-        statusText = 'Watching Flight Prices';
-    } else if (platform === 'roblox') {
+    if (platform === 'roblox') {
         statusText = 'Watching Robux Price';
     }
     
@@ -454,47 +550,21 @@ function renderProductStatus(product, platform = null) {
     `;
 }
 
-// Real-time price update functions
-function updateProductPrice(productId, newPrice, targetPrice, platform = null) {
-    const priceElement = document.getElementById(`current-price-${productId}`);
-    const statusElement = document.getElementById(`status-${productId}`);
-    const cardElement = document.getElementById(`product-${productId}`);
-    
-    if (priceElement) {
-        priceElement.style.transition = 'all 0.3s ease';
-        priceElement.style.transform = 'scale(1.1)';
-        priceElement.textContent = formatPrice(newPrice, platform);
-        
-        setTimeout(() => {
-            priceElement.style.transform = 'scale(1)';
-        }, 300);
-    }
-    
-    if (statusElement) {
-        const product = { last_price: newPrice, target_price: targetPrice, status: newPrice <= targetPrice ? 'below_target' : 'waiting' };
-        statusElement.innerHTML = renderProductStatus(product, platform);
-    }
-    
-    // Add visual feedback for price updates
-    if (cardElement) {
-        if (platform === 'flights') {
-            cardElement.style.boxShadow = '0 0 20px rgba(52, 152, 219, 0.3)';
-        } else if (platform === 'roblox') {
-            cardElement.style.boxShadow = '0 0 20px rgba(0, 162, 255, 0.3)';
-        } else {
-            cardElement.style.boxShadow = '0 0 20px rgba(99, 102, 241, 0.3)';
-        }
-        
-        setTimeout(() => {
-            cardElement.style.boxShadow = '';
-        }, 2000);
-    }
-}
-
 // ===== PRODUCTS MANAGEMENT (Amazon, eBay, Etsy, Walmart, Storenvy) =====
 async function loadProducts() {
     try {
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/products`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load products');
+        }
+        
         const allProducts = await response.json();
         
         // Filter for e-commerce platforms only
@@ -627,12 +697,13 @@ async function addProduct(event) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ url, target_price: targetPrice })
         });
         
         if (response.ok) {
             const platformName = platformConfigs[platform].name;
-            showToast(`✅ ${platformName} product added successfully! Automatic monitoring will begin shortly.`);
+            showToast(`✅ ${platformName} product added successfully! Automatic monitoring has started.`);
             closeAddProductModal();
             loadProducts();
             loadStats();
@@ -653,7 +724,8 @@ async function deleteProduct(productId) {
     
     try {
         const response = await fetch(`${API_URL}/products/${productId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         
         if (response.ok) {
@@ -672,7 +744,18 @@ async function deleteProduct(productId) {
 // ===== ROBLOX MANAGEMENT =====
 async function loadRobloxItems() {
     try {
-        const response = await fetch(`${API_URL}/products`);
+        const response = await fetch(`${API_URL}/products`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load Roblox items');
+        }
+        
         const allProducts = await response.json();
         
         // Filter for Roblox items only
@@ -701,7 +784,132 @@ async function loadRobloxItems() {
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
                             <span class="price-value robux" id="roblox-price-${item.id}">
-                                ${item.last_price ? `${Math.round(item.last_price)} R$` : '--'}
+                                ${item.last_price ? `${Math.round(item.last_price)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
+// frontend/js/app.js
+
+const API_URL = 'http://localhost:5000/api';
+
+// User state
+let currentUser = null;
+
+// Platform configurations
+const platformConfigs = {
+    amazon: {
+        name: 'Amazon',
+        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
+        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
+        icon: '🛒'
+    },
+    ebay: {
+        name: 'eBay',
+        exampleUrl: 'https://www.ebay.com/itm/123456789012',
+        tips: 'Use the item URL that contains /itm/ followed by the item number',
+        icon: '🏷️'
+    },
+    etsy: {
+        name: 'Etsy',
+        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
+        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
+        icon: '🎨'
+    },
+    walmart: {
+        name: 'Walmart',
+        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
+        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
+        icon: '🏪'
+    },
+    storenvy: {
+        name: 'Storenvy',
+        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
+        tips: 'Copy the full product URL from the product page',
+        icon: '🏬'
+    }
+};
+
+// Auto-refresh state
+let autoRefreshInterval = null;
+
+// ===== AUTH FUNCTIONS =====
+async function checkSession() {
+    try {
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.logged_in) {
+            currentUser = data.user;
+            showApp();
+        } else {
+            showAuth();
+        }
+    } catch (error) {
+        console.error('Session check failed:', error);
+        showAuth();
+    }
+}
+
+function showAuth() {
+    document.getElementById('authContainer').style.display = 'flex';
+    document.getElementById('appContainer').style.display = 'none';
+    stopAutoRefresh();
+}
+
+function showApp() {
+    document.getElementById('authContainer').style.display = 'none';
+    document.getElementById('appContainer').style.display = 'block';
+    
+    // Update user name
+    document.getElementById('userName').textContent = currentUser.first_name;
+    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
+    document.getElementById('accountEmail').textContent = currentUser.email;
+    
+    // Load initial data
+    loadProducts();
+    loadStats();
+    
+    // Start auto-refresh
+    startAutoRefresh();
+}
+
+function showLoginForm() {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+}
+
+function showSignupForm() {
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('loginForm').style.display = 'none';
+}
+
+async function handleLogin(event) {
+    event.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ email, password })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            currentUser = data.user;
+            showToast('Welcome back, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('loginForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+ : '--'}
                             </span>
                         </div>
                         <div class="price-item">
@@ -763,11 +971,12 @@ async function addRobloxItem(event) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ url, target_price: targetPrice })
         });
         
         if (response.ok) {
-            showToast('🎮 Roblox UGC item added successfully! Automatic monitoring will begin shortly.');
+            showToast('🎮 Roblox UGC item added successfully! Automatic monitoring has started.');
             closeAddRobloxModal();
             loadRobloxItems();
             loadStats();
@@ -788,7 +997,8 @@ async function deleteRobloxItem(itemId) {
     
     try {
         const response = await fetch(`${API_URL}/products/${itemId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         
         if (response.ok) {
@@ -804,152 +1014,21 @@ async function deleteRobloxItem(itemId) {
     }
 }
 
-// ===== FLIGHTS MANAGEMENT =====
-async function loadFlights() {
-    try {
-        const response = await fetch(`${API_URL}/products`);
-        const allProducts = await response.json();
-        
-        // Filter for flight items only
-        const flights = allProducts.filter(product => product.platform === 'flights');
-        
-        const flightsList = document.getElementById('flightsList');
-        const emptyState = document.getElementById('flightsEmptyState');
-        
-        if (flights.length === 0) {
-            flightsList.style.display = 'none';
-            emptyState.style.display = 'block';
-        } else {
-            flightsList.style.display = 'grid';
-            emptyState.style.display = 'none';
-            
-            flightsList.innerHTML = flights.map(flight => {
-                // Enhanced flight display with parsed route info
-                const flightInfo = flight.title || parseFlightInfoFromUrl(flight.url);
-                const siteConfig = getFlightSiteFromUrl(flight.url);
-                
-                return `
-                <div class="card" data-platform="flights" id="flight-${flight.id}">
-                    <div class="platform-badge">
-                        <span>${siteConfig.icon}</span>
-                        <span style="font-weight: 500;">${siteConfig.name}</span>
-                    </div>
-                    <h3 class="card-title">${flightInfo}</h3>
-                    <p class="card-subtitle">${truncateUrl(flight.url)}</p>
-                    
-                    <div class="price-info">
-                        <div class="price-item">
-                            <span class="price-label">Current Price</span>
-                            <span class="price-value" id="flight-price-${flight.id}">
-                                ${flight.last_price ? `${flight.last_price.toFixed(2)}` : '--'}
-                            </span>
-                        </div>
-                        <div class="price-item">
-                            <span class="price-label">Target Price</span>
-                            <span class="price-value">${flight.target_price.toFixed(2)}</span>
-                        </div>
-                    </div>
-                    
-                    <div id="flight-status-${flight.id}">
-                        ${renderProductStatus(flight, 'flights')}
-                    </div>
-                    
-                    <div class="card-actions">
-                        <a href="${flight.url}" target="_blank" class="btn btn-primary btn-icon">
-                            <i class="fas fa-plane"></i> View Flight
-                        </a>
-                        <button onclick="deleteFlight(${flight.id})" class="btn btn-secondary btn-icon">
-                            <i class="fas fa-trash"></i> Remove
-                        </button>
-                    </div>
-                </div>
-            `;
-            }).join('');
-        }
-    } catch (error) {
-        showToast('Failed to load flights', 'error');
-        console.error('Error loading flights:', error);
-    }
-}
-
-function showAddFlightModal() {
-    document.getElementById('addFlightModal').classList.add('show');
-    document.getElementById('flightUrl').focus();
-}
-
-function closeAddFlightModal() {
-    document.getElementById('addFlightModal').classList.remove('show');
-    document.getElementById('addFlightForm').reset();
-}
-
-async function addFlight(event) {
-    event.preventDefault();
-    
-    const url = document.getElementById('flightUrl').value.trim();
-    const targetPrice = parseFloat(document.getElementById('flightTargetPrice').value);
-    
-    if (!url || !targetPrice || targetPrice <= 0) {
-        showToast('Please enter a valid flight URL and target price', 'error');
-        return;
-    }
-    
-    if (!validateFlightUrl(url)) {
-        showToast('This URL doesn\'t appear to be from a supported flight site. Please use URLs from Kayak, Booking.com, Priceline, Momondo, or Expedia.', 'error');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url, target_price: targetPrice })
-        });
-        
-        if (response.ok) {
-            const siteConfig = getFlightSiteFromUrl(url);
-            showToast(`✈️ Flight from ${siteConfig.name} added successfully! Automatic monitoring will begin shortly.`);
-            closeAddFlightModal();
-            loadFlights();
-            loadStats();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Failed to add flight', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to add flight', 'error');
-        console.error('Error adding flight:', error);
-    }
-}
-
-async function deleteFlight(flightId) {
-    if (!confirm('Are you sure you want to stop tracking this flight?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/products/${flightId}`, {
-            method: 'DELETE'
-        });
-        
-        if (response.ok) {
-            showToast('Flight removed from tracking');
-            loadFlights();
-            loadStats();
-        } else {
-            showToast('Failed to remove flight', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to remove flight', 'error');
-        console.error('Error deleting flight:', error);
-    }
-}
-
 // ===== STOCK MANAGEMENT =====
 async function loadStockAlerts() {
     try {
-        const response = await fetch(`${API_URL}/stocks`);
+        const response = await fetch(`${API_URL}/stocks`, {
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load stock alerts');
+        }
+        
         const alerts = await response.json();
         
         const stocksList = document.getElementById('stocksList');
@@ -1094,6 +1173,7 @@ async function addStockAlert(event) {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
             body: JSON.stringify({ 
                 symbol: symbol, 
                 alert_type: alertType, 
@@ -1123,7 +1203,8 @@ async function deleteStockAlert(alertId) {
     
     try {
         const response = await fetch(`${API_URL}/stocks/${alertId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: 'include'
         });
         
         if (response.ok) {
@@ -1139,41 +1220,17 @@ async function deleteStockAlert(alertId) {
     }
 }
 
-function updateStockPrice(alertId, newPrice, isTriggered = false) {
-    const priceElement = document.getElementById(`stock-price-${alertId}`);
-    const statusElement = document.getElementById(`stock-status-${alertId}`);
-    const cardElement = document.getElementById(`stock-${alertId}`);
-    
-    if (priceElement) {
-        priceElement.style.transition = 'all 0.3s ease';
-        priceElement.style.transform = 'scale(1.1)';
-        priceElement.textContent = `${newPrice.toFixed(2)}`;
-        
-        setTimeout(() => {
-            priceElement.style.transform = 'scale(1)';
-        }, 300);
-    }
-    
-    if (statusElement) {
-        const alert = { current_price: newPrice, is_triggered: isTriggered };
-        statusElement.innerHTML = renderStockStatus(alert);
-    }
-    
-    if (cardElement) {
-        cardElement.style.boxShadow = '0 0 20px rgba(16, 185, 129, 0.3)';
-        setTimeout(() => {
-            cardElement.style.boxShadow = '';
-        }, 2000);
-    }
-}
-
-// ===== STATISTICS WITH SEPARATE COUNTERS =====
+// ===== STATISTICS =====
 async function loadStats() {
     try {
         const [statsResponse, productsResponse] = await Promise.all([
-            fetch(`${API_URL}/stats`),
-            fetch(`${API_URL}/products`)
+            fetch(`${API_URL}/stats`, { credentials: 'include' }),
+            fetch(`${API_URL}/products`, { credentials: 'include' })
         ]);
+        
+        if (!statsResponse.ok || !productsResponse.ok) {
+            return;
+        }
         
         const stats = await statsResponse.json();
         const allProducts = await productsResponse.json();
@@ -1181,126 +1238,31 @@ async function loadStats() {
         // Count by platform
         const productCounts = {
             ecommerce: allProducts.filter(p => ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(p.platform)).length,
-            roblox: allProducts.filter(p => p.platform === 'roblox').length,
-            flights: allProducts.filter(p => p.platform === 'flights').length
+            roblox: allProducts.filter(p => p.platform === 'roblox').length
         };
         
-        // Animate stats updates
-        updateStatWithAnimation('totalProducts', productCounts.ecommerce);
-        updateStatWithAnimation('totalRobloxItems', productCounts.roblox);
-        updateStatWithAnimation('totalFlights', productCounts.flights);
-        updateStatWithAnimation('totalStockAlerts', stats.total_stock_alerts || 0);
+        // Update stats
+        document.getElementById('totalProducts').textContent = productCounts.ecommerce;
+        document.getElementById('totalRobloxItems').textContent = productCounts.roblox;
+        document.getElementById('totalStockAlerts').textContent = stats.total_stock_alerts || 0;
+        document.getElementById('totalSavings').textContent = (stats.total_savings || 0).toFixed(2);
         
     } catch (error) {
         console.error('Failed to load stats:', error);
     }
 }
 
-function updateStatWithAnimation(elementId, newValue) {
-    const element = document.getElementById(elementId);
-    if (element && element.textContent !== newValue.toString()) {
-        element.style.transition = 'all 0.3s ease';
-        element.style.transform = 'scale(1.1)';
-        element.textContent = newValue;
-        
-        setTimeout(() => {
-            element.style.transform = 'scale(1)';
-        }, 300);
-    }
-}
-
-// ===== MONITOR PAGE FUNCTIONS - AUTOMATIC ONLY =====
-async function loadSchedulerStatus() {
-    try {
-        const response = await fetch(`${API_URL}/scheduler/status`);
-        const status = await response.json();
-        
-        const statusDot = document.getElementById('statusDot');
-        const statusText = document.getElementById('statusText');
-        const startBtn = document.getElementById('startBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        
-        if (status.running) {
-            statusDot.classList.add('active');
-            statusText.textContent = 'Automatic monitoring is active';
-            startBtn.style.display = 'none';
-            stopBtn.style.display = 'inline-flex';
-        } else {
-            statusDot.classList.remove('active');
-            statusText.textContent = 'Automatic monitoring is inactive';
-            startBtn.style.display = 'inline-flex';
-            stopBtn.style.display = 'none';
-        }
-        
-    } catch (error) {
-        console.error('Failed to load scheduler status:', error);
-        document.getElementById('statusText').textContent = 'Status unknown';
-    }
-}
-
-async function startScheduler() {
-    try {
-        const response = await fetch(`${API_URL}/scheduler/start`, { method: 'POST' });
-        
-        if (response.ok) {
-            showToast('🚀 Automatic monitoring started! Your items will be checked automatically in the background.');
-            loadSchedulerStatus();
-        } else {
-            showToast('Failed to start automatic monitoring', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to start monitoring', 'error');
-        console.error('Error starting scheduler:', error);
-    }
-}
-
-async function stopScheduler() {
-    if (!confirm('Are you sure you want to stop automatic monitoring?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch(`${API_URL}/scheduler/stop`, { method: 'POST' });
-        
-        if (response.ok) {
-            showToast('⏹️ Automatic monitoring stopped');
-            loadSchedulerStatus();
-        } else {
-            showToast('Failed to stop automatic monitoring', 'error');
-        }
-    } catch (error) {
-        showToast('Network error: Failed to stop monitoring', 'error');
-        console.error('Error stopping scheduler:', error);
-    }
-}
-
 // ===== EMAIL CONFIGURATION =====
 async function loadEmailConfig() {
-    try {
-        const response = await fetch(`${API_URL}/email-config`);
-        const config = await response.json();
-        
-        const emailEnabled = document.getElementById('emailEnabled');
-        const emailSettings = document.getElementById('emailSettings');
-        
-        emailEnabled.checked = config.enabled;
-        emailSettings.style.display = config.enabled ? 'block' : 'none';
-        
-        // Load existing values if they exist
-        if (config.enabled) {
-            document.getElementById('smtpServer').value = config.smtp_server || '';
-            document.getElementById('smtpPort').value = config.smtp_port || 587;
-            document.getElementById('fromEmail').value = config.from_email || '';
-            document.getElementById('toEmail').value = config.to_email || '';
-        }
-        
-    } catch (error) {
-        console.error('Failed to load email config:', error);
-    }
+    // Email config is now handled through user account
+    document.getElementById('smtpPassword').value = '';
 }
 
 // ===== EVENT LISTENERS AND INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', function() {
+    // Check session on load
+    checkSession();
+    
     // Disable URL input initially
     const urlInput = document.getElementById('productUrl');
     if (urlInput) {
@@ -1313,42 +1275,33 @@ document.addEventListener('DOMContentLoaded', function() {
         alertTypeSelect.addEventListener('change', updateThresholdLabel);
     }
     
-    // Set up email toggle
-    const emailEnabled = document.getElementById('emailEnabled');
-    if (emailEnabled) {
-        emailEnabled.addEventListener('change', function() {
-            document.getElementById('emailSettings').style.display = this.checked ? 'block' : 'none';
-        });
-    }
-    
     // Set up email form submission
     const emailForm = document.getElementById('emailForm');
     if (emailForm) {
         emailForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             
-            const config = {
-                enabled: document.getElementById('emailEnabled').checked,
-                smtp_server: document.getElementById('smtpServer').value,
-                smtp_port: parseInt(document.getElementById('smtpPort').value),
-                from_email: document.getElementById('fromEmail').value,
-                password: document.getElementById('password').value,
-                to_email: document.getElementById('toEmail').value
-            };
+            const smtpPassword = document.getElementById('smtpPassword').value;
+            
+            if (!smtpPassword) {
+                showToast('Please enter your Gmail app password', 'error');
+                return;
+            }
             
             try {
-                const response = await fetch(`${API_URL}/email-config`, {
+                const response = await fetch(`${API_URL}/auth/update-smtp`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(config)
+                    credentials: 'include',
+                    body: JSON.stringify({ smtp_password: smtpPassword })
                 });
                 
                 if (response.ok) {
                     showToast('📧 Email settings saved successfully!');
                     // Clear password field for security
-                    document.getElementById('password').value = '';
+                    document.getElementById('smtpPassword').value = '';
                 } else {
                     showToast('Failed to save email settings', 'error');
                 }
@@ -1376,28 +1329,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.classList.remove('show');
             });
         }
-        
-        // Ctrl/Cmd + Enter to submit forms
-        if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-            const activeModal = document.querySelector('.modal.show');
-            if (activeModal) {
-                const form = activeModal.querySelector('form');
-                if (form) {
-                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                }
-            }
-        }
     });
-    
-    // Load initial data
-    loadProducts();
-    loadStats();
-    
-    // Start auto-refresh functionality
-    startAutoRefresh();
     
     // Cleanup on page unload
     window.addEventListener('beforeunload', function() {
         stopAutoRefresh();
     });
-});
+}); Failed to login', 'error');
+        console.error('Login error:', error);
+    }
+}
+
+async function handleSignup(event) {
+    event.preventDefault();
+    
+    const data = {
+        first_name: document.getElementById('signupFirstName').value,
+        last_name: document.getElementById('signupLastName').value,
+        email: document.getElementById('signupEmail').value,
+        password: document.getElementById('signupPassword').value,
+        smtp_password: document.getElementById('signupSmtpPassword').value
+    };
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            const responseData = await response.json();
+            currentUser = responseData.user;
+            showToast('Welcome to PriceTracker, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('signupForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Signup failed', 'error');
+        }
+    } catch (error) {
+        showToast

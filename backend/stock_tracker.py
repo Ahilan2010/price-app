@@ -517,6 +517,38 @@ async def test_stock_tracker():
         else:
             print(f"❌ Failed to get {symbol} data")
 
+def init_stock_tables(self) -> None:
+        """Initialize SQLite database tables for stock tracking."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Stock alerts table with user_id
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS stock_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                symbol TEXT NOT NULL,
+                company_name TEXT,
+                alert_type TEXT NOT NULL,
+                threshold REAL NOT NULL,
+                current_price REAL,
+                last_checked TIMESTAMP,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_triggered BOOLEAN DEFAULT 0,
+                UNIQUE(user_id, symbol, alert_type, threshold)
+            )
+        ''')
+        
+        # Check if user_id column exists
+        cursor.execute("PRAGMA table_info(stock_alerts)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'user_id' not in columns:
+            # Migrate existing data
+            cursor.execute('ALTER TABLE stock_alerts ADD COLUMN user_id INTEGER DEFAULT 1')
+            print("Added user_id column to stock_alerts table")
+
+
 if __name__ == "__main__":
     # Run the test
     asyncio.run(test_stock_tracker())

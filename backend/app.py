@@ -1,5 +1,5 @@
-# backend/app.py - UPDATED VERSION WITH AUTOMATIC SCHEDULING ONLY
-from flask import Flask, jsonify, request, send_file, send_from_directory
+# backend/app.py - UPDATED VERSION WITH AUTH AND NO FLIGHTS
+from flask import Flask, jsonify, request, send_file, send_from_directory, session
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
 from stock_tracker import StockPriceTracker
@@ -8,28 +8,14 @@ import asyncio
 import json
 from pathlib import Path
 import os
-
-def validate_and_clean_url(url: str) -> str:
-    """Validate and clean product URLs"""
-    url = url.strip()
-    
-    # Ensure URL has protocol
-    if not url.startswith(('http://', 'https://')):
-        url = 'https://' + url
-    
-    # Remove tracking parameters for cleaner URLs
-    if 'amazon.com' in url:
-        # Extract ASIN for Amazon URLs
-        import re
-        asin_match = re.search(r'/dp/([A-Z0-9]{10})', url)
-        if asin_match:
-            domain = urlparse(url).netloc
-            return f"https://{domain}/dp/{asin_match.group(1)}"
-    
-    return url
+import hashlib
+import sqlite3
+from datetime import datetime
+import secrets
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+app.secret_key = secrets.token_hex(32)  # Generate a secure secret key
+CORS(app, supports_credentials=True)  # Enable CORS with credentials
 
 # Initialize trackers
 tracker = StorenvyPriceTracker()
@@ -38,13 +24,32 @@ stock_tracker = StockPriceTracker()
 # Initialize scheduler service
 scheduler_service = PersistentSchedulerService()
 
-# Global variable to store email config
-email_config_file = Path("email_config.json")
-email_config = {}
+# Initialize auth database
+def init_auth_db():
+    """Initialize authentication database"""
+    conn = sqlite3.connect('storenvy_tracker.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            first_name TEXT NOT NULL,
+            last_name TEXT,
+            smtp_password TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
 
-if email_config_file.exists():
-    with open(email_config_file, 'r') as f:
-        email_config = json.load(f)
+init_auth_db()
+
+# Helper function for password hashing
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 # SERVE THE FRONTEND
 @app.route('/')
@@ -63,16 +68,205 @@ def js_files(filename):
     frontend_js = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'js')
     return send_from_directory(frontend_js, filename)
 
+# AUTH ROUTES
+@app.route('/api/auth/signup', methods=['POST'])
+def signup():
+    """Create a new user account"""
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    first_name = data.get('first_name')
+    last_name = data.get('last_name', '')
+    smtp_password = data.get('smtp_password', '')
+    
+    if not email or not password or not first_name:
+        return jsonify({'error': 'Email, password, and first name are required'}), 400
+    
+    conn = sqlite3.connect('storenvy_tracker.db')
+    cursor = conn.cursor()
+    
+    try:
+        # Check if user already exists
+        cursor.execute('SELECT id FROM users WHERE email = ?', (email,))
+        if cursor.fetchone():
+            return jsonify({'error': 'User with this email already exists'}), 409
+        
+        # Create new user
+        password_hash = hash_password(password)
+        cursor.execute('''
+            INSERT INTO users (email, password_hash, first_name, last_name, smtp_password)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (email, password_hash, first_name, last_name, smtp_password))
+        
+        user_id = cursor.lastrowid
+        conn.commit()
+        
+        # Set session
+        session['user_id'] = user_id
+        session['user_email'] = email
+        session['user_name'] = first_name
+        
+        # Auto-start scheduler for new user
+        if not scheduler_service.is_running():
+            scheduler_service.start()
+        
+        return jsonify({
+            'message': 'Account created successfully',
+            'user': {
+                'id': user_id,
+                'email': email,
+                'first_name': first_name
+            }
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    """Login user"""
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({'error': 'Email and password are required'}), 400
+    
+    conn = sqlite3.connect('storenvy_tracker.db')
+    cursor = conn.cursor()
+    
+    try:
+        password_hash = hash_password(password)
+        cursor.execute('''
+            SELECT id, email, first_name, smtp_password 
+            FROM users 
+            WHERE email = ? AND password_hash = ?
+        ''', (email, password_hash))
+        
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'error': 'Invalid email or password'}), 401
+        
+        # Set session
+        session['user_id'] = user[0]
+        session['user_email'] = user[1]
+        session['user_name'] = user[2]
+        
+        # Auto-start scheduler on login
+        if not scheduler_service.is_running():
+            scheduler_service.start()
+        
+        return jsonify({
+            'message': 'Login successful',
+            'user': {
+                'id': user[0],
+                'email': user[1],
+                'first_name': user[2],
+                'has_smtp': bool(user[3])
+            }
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+@app.route('/api/auth/logout', methods=['POST'])
+def logout():
+    """Logout user"""
+    session.clear()
+    return jsonify({'message': 'Logged out successfully'}), 200
+
+@app.route('/api/auth/session', methods=['GET'])
+def check_session():
+    """Check if user is logged in"""
+    if 'user_id' in session:
+        return jsonify({
+            'logged_in': True,
+            'user': {
+                'id': session['user_id'],
+                'email': session['user_email'],
+                'first_name': session['user_name']
+            }
+        }), 200
+    return jsonify({'logged_in': False}), 200
+
+@app.route('/api/auth/update-smtp', methods=['POST'])
+def update_smtp():
+    """Update user's SMTP password"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    data = request.json
+    smtp_password = data.get('smtp_password')
+    
+    if not smtp_password:
+        return jsonify({'error': 'SMTP password is required'}), 400
+    
+    conn = sqlite3.connect('storenvy_tracker.db')
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            UPDATE users SET smtp_password = ? WHERE id = ?
+        ''', (smtp_password, session['user_id']))
+        
+        conn.commit()
+        return jsonify({'message': 'SMTP password updated successfully'}), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        conn.close()
+
+# Helper to get user email config
+def get_user_email_config():
+    """Get email configuration for the logged-in user"""
+    if 'user_id' not in session:
+        return None
+    
+    conn = sqlite3.connect('storenvy_tracker.db')
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute('''
+            SELECT email, smtp_password FROM users WHERE id = ?
+        ''', (session['user_id'],))
+        
+        user = cursor.fetchone()
+        if user and user[1]:  # Has SMTP password
+            return {
+                'enabled': True,
+                'smtp_server': 'smtp.gmail.com',
+                'smtp_port': 587,
+                'from_email': user[0],
+                'password': user[1],
+                'to_email': user[0]
+            }
+        return None
+        
+    finally:
+        conn.close()
+
 # PRODUCT API ROUTES
 @app.route('/api/products', methods=['GET'])
 def get_products():
     """Get all tracked products"""
-    products = tracker.get_tracked_products()
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    products = tracker.get_tracked_products(session['user_id'])
     return jsonify(products)
 
 @app.route('/api/products', methods=['POST'])
 def add_product():
     """Add a new product to track"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
     data = request.json
     url = data.get('url')
     target_price = data.get('target_price')
@@ -85,10 +279,15 @@ def add_product():
         
         # Validate that the URL is from a supported platform
         platform = tracker.scraper.detect_platform(url)
-        if not platform:
+        if not platform or platform == 'flights':  # Exclude flights
             return jsonify({'error': 'Unsupported e-commerce platform. Please use a supported website.'}), 400
         
-        tracker.add_product(url, target_price)
+        tracker.add_product(url, target_price, session['user_id'])
+        
+        # Auto-start scheduler when first product is added
+        if not scheduler_service.is_running():
+            scheduler_service.start()
+        
         return jsonify({'message': f'Product from {platform.title()} added successfully'}), 201
     except ValueError as ve:
         return jsonify({'error': str(ve)}), 400
@@ -98,29 +297,31 @@ def add_product():
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
     """Delete a tracked product"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
     try:
-        tracker.delete_product(product_id)
+        tracker.delete_product(product_id, session['user_id'])
         return jsonify({'message': 'Product deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-# NEW ROUTE: Get supported platforms
-@app.route('/api/platforms', methods=['GET'])
-def get_platforms():
-    """Get all supported e-commerce platforms"""
-    platforms = tracker.get_supported_platforms()
-    return jsonify(platforms)
 
 # STOCK API ROUTES
 @app.route('/api/stocks', methods=['GET'])
 def get_stock_alerts():
     """Get all stock alerts"""
-    alerts = stock_tracker.get_stock_alerts()
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    alerts = stock_tracker.get_stock_alerts(session['user_id'])
     return jsonify(alerts)
 
 @app.route('/api/stocks', methods=['POST'])
 def add_stock_alert():
     """Add a new stock alert"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
     data = request.json
     symbol = data.get('symbol', '').upper().strip()
     alert_type = data.get('alert_type')
@@ -136,7 +337,12 @@ def add_stock_alert():
     
     try:
         threshold = float(threshold)
-        stock_tracker.add_stock_alert(symbol, alert_type, threshold)
+        stock_tracker.add_stock_alert(symbol, alert_type, threshold, session['user_id'])
+        
+        # Auto-start scheduler when first alert is added
+        if not scheduler_service.is_running():
+            scheduler_service.start()
+        
         return jsonify({'message': f'Stock alert added for {symbol}'}), 201
     except ValueError:
         return jsonify({'error': 'Invalid threshold format'}), 400
@@ -146,68 +352,31 @@ def add_stock_alert():
 @app.route('/api/stocks/<int:alert_id>', methods=['DELETE'])
 def delete_stock_alert(alert_id):
     """Delete a stock alert"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
     try:
-        stock_tracker.delete_stock_alert(alert_id)
+        stock_tracker.delete_stock_alert(alert_id, session['user_id'])
         return jsonify({'message': 'Stock alert deleted successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-@app.route('/api/stocks/stats', methods=['GET'])
-def get_stock_stats():
-    """Get statistics about stock alerts"""
-    stats = stock_tracker.get_stock_stats()
-    return jsonify(stats)
-
-@app.route('/api/stocks/reset-triggered', methods=['POST'])
-def reset_triggered_stock_alerts():
-    """Reset all triggered alerts (useful for daily reset)"""
-    try:
-        stock_tracker.reset_triggered_alerts()
-        return jsonify({'message': 'All triggered alerts have been reset'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# EMAIL CONFIGURATION ROUTES
-@app.route('/api/email-config', methods=['GET'])
-def get_email_config():
-    """Get current email configuration status"""
-    return jsonify({
-        'enabled': email_config.get('enabled', False),
-        'configured': bool(email_config.get('smtp_server')),
-        'smtp_server': email_config.get('smtp_server', ''),
-        'smtp_port': email_config.get('smtp_port', 587),
-        'from_email': email_config.get('from_email', ''),
-        'to_email': email_config.get('to_email', '')
-        # Note: We never return the password for security
-    })
-
-@app.route('/api/email-config', methods=['POST'])
-def update_email_config():
-    """Update email configuration"""
-    global email_config
-    data = request.json
-    
-    email_config = {
-        'enabled': data.get('enabled', False),
-        'smtp_server': data.get('smtp_server', ''),
-        'smtp_port': int(data.get('smtp_port', 587)),
-        'from_email': data.get('from_email', ''),
-        'password': data.get('password', ''),
-        'to_email': data.get('to_email', '')
-    }
-    
-    # Save to file
-    with open(email_config_file, 'w') as f:
-        json.dump(email_config, f)
-    
-    return jsonify({'message': 'Email configuration updated'}), 200
 
 # STATISTICS ROUTES
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     """Get statistics about tracked products and stocks"""
+    if 'user_id' not in session:
+        return jsonify({
+            'total_products': 0,
+            'products_below_target': 0,
+            'total_savings': 0,
+            'total_stock_alerts': 0,
+            'triggered_stock_alerts': 0,
+            'monitoring_stock_alerts': 0
+        })
+    
     # Product stats
-    products = tracker.get_tracked_products()
+    products = tracker.get_tracked_products(session['user_id'])
     
     total_products = len(products)
     products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
@@ -215,83 +384,26 @@ def get_stats():
                        if p.get('last_price') and p['last_price'] <= p['target_price'])
     
     # Stock stats
-    stock_stats = stock_tracker.get_stock_stats()
+    stock_stats = stock_tracker.get_stock_stats(session['user_id'])
     
     return jsonify({
-        # Product stats (existing)
         'total_products': total_products,
         'products_below_target': products_below_target,
         'total_savings': round(total_savings, 2),
-        
-        # Stock stats (new)
         'total_stock_alerts': stock_stats['total_alerts'],
         'triggered_stock_alerts': stock_stats['triggered_alerts'],
         'monitoring_stock_alerts': stock_stats['monitoring_alerts']
     })
 
-# SCHEDULER CONTROL ROUTES
-@app.route('/api/scheduler/status', methods=['GET'])
-def get_scheduler_status():
-    """Get scheduler service status"""
-    status = scheduler_service.status()
-    return jsonify(status)
-
-@app.route('/api/scheduler/start', methods=['POST'])
-def start_scheduler():
-    """Start the scheduler service"""
-    try:
-        scheduler_service.start()
-        return jsonify({'message': 'Scheduler service started'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/api/scheduler/stop', methods=['POST'])
-def stop_scheduler():
-    """Stop the scheduler service"""
-    try:
-        scheduler_service.stop()
-        return jsonify({'message': 'Scheduler service stopped'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-# NEW ROUTE: Real-time price update endpoint
-@app.route('/api/products/<int:product_id>/price', methods=['GET'])
-def get_product_current_price(product_id):
-    """Get current price for a specific product (for real-time updates)"""
-    try:
-        products = tracker.get_tracked_products()
-        product = next((p for p in products if p['id'] == product_id), None)
-        
-        if not product:
-            return jsonify({'error': 'Product not found'}), 404
-        
-        response_data = {
-            'id': product['id'],
-            'current_price': product['last_price'],
-            'target_price': product['target_price'],
-            'last_checked': product['last_checked'],
-            'status': product['status']
-        }
-        
-        # Include metadata for flights
-        if product.get('platform') == 'flights' and product.get('metadata'):
-            response_data['metadata'] = product['metadata']
-        
-        return jsonify(response_data)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🛍️  PRICETRACKER WEB APPLICATION")
+    print("🛍️  PRICETRACKER - PROFESSIONAL PRICE MONITORING")
     print("="*60)
     print("\n🚀 Web server starting...")
     print("🌐 Interface: http://localhost:5000")
     print("📦 E-commerce Products: Auto-check every 6 hours")
-    print("✈️ Flights: Auto-check every 30 minutes")
+    print("🎮 Roblox Items: Auto-check every 6 hours")
     print("📈 Stocks: Auto-check every 5 minutes")
-    print("\n💡 For persistent background checking:")
-    print("   Run: python scheduler_service.py")
     print("\n⏹️  Press Ctrl+C to stop the web server")
     print("="*60 + "\n")
     

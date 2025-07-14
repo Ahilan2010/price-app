@@ -1,17 +1,17 @@
-# backend/multi_platform_scraper.py - ENHANCED WITH ALL FLIGHT SITES URL PARSING
+# backend/multi_platform_scraper.py - ENHANCED STEALTH VERSION WITHOUT FLIGHTS
 import asyncio
 import re
 import random
 import json
 from typing import Optional, Tuple, Dict, List
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 import time
 from datetime import datetime
 
 
 class MultiPlatformScraper:
-    """Multi-platform e-commerce scraper with comprehensive flight URL parsing"""
+    """Enhanced multi-platform e-commerce scraper with advanced stealth capabilities"""
     
     def __init__(self):
         self.platform_configs = {
@@ -22,96 +22,88 @@ class MultiPlatformScraper:
                     'h1#title span',
                     'h1.a-size-large span',
                     'h1[data-automation-id="product-title"]',
-                    '#feature-bullets h1',
-                    '.product-title'
+                    '[data-feature-name="title"] h1 span',
+                    'div#title_feature_div span',
+                    'div#titleSection h1 span'
                 ],
                 'price_selectors': [
-                    'span.a-price.a-text-price.a-size-medium.apexPriceToPay .a-offscreen',
-                    '.a-price .a-offscreen',
-                    'span.a-price.a-text-price.apexPriceToPay .a-offscreen',
-                    '.a-price-current .a-offscreen',
-                    'span[class*="a-price-range"]',
-                    '.price .a-offscreen',
+                    'span.a-price.a-text-price.a-size-medium.apexPriceToPay span.a-offscreen',
+                    'span.a-price.a-text-price.apexPriceToPay span.a-offscreen',
+                    'span.a-price-current span.a-offscreen',
+                    'span.a-price.aok-align-center.reinventPricePriceToPayMargin span.a-offscreen',
+                    'span.a-price.a-size-medium.a-color-price span.a-offscreen',
+                    'div[data-feature-name="apex_desktop"] span.a-price-whole',
+                    'span.a-price-range span.a-offscreen',
                     '#priceblock_dealprice',
-                    '#priceblock_ourprice'
+                    '#priceblock_ourprice',
+                    '.a-price .a-offscreen'
                 ],
                 'wait_time': 5000,
                 'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
                 ]
             },
             'ebay': {
                 'domain_patterns': ['ebay.com', 'ebay.co.uk', 'ebay.ca', 'ebay.de', 'ebay.fr'],
                 'title_selectors': [
-                    'h1[data-testid="x-item-title-label"]',
-                    'h1#x-item-title-label',
-                    'h1.x-item-title-label',
-                    'h1[id*="x-item-title"]',
+                    'h1.x-item-title__mainTitle span.ux-textspans--BOLD',
+                    'h1[data-testid="x-item-title-textual"]',
                     'h1.it-ttl',
-                    'span.ux-textspans--BOLD',
-                    'h1'
+                    'div.vi-swc-lsp h1',
+                    'h1.x-item-title-mainTitle span',
+                    '.x-item-title__mainTitle span'
                 ],
                 'price_selectors': [
-                    'span.ux-textspans[role="text"]',
-                    'span.ux-textspans',
-                    'span.notranslate',
-                    '.x-price-primary',
+                    'div.x-price-primary span.ux-textspans',
+                    'span.ux-textspans.ux-textspans--DISPLAY.ux-textspans--BOLD',
+                    'div.mainPrice span.notranslate',
+                    '#prcIsum',
                     'span[itemprop="price"]',
-                    '.u-flL.condText',
-                    '#prcIsum'
+                    '.x-price-primary span[data-testid="x-price-primary"]'
                 ],
                 'wait_time': 4000,
                 'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ]
             },
             'etsy': {
                 'domain_patterns': ['etsy.com'],
                 'title_selectors': [
-                    'h1[data-test-id="listing-page-title"]',
-                    'h1[data-testid="listing-page-title"]',
-                    'h1.shop2-listing-page-title',
-                    'h1[data-cy="listing-page-title"]',
-                    'h1.listing-page-title',
-                    'h1'
+                    'h1[data-buy-box-listing-title]',
+                    'h1.wt-text-body-01',
+                    'h1[data-listing-page-title-component]',
+                    'div[data-region="listing-title"] h1'
                 ],
                 'price_selectors': [
-                    'p.wt-text-title-larger.wt-mr-xs-1',
+                    'div[data-buy-box-region="price"] p[data-selector="price-only"]',
                     'p.wt-text-title-larger span.currency-value',
-                    'p[data-testid="lp-price"] span.currency-value',
-                    'p[data-test-id="lp-price"] span.currency-value',
-                    'span[data-testid="currency-value"]',
-                    'span.currency-value',
-                    'p.wt-text-title-larger'
+                    'div[data-selector="listing-page-cart"] span.currency-value',
+                    'span.wt-text-title-largest'
                 ],
                 'wait_time': 4000,
                 'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ]
             },
             'walmart': {
                 'domain_patterns': ['walmart.com'],
                 'title_selectors': [
-                    'h1[data-automation-id="product-title"]',
-                    'h1[data-testid="product-title"]',
+                    'h1[itemprop="name"]',
                     'h1.prod-ProductTitle',
-                    'h1[id*="main-title"]',
-                    'h1.f2',
-                    'h1'
+                    'h1[data-automation="product-title"]',
+                    'main h1'
                 ],
                 'price_selectors': [
-                    'span[data-automation-id="product-price"]',
-                    'span[data-testid="product-price"]',
                     'span[itemprop="price"]',
-                    'div[data-testid="price-wrap"] span',
-                    'span.price-current',
-                    'span.price-display',
-                    '[data-testid="price-current"]',
-                    'div.price span'
+                    'span[data-automation="buybox-price"]',
+                    'div[data-testid="add-to-cart-price"] span',
+                    'span.price.display-inline-block.arrange-fit'
                 ],
                 'wait_time': 5000,
                 'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ]
             },
             'storenvy': {
@@ -133,80 +125,30 @@ class MultiPlatformScraper:
                 ],
                 'wait_time': 3000,
                 'user_agents': [
-                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ]
             },
             'roblox': {
                 'domain_patterns': ['roblox.com'],
                 'title_selectors': [
-                    'div.item-details-name-row h1',
-                    'h1[data-testid="item-name"]',
-                    'h1.item-name-container h1',
-                    'h1.font-header-1',
-                    '.item-name-container h1',
-                    '.item-details-name h1',
-                    'h1'
+                    'h1.item-name-container',
+                    'div.item-name-container h1',
+                    '[data-testid="item-details-name"]',
+                    'div.item-details-name-container h1',
+                    'h1.text-display-1'
                 ],
                 'price_selectors': [
-                    'span[data-testid="price-label"]',
-                    'span.text-robux',
-                    'span.robux',
-                    'span[class*="robux"]',
-                    '.price-robux',
-                    'span.icon-robux + span',
-                    'div[class*="price"] span',
-                    'span[class*="Price"]'
+                    'span.text-robux-lg',
+                    'span.icon-robux-price-container',
+                    '[data-testid="item-details-price"] .text-robux',
+                    'div.price-container span.text-robux',
+                    'span.text-label[class*="robux"]'
                 ],
                 'wait_time': 5000,
                 'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
                 ],
                 'currency': 'robux'
-            },
-            'flights': {
-                'domain_patterns': ['kayak.com', 'booking.com', 'priceline.com', 'momondo.com', 'expedia.com'],
-                'price_selectors': [
-                    # Updated 2024 Kayak selectors - MOST CURRENT
-                    'div[data-resultid] span.price-text',
-                    'div[data-resultid] .price-text', 
-                    'div.resultWrapper span.price-text',
-                    'div.price-text',
-                    'span.price-text',
-                    '[data-testid="price-text"]',
-                    'div[class*="price"] span[role="text"]',
-                    'div.bottom span.price-text',
-                    'div.above-button span.price-text',
-                    '.result-price .price-text',
-                    '.booking-link .price-text',
-                    
-                    # Alternative Kayak selectors
-                    'div[class*="FlightsTicket"] span[class*="price"]',
-                    'a[class*="FlightsTicket"] span.price-text',
-                    'div.flight-card .price-text',
-                    '[data-testid="flight-card"] .price-text',
-                    
-                    # Other flight sites
-                    'div[data-testid="flight-card-segment"] .bui-price-display__value',
-                    '.bui-price-display__value',
-                    '.price-amount',
-                    '.flight-price .price',
-                    '[data-test-id="price"]',
-                    '.fare-price',
-                    '.flight-result-price'
-                ],
-                'wait_selectors': [
-                    'div[data-resultid]',
-                    'div.resultWrapper', 
-                    '.result-price',
-                    'div[class*="FlightsTicket"]',
-                    '[data-testid="flight-card-segment"]',
-                    '.flight-result'
-                ],
-                'wait_time': 15000,  # Longer wait for flights
-                'scroll_time': 8000,
-                'user_agents': [
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                ]
             }
         }
     
@@ -229,271 +171,214 @@ class MultiPlatformScraper:
         """Get a random user agent for the platform"""
         config = self.platform_configs.get(platform, {})
         user_agents = config.get('user_agents', [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36'
         ])
         return random.choice(user_agents)
     
-    def parse_flight_route_from_url(self, url: str) -> str:
-        """Enhanced flight route and dates parsing from URL - ALL FLIGHT SITES"""
-        try:
-            parsed_url = urlparse(url)
-            domain = parsed_url.netloc.lower()
-            path = parsed_url.pathname
-            query_params = parse_qs(parsed_url.query)
-            
-            print(f"Parsing flight info from URL: {url}")
-            
-            if 'kayak.com' in domain:
-                # Extract from Kayak URL path or query parameters
-                # Try path parsing first (e.g., /flights/LAX-NYC/2024-03-15/2024-03-22)
-                kayak_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
-                if kayak_match:
-                    from_code, to_code, dep_date, ret_date = kayak_match.groups()
-                    if ret_date:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                    else:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                
-                # Try query parameter parsing
-                if 'origin' in query_params and 'destination' in query_params:
-                    origin = query_params['origin'][0] if query_params['origin'] else 'Unknown'
-                    destination = query_params['destination'][0] if query_params['destination'] else 'Unknown'
-                    dep_date = query_params.get('depart_date', [''])[0]
-                    ret_date = query_params.get('return_date', [''])[0]
-                    
-                    if dep_date and ret_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} to {ret_date}"
-                    elif dep_date:
-                        return f"✈️ {origin} → {destination} | {dep_date} (One-way)"
-                    else:
-                        return f"✈️ {origin} → {destination}"
-                
-                return "✈️ Kayak Flight Search"
-            
-            elif 'booking.com' in domain:
-                # Booking.com flight parsing
-                departure = query_params.get('ss', [''])[0] or query_params.get('departure_city', [''])[0]
-                arrival = query_params.get('arrival_city', [''])[0]
-                checkin = query_params.get('checkin', [''])[0]
-                checkout = query_params.get('checkout', [''])[0]
-                
-                # Try to extract from flight-specific parameters
-                from_airport = query_params.get('from_airport', [''])[0]
-                to_airport = query_params.get('to_airport', [''])[0]
-                departure_date = query_params.get('departure_date', [''])[0]
-                return_date = query_params.get('return_date', [''])[0]
-                
-                if from_airport and to_airport:
-                    if departure_date and return_date:
-                        return f"✈️ {from_airport} → {to_airport} | {departure_date} to {return_date}"
-                    elif departure_date:
-                        return f"✈️ {from_airport} → {to_airport} | {departure_date} (One-way)"
-                    else:
-                        return f"✈️ {from_airport} → {to_airport}"
-                
-                if departure and arrival:
-                    if checkin and checkout:
-                        return f"✈️ {departure} → {arrival} | {checkin} to {checkout}"
-                    else:
-                        return f"✈️ {departure} → {arrival}"
-                elif departure:
-                    return f"✈️ {departure} Flight Search"
-                
-                return "✈️ Booking.com Flight Search"
-            
-            elif 'priceline.com' in domain:
-                # Priceline flight parsing
-                from_code = query_params.get('from', [''])[0] or query_params.get('departure', [''])[0]
-                to_code = query_params.get('to', [''])[0] or query_params.get('arrival', [''])[0]
-                departure_date = query_params.get('departure_date', [''])[0] or query_params.get('dep_date', [''])[0]
-                return_date = query_params.get('return_date', [''])[0] or query_params.get('ret_date', [''])[0]
-                
-                # Try to extract from path as well
-                if not from_code or not to_code:
-                    priceline_match = re.search(r'/flights/([A-Z]{3})-([A-Z]{3})/', path)
-                    if priceline_match:
-                        from_code, to_code = priceline_match.groups()
-                
-                if from_code and to_code:
-                    if departure_date and return_date:
-                        return f"✈️ {from_code} → {to_code} | {departure_date} to {return_date}"
-                    elif departure_date:
-                        return f"✈️ {from_code} → {to_code} | {departure_date} (One-way)"
-                    else:
-                        return f"✈️ {from_code} → {to_code}"
-                
-                return "✈️ Priceline Flight Search"
-            
-            elif 'momondo.com' in domain:
-                # Momondo flight parsing
-                # Try path parsing first
-                momondo_match = re.search(r'/flight-search/([A-Z]{3})-([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
-                if momondo_match:
-                    from_code, to_code, dep_date, ret_date = momondo_match.groups()
-                    if ret_date:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                    else:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                
-                # Try another Momondo URL pattern
-                momondo_match2 = re.search(r'/flights/([A-Z]{3})/([A-Z]{3})/(\d{4}-\d{2}-\d{2})(?:/(\d{4}-\d{2}-\d{2}))?', path)
-                if momondo_match2:
-                    from_code, to_code, dep_date, ret_date = momondo_match2.groups()
-                    if ret_date:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} to {ret_date}"
-                    else:
-                        return f"✈️ {from_code} → {to_code} | {dep_date} (One-way)"
-                
-                # Try query parameters
-                origin = query_params.get('origin', [''])[0] or query_params.get('from', [''])[0]
-                destination = query_params.get('destination', [''])[0] or query_params.get('to', [''])[0]
-                departure_date = query_params.get('departure', [''])[0] or query_params.get('depart', [''])[0]
-                return_date = query_params.get('return', [''])[0]
-                
-                if origin and destination:
-                    if departure_date and return_date:
-                        return f"✈️ {origin} → {destination} | {departure_date} to {return_date}"
-                    elif departure_date:
-                        return f"✈️ {origin} → {destination} | {departure_date} (One-way)"
-                    else:
-                        return f"✈️ {origin} → {destination}"
-                
-                return "✈️ Momondo Flight Search"
-            
-            elif 'expedia.com' in domain:
-                # Expedia flight parsing
-                flight_1 = query_params.get('flight-1', [''])[0]
-                d1 = query_params.get('d1', [''])[0]
-                d2 = query_params.get('d2', [''])[0]
-                
-                # Try to extract from flight-1 parameter
-                if flight_1:
-                    flight_match = re.search(r'([A-Z]{3}),([A-Z]{3})', flight_1)
-                    if flight_match:
-                        from_code, to_code = flight_match.groups()
-                        if d1 and d2:
-                            return f"✈️ {from_code} → {to_code} | {d1} to {d2}"
-                        elif d1:
-                            return f"✈️ {from_code} → {to_code} | {d1} (One-way)"
-                        else:
-                            return f"✈️ {from_code} → {to_code}"
-                
-                # Try alternative Expedia parameters
-                departure_airport = query_params.get('departing', [''])[0] or query_params.get('from', [''])[0]
-                arrival_airport = query_params.get('arriving', [''])[0] or query_params.get('to', [''])[0]
-                departure_date = query_params.get('departing-date', [''])[0] or query_params.get('dep', [''])[0]
-                return_date = query_params.get('returning-date', [''])[0] or query_params.get('ret', [''])[0]
-                
-                if departure_airport and arrival_airport:
-                    if departure_date and return_date:
-                        return f"✈️ {departure_airport} → {arrival_airport} | {departure_date} to {return_date}"
-                    elif departure_date:
-                        return f"✈️ {departure_airport} → {arrival_airport} | {departure_date} (One-way)"
-                    else:
-                        return f"✈️ {departure_airport} → {arrival_airport}"
-                
-                # Try path parsing for Expedia
-                expedia_path_match = re.search(r'/Flights-Search.*?([A-Z]{3}).*?([A-Z]{3})', path)
-                if expedia_path_match:
-                    from_code, to_code = expedia_path_match.groups()
-                    return f"✈️ {from_code} → {to_code}"
-                
-                return "✈️ Expedia Flight Search"
-            
-            return "✈️ Flight Search"
-            
-        except Exception as e:
-            print(f"Error parsing flight URL: {e}")
-            return "✈️ Flight Search"
-
-    async def setup_browser_page(self, browser, platform: str):
-        """Set up browser page with stealth configuration"""
+    async def setup_stealth_browser(self, browser, platform: str):
+        """Set up browser page with advanced stealth configuration"""
         try:
             user_agent = self.get_random_user_agent(platform)
             
+            # Enhanced context options for stealth
             context = await browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
+                screen={'width': 1920, 'height': 1080},
                 locale='en-US',
                 timezone_id='America/New_York',
                 user_agent=user_agent,
+                has_touch=False,
+                is_mobile=False,
+                java_script_enabled=True,
                 extra_http_headers={
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'Accept-Language': 'en-US,en;q=0.9',
                     'Accept-Encoding': 'gzip, deflate, br',
-                    'DNT': '1',
                     'Connection': 'keep-alive',
                     'Upgrade-Insecure-Requests': '1',
                     'Sec-Fetch-Dest': 'document',
                     'Sec-Fetch-Mode': 'navigate',
-                    'Sec-Fetch-Site': 'none'
-                }
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'Cache-Control': 'max-age=0'
+                },
+                # Enhanced permissions
+                permissions=['geolocation'],
+                geolocation={'latitude': 40.7128, 'longitude': -74.0060},
+                color_scheme='light',
+                reduced_motion='no-preference',
+                forced_colors='none'
             )
             
             page = await context.new_page()
             
-            # Enhanced stealth script for flight sites
+            # Advanced stealth scripts
             await page.add_init_script("""
+                // Enhanced stealth mode
                 Object.defineProperty(navigator, 'webdriver', {
-                    get: () => undefined,
+                    get: () => undefined
                 });
                 
+                // Mock plugins with realistic data
                 Object.defineProperty(navigator, 'plugins', {
-                    get: () => [1, 2, 3, 4, 5],
+                    get: () => {
+                        return [
+                            {
+                                0: {type: "application/x-google-chrome-pdf", suffixes: "pdf", description: "Portable Document Format"},
+                                description: "Portable Document Format",
+                                filename: "internal-pdf-viewer",
+                                length: 1,
+                                name: "Chrome PDF Plugin"
+                            },
+                            {
+                                0: {type: "application/pdf", suffixes: "pdf", description: "Portable Document Format"},
+                                description: "Portable Document Format", 
+                                filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
+                                length: 1,
+                                name: "Chrome PDF Viewer"
+                            }
+                        ];
+                    }
                 });
                 
+                // Mock languages properly
                 Object.defineProperty(navigator, 'languages', {
-                    get: () => ['en-US', 'en'],
+                    get: () => ['en-US', 'en']
                 });
                 
-                // Mock chrome runtime
+                // Mock hardware concurrency
+                Object.defineProperty(navigator, 'hardwareConcurrency', {
+                    get: () => 8
+                });
+                
+                // Mock device memory
+                Object.defineProperty(navigator, 'deviceMemory', {
+                    get: () => 8
+                });
+                
+                // Mock permissions correctly
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                );
+                
+                // Mock chrome object
                 window.chrome = {
-                    runtime: {}
+                    runtime: {
+                        id: "fake-extension-id",
+                        connect: () => {},
+                        sendMessage: () => {}
+                    },
+                    loadTimes: () => {},
+                    csi: () => {}
                 };
                 
-                // Remove automation indicators
+                // Override the instanceof check for CanvasRenderingContext2D
+                const originalToString = Object.prototype.toString;
+                Object.prototype.toString = function() {
+                    if (this instanceof CanvasRenderingContext2D) {
+                        return '[object CanvasRenderingContext2D]';
+                    }
+                    return originalToString.call(this);
+                };
+                
+                // Remove Playwright/Puppeteer traces
+                delete window.__playwright;
+                delete window.__puppeteer;
+                delete window._phantom;
+                delete window._selenium;
+                delete window.callPhantom;
+                delete window.callSelenium;
+                delete window._Selenium_IDE_Recorder;
+                
+                // Remove CDP traces
                 delete window.cdc_adoQpoasnfa76pfcZLmcfl_Array;
                 delete window.cdc_adoQpoasnfa76pfcZLmcfl_Promise;
                 delete window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol;
             """)
             
+            # Additional script for WebGL vendor spoofing
+            await page.add_init_script("""
+                const getParameter = WebGLRenderingContext.prototype.getParameter;
+                WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                    if (parameter === 37445) {
+                        return 'Intel Inc.';
+                    }
+                    if (parameter === 37446) {
+                        return 'Intel Iris OpenGL Engine';
+                    }
+                    return getParameter.apply(this, arguments);
+                };
+                
+                const getParameter2 = WebGL2RenderingContext.prototype.getParameter;
+                WebGL2RenderingContext.prototype.getParameter = function(parameter) {
+                    if (parameter === 37445) {
+                        return 'Intel Inc.';
+                    }
+                    if (parameter === 37446) {
+                        return 'Intel Iris OpenGL Engine';
+                    }
+                    return getParameter2.apply(this, arguments);
+                };
+            """)
+            
             return page
         except Exception as e:
-            print(f"Error setting up browser page: {e}")
+            print(f"Error setting up stealth browser: {e}")
             raise
     
     async def simulate_human_behavior(self, page, platform: str):
         """Enhanced human behavior simulation"""
         try:
-            config = self.platform_configs.get(platform, {})
+            # Random initial wait
+            await asyncio.sleep(random.uniform(1.5, 3))
             
-            # Random wait
-            await asyncio.sleep(random.uniform(1, 3))
-            
-            # Random mouse movements
+            # Smooth random mouse movements
             for _ in range(random.randint(2, 4)):
-                x = random.randint(100, 1200)
-                y = random.randint(100, 800)
-                await page.mouse.move(x, y)
-                await asyncio.sleep(random.uniform(0.1, 0.3))
-            
-            # Enhanced scrolling for flight sites
-            if platform == 'flights':
-                # More aggressive scrolling to load all content
-                scroll_steps = random.randint(4, 8)
-                for i in range(scroll_steps):
-                    scroll_y = 400 * (i + 1) + random.randint(-100, 100)
-                    await page.evaluate(f"window.scrollTo({{top: {scroll_y}, behavior: 'smooth'}})")
-                    await asyncio.sleep(random.uniform(1, 2.5))
+                x1 = random.randint(100, 1200)
+                y1 = random.randint(100, 800)
+                x2 = random.randint(100, 1200)
+                y2 = random.randint(100, 800)
                 
-                # Wait for scroll time
-                scroll_time = config.get('scroll_time', 5000)
-                await asyncio.sleep(scroll_time / 1000)
-            else:
-                # Standard scrolling for other platforms
-                scroll_positions = [200, 400, 600, 300, 100]
-                for position in scroll_positions[:random.randint(2, 4)]:
-                    await page.evaluate(f"window.scrollTo({{top: {position}, behavior: 'smooth'}})")
-                    await asyncio.sleep(random.uniform(0.5, 1.2))
+                # Create smooth movement path
+                steps = random.randint(10, 20)
+                for i in range(steps):
+                    t = i / steps
+                    x = x1 + (x2 - x1) * t
+                    y = y1 + (y2 - y1) * t
+                    await page.mouse.move(x, y)
+                    await asyncio.sleep(random.uniform(0.01, 0.03))
+                
+                await asyncio.sleep(random.uniform(0.2, 0.5))
+            
+            # Natural scrolling pattern
+            current_position = 0
+            scroll_targets = [300, 600, 400, 800, 200]
+            
+            for target in scroll_targets[:random.randint(2, 4)]:
+                # Smooth scroll animation
+                steps = random.randint(15, 25)
+                for i in range(steps):
+                    t = i / steps
+                    # Easing function for natural movement
+                    eased_t = t * t * (3.0 - 2.0 * t)
+                    position = current_position + (target - current_position) * eased_t
+                    await page.evaluate(f"window.scrollTo({{top: {position}, behavior: 'auto'}})")
+                    await asyncio.sleep(random.uniform(0.01, 0.02))
+                
+                current_position = target
+                await asyncio.sleep(random.uniform(0.5, 1.5))
+            
+            # Random hover over elements
+            if random.random() > 0.5:
+                await page.mouse.move(
+                    random.randint(400, 800),
+                    random.randint(200, 600)
+                )
+                await asyncio.sleep(random.uniform(0.2, 0.4))
+                
         except Exception as e:
             print(f"Error simulating human behavior: {e}")
     
@@ -501,126 +386,57 @@ class MultiPlatformScraper:
         """Wait for platform-specific content to load"""
         try:
             config = self.platform_configs.get(platform, {})
-            wait_selectors = config.get('wait_selectors', [])
-            wait_time = config.get('wait_time', 10000)
+            wait_time = config.get('wait_time', 5000)
             
-            if platform == 'flights':
-                print("Waiting for flight results to load...")
-                
-                # Try each wait selector
-                for selector in wait_selectors:
-                    try:
-                        await page.wait_for_selector(selector, timeout=wait_time)
-                        print(f"Found flight content with selector: {selector}")
-                        break
-                    except Exception:
-                        continue
-                else:
-                    print("No specific flight selectors found, using general wait...")
-                
-                # Additional wait for JavaScript to finish
-                await asyncio.sleep(3)
-                
-                # Check if we can see any price elements
-                price_selectors = config.get('price_selectors', [])
-                for selector in price_selectors[:5]:  # Check first 5 selectors
-                    try:
-                        element = await page.query_selector(selector)
-                        if element:
-                            print(f"Price elements detected with selector: {selector}")
-                            return True
-                    except Exception:
-                        continue
-                
-                print("Flight results may not have loaded completely")
-                return False
-            else:
-                # Standard wait for other platforms
-                await page.wait_for_timeout(wait_time)
-                return True
-                
+            # Wait for page to be fully loaded
+            await page.wait_for_load_state('networkidle', timeout=wait_time)
+            
+            # Additional platform-specific waits
+            if platform == 'amazon':
+                try:
+                    await page.wait_for_selector('span#productTitle', timeout=3000)
+                except:
+                    pass
+            elif platform == 'roblox':
+                try:
+                    await page.wait_for_selector('.item-name-container', timeout=3000)
+                except:
+                    pass
+            
+            # General wait
+            await page.wait_for_timeout(1000)
+            return True
+            
         except Exception as e:
             print(f"Error waiting for content load: {e}")
-            return True  # Continue anyway
+            return True
     
     async def extract_text_content(self, page, selectors: List[str]) -> Optional[str]:
-        """Extract text content using multiple selectors"""
+        """Extract text content using multiple selectors with improved error handling"""
         for i, selector in enumerate(selectors):
             try:
-                element = await page.wait_for_selector(selector, timeout=3000)
+                # Try different methods to get the element
+                element = await page.query_selector(selector)
                 if element:
-                    text = await element.text_content()
+                    # Try multiple methods to get text
+                    text = None
+                    try:
+                        text = await element.text_content()
+                    except:
+                        try:
+                            text = await element.inner_text()
+                        except:
+                            try:
+                                text = await page.evaluate(f'(el) => el.textContent', element)
+                            except:
+                                pass
+                    
                     if text and text.strip():
                         print(f"Found content with selector #{i+1}: {selector}")
                         return text.strip()
-            except Exception:
+            except Exception as e:
                 continue
         return None
-    
-    async def extract_all_prices(self, page, platform: str) -> List[float]:
-        """Extract all available prices from the page"""
-        try:
-            config = self.platform_configs.get(platform, {})
-            price_selectors = config.get('price_selectors', [])
-            
-            all_prices = []
-            
-            print(f"Extracting prices for {platform} using {len(price_selectors)} selectors...")
-            
-            for i, selector in enumerate(price_selectors):
-                try:
-                    elements = await page.query_selector_all(selector)
-                    print(f"Selector {i+1} ({selector}): Found {len(elements)} elements")
-                    
-                    for element in elements:
-                        try:
-                            price_text = await element.text_content()
-                            if price_text:
-                                if platform == 'roblox':
-                                    price = await self.extract_robux_from_text(price_text)
-                                else:
-                                    price = await self.extract_price_from_text(price_text)
-                                
-                                if price and self.is_valid_price(price, platform):
-                                    all_prices.append(price)
-                                    print(f"Extracted price: {price} from text: '{price_text.strip()}'")
-                        except Exception:
-                            continue
-                    
-                    # If we found prices with this selector, we can stop
-                    if all_prices:
-                        print(f"Successfully extracted {len(all_prices)} prices with selector: {selector}")
-                        break
-                        
-                except Exception as e:
-                    print(f"Selector {selector} failed: {e}")
-                    continue
-            
-            # Remove duplicates and sort
-            unique_prices = list(set(all_prices))
-            unique_prices.sort()
-            
-            print(f"Total unique prices found: {len(unique_prices)}")
-            if unique_prices:
-                if platform == 'roblox':
-                    print(f"Price range: {min(unique_prices)} - {max(unique_prices)} Robux")
-                else:
-                    print(f"Price range: ${min(unique_prices)} - ${max(unique_prices)}")
-            
-            return unique_prices
-            
-        except Exception as e:
-            print(f"Error extracting prices: {e}")
-            return []
-    
-    def is_valid_price(self, price: float, platform: str) -> bool:
-        """Check if price is within valid range for platform"""
-        if platform == 'roblox':
-            return 1 <= price <= 999999
-        elif platform == 'flights':
-            return 10 <= price <= 50000
-        else:
-            return 0.01 <= price <= 999999
     
     async def extract_price_from_text(self, price_text: str) -> Optional[float]:
         """Extract price from text with improved regex"""
@@ -628,21 +444,18 @@ class MultiPlatformScraper:
             return None
         
         try:
-            print(f"Extracting price from: '{price_text[:100]}'")
-            
             # Clean the text
             cleaned_text = re.sub(r'[^\d.,\-\s$€£¥₹]', ' ', price_text)
             cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
             
             # Enhanced price patterns
             patterns = [
-                r'US\s*\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
                 r'\$\s*(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)',
-                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\)',
+                r'(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?)\s*\$',
                 r'(\d{1,3}(?:,\d{3})*\.\d{2})',
                 r'(\d{1,3}(?:,\d{3})*)',
                 r'(\d+\.\d{2})',
-                r'(\d+)',
+                r'(\d+)'
             ]
             
             for pattern in patterns:
@@ -653,12 +466,10 @@ class MultiPlatformScraper:
                             price_str = match.replace(',', '').strip()
                             price = float(price_str)
                             if 0.01 <= price <= 999999:
-                                print(f"Extracted price: ${price:.2f}")
                                 return price
                         except (ValueError, TypeError):
                             continue
             
-            print(f"Could not extract price from: '{price_text[:100]}'")
             return None
         except Exception as e:
             print(f"Error extracting price: {e}")
@@ -670,77 +481,22 @@ class MultiPlatformScraper:
             return None
         
         try:
-            print(f"Extracting Robux from: '{price_text[:100]}'")
-            
             # Clean the text
-            cleaned_text = re.sub(r'[^\d,.\-\s]', ' ', price_text)
-            cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
+            cleaned_text = re.sub(r'[^\d,]', '', price_text)
             
-            # Robux patterns
-            patterns = [
-                r'(\d{1,3}(?:,\d{3})*)',
-                r'(\d+)',
-            ]
+            if cleaned_text:
+                price_str = cleaned_text.replace(',', '')
+                price = float(price_str)
+                if 1 <= price <= 999999:
+                    return price
             
-            for pattern in patterns:
-                matches = re.findall(pattern, cleaned_text)
-                if matches:
-                    for match in matches:
-                        try:
-                            price_str = match.replace(',', '').strip()
-                            price = float(price_str)
-                            if 1 <= price <= 999999:
-                                print(f"Extracted Robux: {price:.0f}")
-                                return price
-                        except (ValueError, TypeError):
-                            continue
-            
-            print(f"Could not extract Robux from: '{price_text[:100]}'")
             return None
         except Exception as e:
             print(f"Error extracting Robux: {e}")
             return None
     
-    async def scrape_flight_with_enhanced_detection(self, page, url: str) -> Optional[Tuple[str, float]]:
-        """Enhanced flight scraping with improved price detection"""
-        try:
-            print("Enhanced flight scraping starting...")
-            
-            # Parse title from URL
-            title = self.parse_flight_route_from_url(url)
-            
-            # Wait for content to load
-            await self.wait_for_content_load(page, 'flights')
-            
-            # Extract all available prices
-            prices = await self.extract_all_prices(page, 'flights')
-            
-            if prices:
-                # Use the lowest price found
-                lowest_price = min(prices)
-                print(f"Successfully scraped flight: {title} - ${lowest_price:.2f}")
-                print(f"Found {len(prices)} total prices, selected lowest: ${lowest_price:.2f}")
-                return title, lowest_price
-            else:
-                print(f"No valid prices found for flight")
-                
-                # Debug: Save page content for analysis
-                try:
-                    content = await page.content()
-                    with open(f'debug_flight_{int(time.time())}.html', 'w', encoding='utf-8') as f:
-                        f.write(content)
-                    print("Saved debug HTML for flight")
-                except Exception:
-                    pass
-                
-                return None
-                
-        except Exception as e:
-            print(f"Error in enhanced flight scraping: {e}")
-            return None
-    
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Main scraping method that detects platform and scrapes accordingly"""
+        """Main scraping method with enhanced stealth"""
         platform = self.detect_platform(url)
         if not platform:
             print(f"Unsupported platform for URL: {url}")
@@ -749,122 +505,89 @@ class MultiPlatformScraper:
         print(f"Detected platform: {platform}")
         
         async with async_playwright() as p:
+            # Enhanced browser launch options
             browser = await p.chromium.launch(
                 headless=True,
                 args=[
                     '--disable-blink-features=AutomationControlled',
-                    '--no-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-web-security',
                     '--disable-features=IsolateOrigins,site-per-process',
+                    '--disable-site-isolation-trials',
+                    '--disable-web-security',
+                    '--disable-dev-shm-usage',
+                    '--disable-accelerated-2d-canvas',
+                    '--no-first-run',
+                    '--no-zygote',
+                    '--no-sandbox',
                     '--disable-gpu',
-                    '--disable-extensions',
-                    '--disable-plugins',
-                    '--memory-pressure-off'
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-tools',
+                    f'--user-agent={self.get_random_user_agent(platform)}'
                 ]
             )
             
             try:
-                page = await self.setup_browser_page(browser, platform)
+                page = await self.setup_stealth_browser(browser, platform)
                 config = self.platform_configs[platform]
                 
                 print(f"Navigating to: {url}")
-                response = await page.goto(url, wait_until='domcontentloaded', timeout=30000)
                 
-                if not response or response.status >= 400:
-                    print(f"Failed to load page, status: {response.status if response else 'None'}")
-                    return None
+                # Navigate with timeout and error handling
+                try:
+                    response = await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                    
+                    if response and response.status >= 400:
+                        print(f"Page returned status {response.status}")
+                        # Try again with a different approach
+                        await page.goto(url, wait_until='load', timeout=30000)
+                except Exception as e:
+                    print(f"Navigation error: {e}, retrying...")
+                    await page.goto(url, wait_until='networkidle', timeout=30000)
                 
-                await page.wait_for_timeout(config['wait_time'])
+                # Wait for content to load
+                await self.wait_for_content_load(page, platform)
                 
-                # Simulate human behavior for anti-bot bypass
+                # Simulate human behavior
                 await self.simulate_human_behavior(page, platform)
                 
-                # Special handling for Roblox
-                if platform == 'roblox':
-                    result = await self.extract_roblox_info(page)
-                    if result:
-                        return result
+                # Extract title
+                title = await self.extract_text_content(page, config['title_selectors'])
+                if not title:
+                    print(f"Could not extract title for {platform}")
+                    title = f"Product from {platform.title()}"
                 
-                # Special handling for flights with enhanced scraping
-                elif platform == 'flights':
-                    result = await self.scrape_flight_with_enhanced_detection(page, url)
-                    if result:
-                        return result
+                # Extract price
+                price = None
+                for price_selector in config['price_selectors']:
+                    try:
+                        price_element = await page.query_selector(price_selector)
+                        if price_element:
+                            price_text = await price_element.text_content()
+                            if price_text:
+                                if platform == 'roblox':
+                                    price = await self.extract_robux_from_text(price_text)
+                                else:
+                                    price = await self.extract_price_from_text(price_text)
+                                
+                                if price:
+                                    break
+                    except Exception:
+                        continue
                 
-                # Standard e-commerce platforms
-                else:
-                    # Extract title
-                    title = await self.extract_text_content(page, config['title_selectors'])
-                    if not title:
-                        print(f"Could not extract title for {platform}")
-                        title = f"Product from {platform.title()}"
-                    
-                    # Extract price
-                    prices = await self.extract_all_prices(page, platform)
-                    if prices:
-                        price = min(prices)  # Use lowest price
+                if price:
+                    if platform == 'roblox':
+                        print(f"Successfully scraped: {title[:50]}... - {int(price)} Robux")
+                    else:
                         print(f"Successfully scraped: {title[:50]}... - ${price:.2f}")
-                        return title, price
-                
-                print(f"Failed to extract complete product info for {url}")
-                return None
+                    return title, price
+                else:
+                    print(f"Failed to extract price for {url}")
+                    return None
                 
             except Exception as e:
                 print(f"Error scraping {url}: {str(e)}")
                 return None
             finally:
                 await browser.close()
-    
-    async def extract_roblox_info(self, page) -> Optional[Tuple[str, float]]:
-        """Extract Roblox item name and price"""
-        try:
-            print("Extracting Roblox UGC item info...")
-            await page.wait_for_timeout(5000)
-            
-            # Extract name
-            name_selectors = [
-                'div.item-details-name-row h1',
-                'h1[data-testid="item-name"]',
-                'h1.item-name-container h1',
-                'h1.font-header-1',
-                'h1'
-            ]
-            
-            item_name = await self.extract_text_content(page, name_selectors)
-            
-            if not item_name:
-                # JavaScript fallback for name
-                item_name = await page.evaluate('''
-                    () => {
-                        const nameRow = document.querySelector('.item-details-name-row h1');
-                        if (nameRow && nameRow.textContent.trim()) {
-                            return nameRow.textContent.trim();
-                        }
-                        
-                        const selectors = ['h1[data-testid="item-name"]', '.item-name-container h1', 'h1'];
-                        for (const sel of selectors) {
-                            const element = document.querySelector(sel);
-                            if (element && element.textContent.trim()) {
-                                return element.textContent.trim();
-                            }
-                        }
-                        return null;
-                    }
-                ''')
-            
-            # Extract price using the enhanced method
-            prices = await self.extract_all_prices(page, 'roblox')
-            
-            if item_name and prices:
-                price = min(prices)  # Use lowest price
-                print(f"Successfully extracted Roblox item: {item_name} - {price:.0f} Robux")
-                return item_name, price
-            
-            return None
-        except Exception as e:
-            print(f"Error extracting Roblox info: {e}")
-            return None
     
     @staticmethod
     def get_platform_info() -> Dict[str, Dict[str, str]]:
@@ -875,25 +598,19 @@ class MultiPlatformScraper:
             'etsy': {'name': 'Etsy', 'icon': '🎨'},
             'walmart': {'name': 'Walmart', 'icon': '🏪'},
             'storenvy': {'name': 'Storenvy', 'icon': '🏬'},
-            'roblox': {'name': 'Roblox', 'icon': '🎮'},
-            'flights': {'name': 'Flights', 'icon': '✈️'}
+            'roblox': {'name': 'Roblox', 'icon': '🎮'}
         }
 
 
 # Test function
-async def test_updated_scraper():
-    """Test the updated scraper with various URLs"""
+async def test_scraper():
+    """Test the enhanced scraper"""
     scraper = MultiPlatformScraper()
     
     test_urls = [
         "https://www.amazon.com/dp/B08N5WRWNW",
         "https://www.etsy.com/listing/123456789/test-product",
         "https://www.roblox.com/catalog/123456789/test-item",
-        "https://www.kayak.com/flights/LAX-NYC/2024-03-15/2024-03-22",
-        "https://www.booking.com/flights/search.html?from_airport=LAX&to_airport=JFK&departure_date=2024-03-15&return_date=2024-03-22",
-        "https://www.priceline.com/flights/search?from=LAX&to=NYC&departure_date=2024-03-15&return_date=2024-03-22",
-        "https://www.momondo.com/flight-search/LAX-NYC/2024-03-15/2024-03-22",
-        "https://www.expedia.com/Flights-Search?flight-1=LAX,NYC&d1=2024-03-15&d2=2024-03-22"
     ]
     
     for url in test_urls:
@@ -901,19 +618,17 @@ async def test_updated_scraper():
         print(f"Testing: {url}")
         print('='*60)
         
-        # Test URL parsing for flights
-        platform = scraper.detect_platform(url)
-        if platform == 'flights':
-            flight_info = scraper.parse_flight_route_from_url(url)
-            print(f"🛫 Parsed flight info: {flight_info}")
-        
         result = await scraper.scrape_product(url)
         if result:
             title, price = result
-            print(f"✅ SUCCESS: {title} - ${price:.2f}")
+            platform = scraper.detect_platform(url)
+            if platform == 'roblox':
+                print(f"✅ SUCCESS: {title} - {int(price)} Robux")
+            else:
+                print(f"✅ SUCCESS: {title} - ${price:.2f}")
         else:
             print("❌ FAILED to scrape")
 
 
 if __name__ == "__main__":
-    asyncio.run(test_updated_scraper())
+    asyncio.run(test_scraper())
