@@ -1,4 +1,4 @@
-# backend/stock_tracker.py - IMPROVED VERSION
+# backend/stock_tracker.py - FIXED VERSION WITH USER SUPPORT
 import asyncio
 import json
 import re
@@ -24,10 +24,11 @@ class StockPriceTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        # Stock alerts table
+        # Stock alerts table with user_id
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS stock_alerts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
                 symbol TEXT NOT NULL,
                 company_name TEXT,
                 alert_type TEXT NOT NULL,
@@ -35,9 +36,19 @@ class StockPriceTracker:
                 current_price REAL,
                 last_checked TIMESTAMP,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_triggered BOOLEAN DEFAULT 0
+                is_triggered BOOLEAN DEFAULT 0,
+                UNIQUE(user_id, symbol, alert_type, threshold)
             )
         ''')
+        
+        # Check if user_id column exists in existing table
+        cursor.execute("PRAGMA table_info(stock_alerts)")
+        columns = [column[1] for column in cursor.fetchall()]
+        
+        if 'user_id' not in columns:
+            # Add user_id column to existing table
+            cursor.execute('ALTER TABLE stock_alerts ADD COLUMN user_id INTEGER DEFAULT 1')
+            print("Added user_id column to stock_alerts table")
         
         # Stock price history table
         cursor.execute('''
@@ -55,8 +66,8 @@ class StockPriceTracker:
         conn.commit()
         conn.close()
     
-    def add_stock_alert(self, symbol: str, alert_type: str, threshold: float) -> None:
-        """Add a stock alert to track."""
+    def add_stock_alert(self, symbol: str, alert_type: str, threshold: float, user_id: int) -> None:
+        """Add a stock alert to track for a specific user."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
@@ -65,44 +76,52 @@ class StockPriceTracker:
         
         try:
             cursor.execute('''
-                INSERT INTO stock_alerts (symbol, alert_type, threshold)
-                VALUES (?, ?, ?)
-            ''', (symbol, alert_type, threshold))
+                INSERT INTO stock_alerts (user_id, symbol, alert_type, threshold)
+                VALUES (?, ?, ?, ?)
+            ''', (user_id, symbol, alert_type, threshold))
             conn.commit()
         except sqlite3.IntegrityError:
             # Update existing alert
             cursor.execute('''
                 UPDATE stock_alerts
                 SET alert_type = ?, threshold = ?, is_triggered = 0
-                WHERE symbol = ?
-            ''', (alert_type, threshold, symbol))
+                WHERE user_id = ? AND symbol = ?
+            ''', (alert_type, threshold, user_id, symbol))
             conn.commit()
         
         conn.close()
     
-    def delete_stock_alert(self, alert_id: int) -> None:
-        """Delete a stock alert."""
+    def delete_stock_alert(self, alert_id: int, user_id: int) -> None:
+        """Delete a stock alert for a specific user."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         # Delete price history first
-        cursor.execute('DELETE FROM stock_price_history WHERE symbol IN (SELECT symbol FROM stock_alerts WHERE id = ?)', (alert_id,))
+        cursor.execute('''
+            DELETE FROM stock_price_history 
+            WHERE symbol IN (
+                SELECT symbol FROM stock_alerts 
+                WHERE id = ? AND user_id = ?
+            )
+        ''', (alert_id, user_id))
+        
         # Delete alert
-        cursor.execute('DELETE FROM stock_alerts WHERE id = ?', (alert_id,))
+        cursor.execute('DELETE FROM stock_alerts WHERE id = ? AND user_id = ?', (alert_id, user_id))
         
         conn.commit()
         conn.close()
     
-    def get_stock_alerts(self) -> List[Dict[str, any]]:
-        """Get all stock alerts from database."""
+    def get_stock_alerts(self, user_id: int) -> List[Dict[str, any]]:
+        """Get all stock alerts for a specific user."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         cursor.execute('''
             SELECT id, symbol, company_name, alert_type, threshold, current_price, last_checked, is_triggered
             FROM stock_alerts
+            WHERE user_id = ?
             ORDER BY created_at DESC
-        ''')
+        ''', (user_id,))
         
         alerts: List[Dict[str, any]] = []
         for row in cursor.fetchall():
@@ -128,6 +147,40 @@ class StockPriceTracker:
                 'last_checked': row[6],
                 'is_triggered': row[7],
                 'status': status
+            })
+        
+        conn.close()
+        return alerts
+
+    def get_all_alerts_for_checking(self) -> List[Dict[str, any]]:
+        """Get all stock alerts from all users for checking."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT a.id, a.user_id, a.symbol, a.company_name, a.alert_type, a.threshold, 
+                   a.current_price, a.last_checked, a.is_triggered,
+                   u.email, u.smtp_password, u.first_name
+            FROM stock_alerts a
+            JOIN users u ON a.user_id = u.id
+            ORDER BY a.created_at DESC
+        ''')
+        
+        alerts: List[Dict[str, any]] = []
+        for row in cursor.fetchall():
+            alerts.append({
+                'id': row[0],
+                'user_id': row[1],
+                'symbol': row[2],
+                'company_name': row[3] or row[2],
+                'alert_type': row[4],
+                'threshold': row[5],
+                'current_price': row[6],
+                'last_checked': row[7],
+                'is_triggered': row[8],
+                'user_email': row[9],
+                'smtp_password': row[10],
+                'user_name': row[11]
             })
         
         conn.close()
@@ -181,7 +234,7 @@ class StockPriceTracker:
             try:
                 print(f"Scraping {symbol} from Yahoo Finance...")
                 await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                await page.wait_for_timeout(5000)  # Increased wait time
+                await page.wait_for_timeout(5000)
 
                 # Extract company name with multiple selectors
                 company_name = symbol  # Default fallback
@@ -204,8 +257,7 @@ class StockPriceTracker:
                                 company_name = name_text.strip().split('(')[0].strip()
                                 print(f"Found company name: {company_name}")
                                 break
-                    except Exception as e:
-                        print(f"Selector {selector} failed: {e}")
+                    except Exception:
                         continue
 
                 # Extract current price with improved selectors
@@ -237,18 +289,16 @@ class StockPriceTracker:
                                     if price > 0:
                                         print(f"Successfully extracted price: ${price}")
                                         break
-                    except Exception as e:
-                        print(f"Price selector {selector} failed: {e}")
+                    except Exception:
                         continue
 
-                # Extract change percentage with improved selectors
+                # Extract change percentage
                 change_percent = None
                 change_selectors = [
                     'fin-streamer[data-testid="quote-price"] + fin-streamer',
                     'fin-streamer[data-field="regularMarketChangePercent"]',
                     '[data-testid="quote-price"] + span',
-                    '.quote-header span[data-reactid*="percent"]',
-                    'span:contains("%")'
+                    '.quote-header span[data-reactid*="percent"]'
                 ]
 
                 for selector in change_selectors:
@@ -263,7 +313,7 @@ class StockPriceTracker:
                                     change_percent = float(percent_match.group(1))
                                     print(f"Found change percent: {change_percent}%")
                                     break
-                    except Exception as e:
+                    except Exception:
                         continue
 
                 if price is None:
@@ -279,74 +329,15 @@ class StockPriceTracker:
             finally:
                 await browser.close()
 
-    async def scrape_marketwatch_fallback(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
-        """Fallback scraper for MarketWatch."""
-        url = f"https://www.marketwatch.com/investing/stock/{symbol.lower()}"
-        
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            context = await browser.new_context(
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
-            page = await context.new_page()
-
-            try:
-                print(f"Trying MarketWatch fallback for {symbol}...")
-                await page.goto(url, wait_until='domcontentloaded', timeout=15000)
-                await page.wait_for_timeout(3000)
-
-                # MarketWatch selectors
-                company_name = symbol
-                price = None
-                
-                # Try to get company name
-                try:
-                    name_element = await page.wait_for_selector('h1.company__name', timeout=3000)
-                    if name_element:
-                        company_name = await name_element.text_content()
-                        company_name = company_name.strip()
-                except Exception:
-                    pass
-                
-                # Try to get price
-                try:
-                    price_element = await page.wait_for_selector('.intraday__price .value', timeout=3000)
-                    if price_element:
-                        price_text = await price_element.text_content()
-                        price_match = re.search(r'(\d+(?:\.\d{1,4})?)', price_text.replace('$', '').replace(',', ''))
-                        if price_match:
-                            price = float(price_match.group(1))
-                            print(f"MarketWatch found price: ${price}")
-                except Exception:
-                    pass
-
-                if price:
-                    return company_name, price, 0, 0.0
-                return None
-
-            except Exception as e:
-                print(f"MarketWatch fallback failed for {symbol}: {str(e)}")
-                return None
-            finally:
-                await browser.close()
-
     async def get_stock_data(self, symbol: str) -> Optional[Tuple[str, float, int, float]]:
-        """Get stock data with multiple fallback sources."""
-        # Try Yahoo Finance first
+        """Get stock data with fallback sources."""
         print(f"Attempting to get data for {symbol}...")
         data = await self.scrape_yahoo_finance(symbol)
         if data:
             print(f"✅ Yahoo Finance success for {symbol}: ${data[1]}")
             return data
-        
-        print(f"Yahoo Finance failed for {symbol}, trying MarketWatch...")
-        # Fallback to MarketWatch
-        data = await self.scrape_marketwatch_fallback(symbol)
-        if data:
-            print(f"✅ MarketWatch success for {symbol}: ${data[1]}")
-            return data
             
-        print(f"❌ All sources failed for {symbol}")
+        print(f"❌ Failed to get data for {symbol}")
         return None
 
     def check_alert_conditions(self, alert: Dict, current_price: float, change_percent: float) -> bool:
@@ -365,15 +356,15 @@ class StockPriceTracker:
         
         return False
 
-    def send_stock_alert_email(self, alert: Dict, current_price: float, change_percent: float, smtp_config: Dict) -> None:
+    def send_stock_alert_email(self, alert: Dict, current_price: float, change_percent: float) -> None:
         """Send email alert for stock price trigger."""
-        if not smtp_config.get('enabled'):
+        if not alert.get('smtp_password'):
             return
         
         try:
             msg = MIMEMultipart()
-            msg['From'] = smtp_config['from_email']
-            msg['To'] = smtp_config['to_email']
+            msg['From'] = alert['user_email']
+            msg['To'] = alert['user_email']
             msg['Subject'] = f"🚨 Stock Alert: {alert['symbol']} - {alert['alert_type']}"
             
             # Create alert type description
@@ -385,31 +376,36 @@ class StockPriceTracker:
             }
             
             body = f"""
-            🚨 Stock Alert Triggered! 🚨
-            
-            Stock: {alert['symbol']} ({alert['company_name']})
-            Alert: {alert_descriptions.get(alert['alert_type'], alert['alert_type'])}
-            
-            Current Price: ${current_price:.2f}
-            Change Today: {change_percent:+.2f}%
-            Threshold: {alert['threshold']}
-            
-            View on Yahoo Finance: https://finance.yahoo.com/quote/{alert['symbol']}
-            
-            Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-            
-            Happy trading! 📈
+Hello {alert['user_name']}! 🚨
+
+Stock Alert Triggered!
+
+Stock: {alert['symbol']} ({alert['company_name']})
+Alert: {alert_descriptions.get(alert['alert_type'], alert['alert_type'])}
+
+Current Price: ${current_price:.2f}
+Change Today: {change_percent:+.2f}%
+Threshold: {alert['threshold']}
+
+View on Yahoo Finance: https://finance.yahoo.com/quote/{alert['symbol']}
+
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+Happy trading! 📈
+
+Best regards,
+PriceTracker
             """
             
             msg.attach(MIMEText(body, 'plain'))
             
-            server = smtplib.SMTP(smtp_config['smtp_server'], smtp_config['smtp_port'])
+            server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
-            server.login(smtp_config['from_email'], smtp_config['password'])
+            server.login(alert['user_email'], alert['smtp_password'])
             server.send_message(msg)
             server.quit()
             
-            print(f"Alert email sent for {alert['symbol']}")
+            print(f"📧 Alert email sent to {alert['user_name']} for {alert['symbol']}")
             
         except Exception as e:
             print(f"Failed to send stock alert email: {str(e)}")
@@ -428,9 +424,9 @@ class StockPriceTracker:
         conn.commit()
         conn.close()
 
-    async def check_all_stock_alerts(self, smtp_config: Optional[Dict] = None) -> None:
-        """Check all stock alerts for triggers."""
-        alerts = self.get_stock_alerts()
+    async def check_all_stock_alerts(self) -> None:
+        """Check all stock alerts for all users."""
+        alerts = self.get_all_alerts_for_checking()
         
         if not alerts:
             print("No stock alerts to check")
@@ -444,7 +440,7 @@ class StockPriceTracker:
                 continue
                 
             symbol = alert['symbol']
-            print(f"📊 Checking {symbol}...")
+            print(f"📊 Checking {symbol} for user {alert['user_name']}...")
             
             stock_data = await self.get_stock_data(symbol)
             
@@ -456,11 +452,11 @@ class StockPriceTracker:
                 
                 # Check if alert conditions are met
                 if self.check_alert_conditions(alert, current_price, change_percent):
-                    print(f"🚨 ALERT TRIGGERED: {symbol} - {alert['alert_type']}")
+                    print(f"🚨 ALERT TRIGGERED: {symbol} - {alert['alert_type']} for {alert['user_name']}")
                     
-                    # Send notification
-                    if smtp_config:
-                        self.send_stock_alert_email(alert, current_price, change_percent, smtp_config)
+                    # Send notification if user has SMTP configured
+                    if alert.get('smtp_password'):
+                        self.send_stock_alert_email(alert, current_price, change_percent)
                     
                     # Mark as triggered to avoid repeated alerts
                     self.mark_alert_triggered(alert['id'])
@@ -483,9 +479,9 @@ class StockPriceTracker:
         conn.close()
         print("All triggered alerts have been reset")
 
-    def get_stock_stats(self) -> Dict:
-        """Get statistics about tracked stocks."""
-        alerts = self.get_stock_alerts()
+    def get_stock_stats(self, user_id: int) -> Dict:
+        """Get statistics about tracked stocks for a specific user."""
+        alerts = self.get_stock_alerts(user_id)
         
         total_alerts = len(alerts)
         triggered_alerts = sum(1 for alert in alerts if alert['is_triggered'])
@@ -503,10 +499,10 @@ async def test_stock_tracker():
     """Test function to verify the stock tracker works."""
     tracker = StockPriceTracker()
     
-    print("Testing improved stock tracker...")
+    print("Testing stock tracker...")
     
     # Test scraping different stocks
-    test_symbols = ["AAPL", "CNC", "MSFT", "GOOGL"]
+    test_symbols = ["AAPL", "MSFT", "GOOGL"]
     
     for symbol in test_symbols:
         print(f"\n📊 Testing {symbol}...")
@@ -516,37 +512,6 @@ async def test_stock_tracker():
             print(f"✅ {company_name}: ${price:.2f} ({change_percent:+.2f}%)")
         else:
             print(f"❌ Failed to get {symbol} data")
-
-def init_stock_tables(self) -> None:
-        """Initialize SQLite database tables for stock tracking."""
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        
-        # Stock alerts table with user_id
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS stock_alerts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                symbol TEXT NOT NULL,
-                company_name TEXT,
-                alert_type TEXT NOT NULL,
-                threshold REAL NOT NULL,
-                current_price REAL,
-                last_checked TIMESTAMP,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                is_triggered BOOLEAN DEFAULT 0,
-                UNIQUE(user_id, symbol, alert_type, threshold)
-            )
-        ''')
-        
-        # Check if user_id column exists
-        cursor.execute("PRAGMA table_info(stock_alerts)")
-        columns = [column[1] for column in cursor.fetchall()]
-        
-        if 'user_id' not in columns:
-            # Migrate existing data
-            cursor.execute('ALTER TABLE stock_alerts ADD COLUMN user_id INTEGER DEFAULT 1')
-            print("Added user_id column to stock_alerts table")
 
 
 if __name__ == "__main__":

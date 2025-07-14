@@ -3,364 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PriceTracker - Professional Automatic Price Monitoring</title>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <title>PriceTracker - Smart Price Monitoring</title>
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Auth Container -->
+    <!-- Authentication Container -->
     <div id="authContainer" class="auth-container">
         <div class="auth-card">
-            <div class="auth-logo">
-                <div class="logo-icon-large">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iMzgiIGZpbGw9IiM2MzY2ZjEiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI0Ii8+CjxwYXRoIGQ9Ik0yNSAzNUwzNSAyNUw0NSAzNUw1NSAyNSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPHBhdGggZD0iTTI1IDQ1TDM1IDU1TDQ1IDQ1TDU1IDU1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8Y2lyY2xlIGN4PSI1NSIgY3k9IjI1IiByPSI4IiBmaWxsPSIjMTBiOTgxIi8+CjxwYXRoIGQ9Ik01MyAyNUw1NSAyN0w1OSAyMyIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+" alt="PriceTracker Logo">
+            <div class="auth-header">
+                <div class="logo">
+                    <i class="fas fa-chart-line"></i>
+                    <h1>PriceTracker</h1>
                 </div>
-                <h1>PriceTracker</h1>
-                <p>Professional Price Monitoring Platform</p>
+                <p class="auth-subtitle">Smart price monitoring for e-commerce, Roblox, and stocks</p>
             </div>
-            
+
             <!-- Login Form -->
             <div id="loginForm" class="auth-form">
-                <h2>Welcome Back</h2>
+                <h2>Sign In</h2>
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="your@email.com" required>
+                        <label for="loginEmail">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="loginEmail" required placeholder="Enter your email">
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="loginPassword" class="form-control" placeholder="Your password" required>
+                        <label for="loginPassword">
+                            <i class="fas fa-lock"></i>
+                            Password
+                        </label>
+                        <input type="password" id="loginPassword" required placeholder="Enter your password">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-large btn-block">
-                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
                     </button>
                 </form>
-                <p class="auth-switch">
-                    Don't have an account? 
-                    <a href="#" onclick="showSignupForm()">Create one</a>
-                </p>
+                <div class="auth-switch">
+                    <p>Don't have an account? <a href="#" onclick="showSignupForm()">Create one</a></p>
+                </div>
             </div>
-            
+
             <!-- Signup Form -->
             <div id="signupForm" class="auth-form" style="display: none;">
                 <h2>Create Account</h2>
                 <form onsubmit="handleSignup(event)">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>First Name</label>
-                            <input type="text" id="signupFirstName" class="form-control" placeholder="John" required>
+                            <label for="signupFirstName">
+                                <i class="fas fa-user"></i>
+                                First Name *
+                            </label>
+                            <input type="text" id="signupFirstName" required placeholder="John">
                         </div>
                         <div class="form-group">
-                            <label>Last Name</label>
-                            <input type="text" id="signupLastName" class="form-control" placeholder="Doe">
+                            <label for="signupLastName">
+                                <i class="fas fa-user"></i>
+                                Last Name
+                            </label>
+                            <input type="text" id="signupLastName" placeholder="Doe">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="signupEmail" class="form-control" placeholder="your@email.com" required>
+                        <label for="signupEmail">
+                            <i class="fas fa-envelope"></i>
+                            Email Address *
+                        </label>
+                        <input type="email" id="signupEmail" required placeholder="john@example.com">
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="signupPassword" class="form-control" placeholder="Create a password" required minlength="6">
+                        <label for="signupPassword">
+                            <i class="fas fa-lock"></i>
+                            Password * (min 6 characters)
+                        </label>
+                        <input type="password" id="signupPassword" required minlength="6" placeholder="Create a secure password">
                     </div>
                     <div class="form-group">
-                        <label>Gmail App Password (Optional)</label>
-                        <input type="password" id="signupSmtpPassword" class="form-control" placeholder="For email notifications">
-                        <span class="form-hint">You can add this later in settings</span>
+                        <label for="signupSmtpPassword">
+                            <i class="fas fa-mail-bulk"></i>
+                            Gmail App Password (Optional)
+                        </label>
+                        <input type="password" id="signupSmtpPassword" placeholder="For email alerts (can be added later)">
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Optional: Add your Gmail app password to receive email alerts when deals are found
+                        </small>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-large btn-block">
-                        <i class="fas fa-user-plus"></i> Create Account
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
                     </button>
                 </form>
-                <p class="auth-switch">
-                    Already have an account? 
-                    <a href="#" onclick="showLoginForm()">Sign in</a>
-                </p>
+                <div class="auth-switch">
+                    <p>Already have an account? <a href="#" onclick="showLoginForm()">Sign in</a></p>
+                </div>
+            </div>
+
+            <!-- Features Preview -->
+            <div class="auth-features">
+                <h3>What you can track:</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Amazon, eBay, Etsy</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-gamepad"></i>
+                        <span>Roblox UGC Items</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Stock Prices</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Email Alerts</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Main App Container -->
-    <div id="appContainer" style="display: none;">
-        <!-- Header -->
-        <header class="header">
-            <div class="container">
-                <div class="header-content">
-                    <div class="logo">
-                        <div class="logo-icon">
-                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjQiIGN5PSIyNCIgcj0iMjIiIGZpbGw9IiM2MzY2ZjEiLz4KPHBhdGggZD0iTTE1IDIxTDIxIDE1TDI3IDIxTDMzIDE1IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjMiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8cGF0aCBkPSJNMTUgMjdMMjEgMzNMMjcgMjdMMzMgMzMiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+CjxjaXJjbGUgY3g9IjMzIiBjeT0iMTUiIHI9IjUiIGZpbGw9IiMxMGI5ODEiLz4KPHBhdGggZD0iTTMxLjUgMTVMMzIuNSAxNkwzNC41IDE0IiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPg==" alt="PriceTracker">
-                        </div>
-                        <div>
-                            <h1>PriceTracker</h1>
-                            <p class="tagline">Hello <span id="userName">User</span>! Your prices are being monitored 24/7</p>
-                        </div>
-                    </div>
-                        
-                    <!-- Stats Grid -->
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon products">
-                                <i class="fas fa-shopping-bag"></i>
-                            </div>
-                            <div class="stat-info">
-                                <span class="stat-value" id="totalProducts">0</span>
-                                <span class="stat-label">Products</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon roblox">
-                                <i class="fas fa-gamepad"></i>
-                            </div>
-                            <div class="stat-info">
-                                <span class="stat-value" id="totalRobloxItems">0</span>
-                                <span class="stat-label">Roblox Items</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon stocks">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="stat-info">
-                                <span class="stat-value" id="totalStockAlerts">0</span>
-                                <span class="stat-label">Stock Alerts</span>
+    <div id="appContainer" class="app-container" style="display: none;">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-chart-line"></i>
+                <span>PriceTracker</span>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" onclick="showPage('productsPage', this)">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>E-commerce</span>
+                </div>
+                <div class="nav-item" onclick="showPage('robloxPage', this)">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Roblox</span>
+                </div>
+                <div class="nav-item" onclick="showPage('stocksPage', this)">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stocks</span>
+                </div>
+                <div class="nav-item" onclick="showPage('settingsPage', this)">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+            
+            <div class="nav-user">
+                <div class="user-dropdown">
+                    <button class="user-button">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <div class="user-name" id="accountName">John Doe</div>
+                                <div class="user-email" id="accountEmail">john@example.com</div>
                             </div>
                         </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-icon savings">
-                                <i class="fas fa-piggy-bank"></i>
-                            </div>
-                            <div class="stat-info">
-                                <span class="stat-value">$<span id="totalSavings">0</span></span>
-                                <span class="stat-label">Total Savings</span>
-                            </div>
-                        </div>
+                        <button class="dropdown-item" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Sign Out
+                        </button>
                     </div>
                 </div>
             </div>
-        </header>
+        </nav>
 
-        <!-- Auto-monitoring Banner -->
-        <div class="auto-monitor-banner">
-            <div class="container">
-                <div class="monitor-info">
-                    <i class="fas fa-robot"></i>
-                    <span><strong>Automatic Monitoring Active:</strong> E-commerce products checked every 6 hours • Roblox items checked every 6 hours • Stock alerts checked every 5 minutes</span>
+        <!-- Stats Dashboard -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">E-commerce Products</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalRobloxItems">0</div>
+                    <div class="stat-label">Roblox Items</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalStockAlerts">0</div>
+                    <div class="stat-label">Stock Alerts</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">$<span id="totalSavings">0.00</span></div>
+                    <div class="stat-label">Potential Savings</div>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="container">
-                <!-- Products Page -->
-                <div id="productsPage" class="page active">
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h2><i class="fas fa-shopping-bag"></i> E-Commerce Products</h2>
-                            <p>Track products from Amazon, eBay, Etsy, Walmart & Storenvy</p>
-                        </div>
-                        <button class="btn btn-primary btn-large" onclick="showAddProductModal()">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                    </div>
+        <!-- E-commerce Products Page -->
+        <div id="productsPage" class="page active">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-shopping-cart"></i>
+                    E-commerce Products
+                </h2>
+                <button class="btn btn-primary" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Product
+                </button>
+            </div>
+
+            <div id="productsList" class="products-grid">
+                <!-- Products will be loaded here -->
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>No products being tracked</h3>
+                <p>Add your first product to start monitoring prices from Amazon, eBay, Etsy, Walmart, and more!</p>
+                <button class="btn btn-primary" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </button>
+            </div>
+        </div>
+
+        <!-- Roblox Page -->
+        <div id="robloxPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-gamepad"></i>
+                    Roblox UGC Items
+                </h2>
+                <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Roblox Item
+                </button>
+            </div>
+
+            <div id="robloxList" class="products-grid">
+                <!-- Roblox items will be loaded here -->
+            </div>
+
+            <div id="robloxEmptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3>No Roblox items being tracked</h3>
+                <p>Add Roblox UGC items to monitor their Robux prices and get alerts when they go on sale!</p>
+                <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Roblox Item
+                </button>
+            </div>
+        </div>
+
+        <!-- Stocks Page -->
+        <div id="stocksPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Stock Alerts
+                </h2>
+                <button class="btn btn-primary" onclick="showAddStockModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Stock Alert
+                </button>
+            </div>
+
+            <div id="stocksList" class="products-grid">
+                <!-- Stock alerts will be loaded here -->
+            </div>
+
+            <div id="stocksEmptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>No stock alerts configured</h3>
+                <p>Create alerts for stock price movements and percentage changes to stay informed about your investments!</p>
+                <button class="btn btn-primary" onclick="showAddStockModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Stock Alert
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </h2>
+            </div>
+
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h3>
+                        <i class="fas fa-envelope"></i>
+                        Email Notifications
+                    </h3>
+                    <p>Configure email alerts to get notified when deals are found or stock alerts trigger.</p>
                     
-                    <div id="productsList" class="content-grid"></div>
-                    
-                    <div id="emptyState" class="empty-state" style="display: none;">
-                        <div class="empty-icon">
-                            <i class="fas fa-shopping-cart"></i>
+                    <form id="emailForm" class="settings-form">
+                        <div class="form-group">
+                            <label for="smtpPassword">
+                                <i class="fas fa-key"></i>
+                                Gmail App Password
+                            </label>
+                            <input type="password" id="smtpPassword" placeholder="Enter your Gmail app password">
+                            <small class="form-hint">
+                                <i class="fas fa-info-circle"></i>
+                                <a href="https://support.google.com/accounts/answer/185833" target="_blank">Learn how to create a Gmail app password</a>
+                            </small>
                         </div>
-                        <h3>No products tracked yet</h3>
-                        <p>Start tracking products to get automatic notifications when prices drop!</p>
-                        <button class="btn btn-primary btn-large" onclick="showAddProductModal()">
-                            <i class="fas fa-plus"></i> Add Your First Product
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Email Settings
                         </button>
-                    </div>
+                    </form>
                 </div>
 
-                <!-- Roblox Page -->
-                <div id="robloxPage" class="page">
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h2><i class="fas fa-gamepad"></i> Roblox UGC Items</h2>
-                            <p>Track Roblox user-generated content and get automatic alerts for price drops</p>
-                        </div>
-                        <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
-                            <i class="fas fa-plus"></i> Add Roblox Item
-                        </button>
-                    </div>
-                    
-                    <div id="robloxList" class="content-grid"></div>
-                    
-                    <div id="robloxEmptyState" class="empty-state" style="display: none;">
-                        <div class="empty-icon">
-                            <i class="fas fa-gamepad"></i>
-                        </div>
-                        <h3>No Roblox items tracked yet</h3>
-                        <p>Start tracking Roblox UGC items to get automatic notifications when prices drop!</p>
-                        <button class="btn btn-primary btn-large" onclick="showAddRobloxModal()">
-                            <i class="fas fa-plus"></i> Add Your First Item
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Stocks Page -->
-                <div id="stocksPage" class="page">
-                    <div class="page-header">
-                        <div class="page-title">
-                            <h2><i class="fas fa-chart-line"></i> Stock Alerts</h2>
-                            <p>Set automatic price alerts for your favorite stocks</p>
-                        </div>
-                        <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
-                            <i class="fas fa-plus"></i> Add Stock Alert
-                        </button>
-                    </div>
-                    
-                    <div id="stocksList" class="content-grid"></div>
-                    
-                    <div id="stocksEmptyState" class="empty-state" style="display: none;">
-                        <div class="empty-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3>No stock alerts set</h3>
-                        <p>Create automatic alerts to get notified when stocks hit your target prices!</p>
-                        <button class="btn btn-primary btn-large" onclick="showAddStockModal()">
-                            <i class="fas fa-plus"></i> Create Your First Alert
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Settings Page -->
-                <div id="settingsPage" class="page">
-                    <div class="settings-container">
-                        <div class="settings-card">
-                            <div class="settings-header">
-                                <h3><i class="fas fa-envelope"></i> Email Notifications</h3>
-                                <p>Configure automatic email alerts for price drops</p>
-                            </div>
-                            
-                            <form id="emailForm">
-                                <div class="info-card">
-                                    <h4><i class="fas fa-info-circle"></i> Gmail App Password</h4>
-                                    <p>For Gmail: Enable 2-factor authentication and generate an App Password. Your regular password won't work.</p>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label>Gmail App Password</label>
-                                    <input type="password" id="smtpPassword" class="form-control" placeholder="Your Gmail app password">
-                                    <span class="form-hint">Generate an app password in your Google Account settings</span>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save Email Settings
-                                </button>
-                            </form>
-                        </div>
-                        
-                        <div class="settings-card" style="margin-top: 24px;">
-                            <div class="settings-header">
-                                <h3><i class="fas fa-user"></i> Account Settings</h3>
-                                <p>Manage your account</p>
-                            </div>
-                            
-                            <div class="account-info">
-                                <p><strong>Name:</strong> <span id="accountName"></span></p>
-                                <p><strong>Email:</strong> <span id="accountEmail"></span></p>
-                            </div>
-                            
-                            <button class="btn btn-secondary" onclick="handleLogout()">
-                                <i class="fas fa-sign-out-alt"></i> Sign Out
-                            </button>
-                        </div>
+                <div class="settings-section">
+                    <h3>
+                        <i class="fas fa-info-circle"></i>
+                        About PriceTracker
+                    </h3>
+                    <div class="about-content">
+                        <p><strong>Version:</strong> 2.0.0</p>
+                        <p><strong>Features:</strong></p>
+                        <ul>
+                            <li>✅ Multi-platform e-commerce price tracking</li>
+                            <li>✅ Roblox UGC item monitoring</li>
+                            <li>✅ Stock price alerts</li>
+                            <li>✅ Automatic background monitoring</li>
+                            <li>✅ Email notifications</li>
+                            <li>✅ User authentication</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active" onclick="showPage('productsPage', this)">
-                <div class="nav-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-                <span>Products</span>
-            </a>
-            
-            <a href="#" class="nav-item" onclick="showPage('robloxPage', this)">
-                <div class="nav-icon">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <span>Roblox</span>
-            </a>
-            
-            <a href="#" class="nav-item" onclick="showPage('stocksPage', this)">
-                <div class="nav-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <span>Stocks</span>
-            </a>
-            
-            <a href="#" class="nav-item" onclick="showPage('settingsPage', this)">
-                <div class="nav-icon">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <span>Settings</span>
-            </a>
-        </nav>
+        </div>
     </div>
 
-    <!-- Modals -->
     <!-- Add Product Modal -->
     <div id="addProductModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-shopping-bag"></i> Add E-Commerce Product</h3>
-                <button class="modal-close" onclick="closeAddProductModal()">&times;</button>
+                <h3>
+                    <i class="fas fa-plus"></i>
+                    Add E-commerce Product
+                </h3>
+                <button class="close-btn" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <form id="addProductForm" onsubmit="addProduct(event)">
                 <div class="form-group">
-                    <label>Select Platform</label>
-                    <select id="platformSelect" class="form-control" onchange="updateUrlPlaceholder()" required>
+                    <label for="platformSelect">
+                        <i class="fas fa-store"></i>
+                        E-commerce Platform
+                    </label>
+                    <select id="platformSelect" required onchange="updateUrlPlaceholder()">
                         <option value="">Choose a platform...</option>
-                        <option value="amazon">Amazon</option>
-                        <option value="ebay">eBay</option>
-                        <option value="etsy">Etsy</option>
-                        <option value="walmart">Walmart</option>
-                        <option value="storenvy">Storenvy</option>
+                        <option value="amazon">🛒 Amazon</option>
+                        <option value="ebay">🏷️ eBay</option>
+                        <option value="etsy">🎨 Etsy</option>
+                        <option value="walmart">🏪 Walmart</option>
+                        <option value="storenvy">🏬 Storenvy</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label>Product URL</label>
-                    <input type="url" id="productUrl" class="form-control" placeholder="Select a platform first..." required disabled>
-                    <span id="urlHint" class="form-hint"></span>
+                    <label for="productUrl">
+                        <i class="fas fa-link"></i>
+                        Product URL
+                    </label>
+                    <input type="url" id="productUrl" required placeholder="Select a platform first...">
+                    <small id="urlHint" class="form-hint"></small>
                 </div>
                 
-                <div id="platformInfo" class="info-card" style="display: none;">
-                    <h4><i class="fas fa-lightbulb"></i> Platform Tips</h4>
-                    <p id="platformTips"></p>
+                <div id="platformInfo" style="display: none;" class="platform-info">
+                    <i class="fas fa-lightbulb"></i>
+                    <span id="platformTips"></span>
                 </div>
                 
                 <div class="form-group">
-                    <label>Target Price ($)</label>
-                    <input type="number" id="targetPrice" class="form-control" placeholder="99.99" step="0.01" min="0.01" required>
-                    <span class="form-hint">You'll be automatically notified when the price drops to or below this amount</span>
+                    <label for="targetPrice">
+                        <i class="fas fa-dollar-sign"></i>
+                        Target Price ($)
+                    </label>
+                    <input type="number" id="targetPrice" step="0.01" min="0.01" required placeholder="150.00">
                 </div>
                 
-                <div class="modal-footer">
+                <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Product
+                        <i class="fas fa-plus"></i>
+                        Add Product
                     </button>
                 </div>
             </form>
@@ -371,26 +434,40 @@
     <div id="addRobloxModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-gamepad"></i> Add Roblox UGC Item</h3>
-                <button class="modal-close" onclick="closeAddRobloxModal()">&times;</button>
+                <h3>
+                    <i class="fas fa-gamepad"></i>
+                    Add Roblox UGC Item
+                </h3>
+                <button class="close-btn" onclick="closeAddRobloxModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <form id="addRobloxForm" onsubmit="addRobloxItem(event)">
                 <div class="form-group">
-                    <label>Roblox Item URL</label>
-                    <input type="url" id="robloxUrl" class="form-control" placeholder="https://www.roblox.com/catalog/123456789/item-name" required>
-                    <span class="form-hint">Copy the URL from the Roblox catalog page</span>
+                    <label for="robloxUrl">
+                        <i class="fas fa-link"></i>
+                        Roblox Item URL
+                    </label>
+                    <input type="url" id="robloxUrl" required placeholder="https://www.roblox.com/catalog/123456789/item-name">
+                    <small class="form-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Copy the URL from the Roblox catalog item page
+                    </small>
                 </div>
                 
                 <div class="form-group">
-                    <label>Target Price (Robux)</label>
-                    <input type="number" id="robloxTargetPrice" class="form-control" placeholder="500" min="1" required>
-                    <span class="form-hint">You'll be automatically notified when the price drops to or below this amount</span>
+                    <label for="robloxTargetPrice">
+                        <i class="fas fa-coins"></i>
+                        Target Price (Robux)
+                    </label>
+                    <input type="number" id="robloxTargetPrice" min="1" required placeholder="500">
                 </div>
                 
-                <div class="modal-footer">
+                <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeAddRobloxModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add Item
+                        <i class="fas fa-plus"></i>
+                        Add Roblox Item
                     </button>
                 </div>
             </form>
@@ -401,35 +478,48 @@
     <div id="addStockModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-chart-line"></i> Create Stock Alert</h3>
-                <button class="modal-close" onclick="closeAddStockModal()">&times;</button>
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Add Stock Alert
+                </h3>
+                <button class="close-btn" onclick="closeAddStockModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <form id="addStockForm" onsubmit="addStockAlert(event)">
                 <div class="form-group">
-                    <label>Stock Symbol</label>
-                    <input type="text" id="stockSymbol" class="form-control" placeholder="AAPL" required>
-                    <span class="form-hint">Enter the stock ticker symbol (e.g., AAPL, GOOGL, TSLA)</span>
+                    <label for="stockSymbol">
+                        <i class="fas fa-building"></i>
+                        Stock Symbol
+                    </label>
+                    <input type="text" id="stockSymbol" required placeholder="AAPL" style="text-transform: uppercase;">
                 </div>
                 
                 <div class="form-group">
-                    <label>Alert Type</label>
-                    <select id="alertType" class="form-control" required>
-                        <option value="price_above">Price rises above</option>
-                        <option value="price_below">Price drops below</option>
-                        <option value="percent_up">Daily gain exceeds</option>
-                        <option value="percent_down">Daily loss exceeds</option>
+                    <label for="alertType">
+                        <i class="fas fa-bell"></i>
+                        Alert Type
+                    </label>
+                    <select id="alertType" required onchange="updateThresholdLabel()">
+                        <option value="price_above">💰 Price Goes Above</option>
+                        <option value="price_below">💰 Price Goes Below</option>
+                        <option value="percent_up">📈 Price Increases By</option>
+                        <option value="percent_down">📉 Price Decreases By</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label id="thresholdLabel">Price Threshold ($)</label>
-                    <input type="number" id="alertThreshold" class="form-control" placeholder="150.00" step="0.01" min="0.01" required>
+                    <label id="thresholdLabel" for="alertThreshold">
+                        💰 Price Threshold ($)
+                    </label>
+                    <input type="number" id="alertThreshold" step="0.01" min="0.01" required placeholder="210.00">
                 </div>
                 
-                <div class="modal-footer">
+                <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeAddStockModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-bell"></i> Create Alert
+                        <i class="fas fa-plus"></i>
+                        Create Alert
                     </button>
                 </div>
             </form>

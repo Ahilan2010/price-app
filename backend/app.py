@@ -1,4 +1,4 @@
-# backend/app.py - UPDATED VERSION WITH AUTH AND NO FLIGHTS
+# backend/app.py - FIXED VERSION WITH PROPER AUTH
 from flask import Flask, jsonify, request, send_file, send_from_directory, session
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
@@ -72,107 +72,131 @@ def js_files(filename):
 @app.route('/api/auth/signup', methods=['POST'])
 def signup():
     """Create a new user account"""
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name', '')
-    smtp_password = data.get('smtp_password', '')
-    
-    if not email or not password or not first_name:
-        return jsonify({'error': 'Email, password, and first name are required'}), 400
-    
-    conn = sqlite3.connect('storenvy_tracker.db')
-    cursor = conn.cursor()
-    
     try:
-        # Check if user already exists
-        cursor.execute('SELECT id FROM users WHERE email = ?', (email,))
-        if cursor.fetchone():
-            return jsonify({'error': 'User with this email already exists'}), 409
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
-        # Create new user
-        password_hash = hash_password(password)
-        cursor.execute('''
-            INSERT INTO users (email, password_hash, first_name, last_name, smtp_password)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (email, password_hash, first_name, last_name, smtp_password))
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
+        first_name = data.get('first_name', '').strip()
+        last_name = data.get('last_name', '').strip()
+        smtp_password = data.get('smtp_password', '').strip()
         
-        user_id = cursor.lastrowid
-        conn.commit()
+        if not email or not password or not first_name:
+            return jsonify({'error': 'Email, password, and first name are required'}), 400
         
-        # Set session
-        session['user_id'] = user_id
-        session['user_email'] = email
-        session['user_name'] = first_name
+        if len(password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters long'}), 400
         
-        # Auto-start scheduler for new user
-        if not scheduler_service.is_running():
-            scheduler_service.start()
+        conn = sqlite3.connect('storenvy_tracker.db')
+        cursor = conn.cursor()
         
-        return jsonify({
-            'message': 'Account created successfully',
-            'user': {
-                'id': user_id,
-                'email': email,
-                'first_name': first_name
-            }
-        }), 201
-        
+        try:
+            # Check if user already exists
+            cursor.execute('SELECT id FROM users WHERE email = ?', (email,))
+            if cursor.fetchone():
+                return jsonify({'error': 'User with this email already exists'}), 409
+            
+            # Create new user
+            password_hash = hash_password(password)
+            cursor.execute('''
+                INSERT INTO users (email, password_hash, first_name, last_name, smtp_password)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (email, password_hash, first_name, last_name, smtp_password))
+            
+            user_id = cursor.lastrowid
+            conn.commit()
+            
+            # Set session
+            session['user_id'] = user_id
+            session['user_email'] = email
+            session['user_name'] = first_name
+            
+            # Auto-start scheduler for new user
+            if not scheduler_service.is_running():
+                scheduler_service.start()
+            
+            return jsonify({
+                'message': 'Account created successfully',
+                'user': {
+                    'id': user_id,
+                    'email': email,
+                    'first_name': first_name,
+                    'last_name': last_name
+                }
+            }), 201
+            
+        except Exception as e:
+            conn.rollback()
+            print(f"Database error during signup: {e}")
+            return jsonify({'error': 'Database error occurred'}), 500
+        finally:
+            conn.close()
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        conn.close()
+        print(f"Signup error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
     """Login user"""
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    
-    if not email or not password:
-        return jsonify({'error': 'Email and password are required'}), 400
-    
-    conn = sqlite3.connect('storenvy_tracker.db')
-    cursor = conn.cursor()
-    
     try:
-        password_hash = hash_password(password)
-        cursor.execute('''
-            SELECT id, email, first_name, smtp_password 
-            FROM users 
-            WHERE email = ? AND password_hash = ?
-        ''', (email, password_hash))
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
-        user = cursor.fetchone()
+        email = data.get('email', '').strip().lower()
+        password = data.get('password', '')
         
-        if not user:
-            return jsonify({'error': 'Invalid email or password'}), 401
+        if not email or not password:
+            return jsonify({'error': 'Email and password are required'}), 400
         
-        # Set session
-        session['user_id'] = user[0]
-        session['user_email'] = user[1]
-        session['user_name'] = user[2]
+        conn = sqlite3.connect('storenvy_tracker.db')
+        cursor = conn.cursor()
         
-        # Auto-start scheduler on login
-        if not scheduler_service.is_running():
-            scheduler_service.start()
-        
-        return jsonify({
-            'message': 'Login successful',
-            'user': {
-                'id': user[0],
-                'email': user[1],
-                'first_name': user[2],
-                'has_smtp': bool(user[3])
-            }
-        }), 200
-        
+        try:
+            password_hash = hash_password(password)
+            cursor.execute('''
+                SELECT id, email, first_name, last_name, smtp_password 
+                FROM users 
+                WHERE email = ? AND password_hash = ?
+            ''', (email, password_hash))
+            
+            user = cursor.fetchone()
+            
+            if not user:
+                return jsonify({'error': 'Invalid email or password'}), 401
+            
+            # Set session
+            session['user_id'] = user[0]
+            session['user_email'] = user[1]
+            session['user_name'] = user[2]
+            
+            # Auto-start scheduler on login
+            if not scheduler_service.is_running():
+                scheduler_service.start()
+            
+            return jsonify({
+                'message': 'Login successful',
+                'user': {
+                    'id': user[0],
+                    'email': user[1],
+                    'first_name': user[2],
+                    'last_name': user[3],
+                    'has_smtp': bool(user[4])
+                }
+            }), 200
+            
+        except Exception as e:
+            print(f"Database error during login: {e}")
+            return jsonify({'error': 'Database error occurred'}), 500
+        finally:
+            conn.close()
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        conn.close()
+        print(f"Login error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/api/auth/logout', methods=['POST'])
 def logout():
@@ -200,27 +224,37 @@ def update_smtp():
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
-    data = request.json
-    smtp_password = data.get('smtp_password')
-    
-    if not smtp_password:
-        return jsonify({'error': 'SMTP password is required'}), 400
-    
-    conn = sqlite3.connect('storenvy_tracker.db')
-    cursor = conn.cursor()
-    
     try:
-        cursor.execute('''
-            UPDATE users SET smtp_password = ? WHERE id = ?
-        ''', (smtp_password, session['user_id']))
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
         
-        conn.commit()
-        return jsonify({'message': 'SMTP password updated successfully'}), 200
+        smtp_password = data.get('smtp_password', '').strip()
         
+        if not smtp_password:
+            return jsonify({'error': 'SMTP password is required'}), 400
+        
+        conn = sqlite3.connect('storenvy_tracker.db')
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute('''
+                UPDATE users SET smtp_password = ? WHERE id = ?
+            ''', (smtp_password, session['user_id']))
+            
+            conn.commit()
+            return jsonify({'message': 'SMTP password updated successfully'}), 200
+            
+        except Exception as e:
+            conn.rollback()
+            print(f"Database error updating SMTP: {e}")
+            return jsonify({'error': 'Database error occurred'}), 500
+        finally:
+            conn.close()
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        conn.close()
+        print(f"Update SMTP error: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 # Helper to get user email config
 def get_user_email_config():
@@ -267,20 +301,28 @@ def add_product():
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
-    data = request.json
-    url = data.get('url')
-    target_price = data.get('target_price')
-    
-    if not url or target_price is None:
-        return jsonify({'error': 'URL and target price are required'}), 400
-    
     try:
-        target_price = float(target_price)
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        url = data.get('url', '').strip()
+        target_price = data.get('target_price')
+        
+        if not url or target_price is None:
+            return jsonify({'error': 'URL and target price are required'}), 400
+        
+        try:
+            target_price = float(target_price)
+            if target_price <= 0:
+                return jsonify({'error': 'Target price must be greater than 0'}), 400
+        except (ValueError, TypeError):
+            return jsonify({'error': 'Invalid target price format'}), 400
         
         # Validate that the URL is from a supported platform
         platform = tracker.scraper.detect_platform(url)
-        if not platform or platform == 'flights':  # Exclude flights
-            return jsonify({'error': 'Unsupported e-commerce platform. Please use a supported website.'}), 400
+        if not platform:
+            return jsonify({'error': 'Unsupported platform. Please use Amazon, eBay, Etsy, Walmart, Storenvy, or Roblox.'}), 400
         
         tracker.add_product(url, target_price, session['user_id'])
         
@@ -289,10 +331,10 @@ def add_product():
             scheduler_service.start()
         
         return jsonify({'message': f'Product from {platform.title()} added successfully'}), 201
-    except ValueError as ve:
-        return jsonify({'error': str(ve)}), 400
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Add product error: {e}")
+        return jsonify({'error': 'Failed to add product'}), 500
 
 @app.route('/api/products/<int:product_id>', methods=['DELETE'])
 def delete_product(product_id):
@@ -304,7 +346,8 @@ def delete_product(product_id):
         tracker.delete_product(product_id, session['user_id'])
         return jsonify({'message': 'Product deleted successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Delete product error: {e}")
+        return jsonify({'error': 'Failed to delete product'}), 500
 
 # STOCK API ROUTES
 @app.route('/api/stocks', methods=['GET'])
@@ -322,21 +365,30 @@ def add_stock_alert():
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
-    data = request.json
-    symbol = data.get('symbol', '').upper().strip()
-    alert_type = data.get('alert_type')
-    threshold = data.get('threshold')
-    
-    if not symbol or not alert_type or threshold is None:
-        return jsonify({'error': 'Symbol, alert type, and threshold are required'}), 400
-    
-    # Validate alert type
-    valid_alert_types = ['price_above', 'price_below', 'percent_up', 'percent_down']
-    if alert_type not in valid_alert_types:
-        return jsonify({'error': f'Invalid alert type. Must be one of: {valid_alert_types}'}), 400
-    
     try:
-        threshold = float(threshold)
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        symbol = data.get('symbol', '').upper().strip()
+        alert_type = data.get('alert_type', '').strip()
+        threshold = data.get('threshold')
+        
+        if not symbol or not alert_type or threshold is None:
+            return jsonify({'error': 'Symbol, alert type, and threshold are required'}), 400
+        
+        # Validate alert type
+        valid_alert_types = ['price_above', 'price_below', 'percent_up', 'percent_down']
+        if alert_type not in valid_alert_types:
+            return jsonify({'error': f'Invalid alert type. Must be one of: {valid_alert_types}'}), 400
+        
+        try:
+            threshold = float(threshold)
+            if threshold <= 0:
+                return jsonify({'error': 'Threshold must be greater than 0'}), 400
+        except (ValueError, TypeError):
+            return jsonify({'error': 'Invalid threshold format'}), 400
+        
         stock_tracker.add_stock_alert(symbol, alert_type, threshold, session['user_id'])
         
         # Auto-start scheduler when first alert is added
@@ -344,10 +396,10 @@ def add_stock_alert():
             scheduler_service.start()
         
         return jsonify({'message': f'Stock alert added for {symbol}'}), 201
-    except ValueError:
-        return jsonify({'error': 'Invalid threshold format'}), 400
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Add stock alert error: {e}")
+        return jsonify({'error': 'Failed to add stock alert'}), 500
 
 @app.route('/api/stocks/<int:alert_id>', methods=['DELETE'])
 def delete_stock_alert(alert_id):
@@ -359,7 +411,8 @@ def delete_stock_alert(alert_id):
         stock_tracker.delete_stock_alert(alert_id, session['user_id'])
         return jsonify({'message': 'Stock alert deleted successfully'}), 200
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Delete stock alert error: {e}")
+        return jsonify({'error': 'Failed to delete stock alert'}), 500
 
 # STATISTICS ROUTES
 @app.route('/api/stats', methods=['GET'])
@@ -375,25 +428,37 @@ def get_stats():
             'monitoring_stock_alerts': 0
         })
     
-    # Product stats
-    products = tracker.get_tracked_products(session['user_id'])
-    
-    total_products = len(products)
-    products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
-    total_savings = sum(p['target_price'] - p['last_price'] for p in products 
-                       if p.get('last_price') and p['last_price'] <= p['target_price'])
-    
-    # Stock stats
-    stock_stats = stock_tracker.get_stock_stats(session['user_id'])
-    
-    return jsonify({
-        'total_products': total_products,
-        'products_below_target': products_below_target,
-        'total_savings': round(total_savings, 2),
-        'total_stock_alerts': stock_stats['total_alerts'],
-        'triggered_stock_alerts': stock_stats['triggered_alerts'],
-        'monitoring_stock_alerts': stock_stats['monitoring_alerts']
-    })
+    try:
+        # Product stats
+        products = tracker.get_tracked_products(session['user_id'])
+        
+        total_products = len(products)
+        products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
+        total_savings = sum(p['target_price'] - p['last_price'] for p in products 
+                           if p.get('last_price') and p['last_price'] <= p['target_price'])
+        
+        # Stock stats
+        stock_stats = stock_tracker.get_stock_stats(session['user_id'])
+        
+        return jsonify({
+            'total_products': total_products,
+            'products_below_target': products_below_target,
+            'total_savings': round(total_savings, 2),
+            'total_stock_alerts': stock_stats['total_alerts'],
+            'triggered_stock_alerts': stock_stats['triggered_alerts'],
+            'monitoring_stock_alerts': stock_stats['monitoring_alerts']
+        })
+        
+    except Exception as e:
+        print(f"Stats error: {e}")
+        return jsonify({
+            'total_products': 0,
+            'products_below_target': 0,
+            'total_savings': 0,
+            'total_stock_alerts': 0,
+            'triggered_stock_alerts': 0,
+            'monitoring_stock_alerts': 0
+        })
 
 if __name__ == '__main__':
     print("\n" + "="*60)
