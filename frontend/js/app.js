@@ -1374,3 +1374,834 @@ async function loadProducts() {
         console.error('Error loading products:', error);
     }
 }
+
+// Check if response is actually JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response received:', responseText.substring(0, 200));
+            showToast('Server error: Backend is not responding with JSON. Please check if the Flask server is running correctly.', 'error');
+            return;
+        }
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentUser = data.user;
+            showToast('Welcome back, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('loginForm').querySelector('form').reset();
+        } else {
+            console.error('Login error response:', data);
+            showToast(data.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+        console.error('Network error during login:', error);
+        if (error.message.includes('JSON')) {
+            showToast('Backend server error: Received HTML instead of JSON. Please ensure the Flask backend server is running properly on port 5000.', 'error');
+        } else if (error.message.includes('fetch')) {
+            showToast('Cannot connect to backend server. Please make sure the Flask app is running: python backend/app.py', 'error');
+        } else {
+            showToast(`Network error: ${error.message}`, 'error');
+        }
+    }
+}
+
+async function handleSignup(event) {
+    event.preventDefault();
+    
+    const data = {
+        first_name: document.getElementById('signupFirstName').value.trim(),
+        last_name: document.getElementById('signupLastName').value.trim(),
+        email: document.getElementById('signupEmail').value.trim(),
+        password: document.getElementById('signupPassword').value,
+        smtp_password: document.getElementById('signupSmtpPassword').value.trim()
+    };
+    
+    // Validate required fields
+    if (!data.first_name || !data.email || !data.password) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    if (data.password.length < 6) {
+        showToast('Password must be at least 6 characters long', 'error');
+        return;
+    }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+        showToast('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    console.log('Attempting signup with data:', { ...data, password: '[HIDDEN]', smtp_password: '[HIDDEN]' });
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+        
+        console.log('Signup response status:', response.status);
+        
+        // Check if response is actually JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            const responseText = await response.text();
+            console.error('Non-JSON response received:', responseText.substring(0, 200));
+            showToast('Server error: Backend is not responding with JSON. Please check if the Flask server is running correctly.', 'error');
+            return;
+        }
+        
+        const responseData = await response.json();
+        
+        if (response.ok) {
+            currentUser = responseData.user;
+            showToast('Welcome to PriceTracker, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('signupForm').querySelector('form').reset();
+        } else {
+            console.error('Signup error response:', responseData);
+            showToast(responseData.error || 'Signup failed', 'error');
+        }
+    } catch (error) {
+        console.error('Network error during signup:', error);
+        if (error.message.includes('JSON')) {
+            showToast('Backend server error: Received HTML instead of JSON. Please ensure the Flask backend server is running properly on port 5000.', 'error');
+        } else if (error.message.includes('fetch')) {
+            showToast('Cannot connect to backend server. Please make sure the Flask app is running: python backend/app.py', 'error');
+        } else {
+            showToast(`Network error: ${error.message}`, 'error');
+        }
+    }
+}
+
+async function handleLogout() {
+    if (!confirm('Are you sure you want to sign out?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/logout`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            currentUser = null;
+            showAuth();
+            showToast('Signed out successfully');
+        }
+    } catch (error) {
+        showToast('Failed to sign out', 'error');
+        console.error('Logout error:', error);
+    }
+}
+
+// ===== PAGE MANAGEMENT =====
+function showPage(pageId, navItem) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // Show selected page
+    document.getElementById(pageId).classList.add('active');
+    
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    navItem.classList.add('active');
+    
+    // Load page-specific data
+    if (pageId === 'productsPage') {
+        loadProducts();
+        loadStats();
+    } else if (pageId === 'robloxPage') {
+        loadRobloxItems();
+        loadStats();
+    } else if (pageId === 'stocksPage') {
+        loadStockAlerts();
+        loadStats();
+    } else if (pageId === 'settingsPage') {
+        loadEmailConfig();
+    }
+}
+
+// ===== AUTO-REFRESH FUNCTIONALITY =====
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Refresh data every 30 seconds
+    autoRefreshInterval = setInterval(() => {
+        loadStats();
+        
+        // Refresh current page data
+        const activePage = document.querySelector('.page.active');
+        if (activePage) {
+            const pageId = activePage.id;
+            if (pageId === 'productsPage') {
+                loadProducts();
+            } else if (pageId === 'robloxPage') {
+                loadRobloxItems();
+            } else if (pageId === 'stocksPage') {
+                loadStockAlerts();
+            }
+        }
+    }, 30000); // 30 seconds
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+// ===== STATS LOADING =====
+async function loadStats() {
+    try {
+        const response = await fetch(`${API_URL}/stats`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load stats');
+        }
+        
+        const stats = await response.json();
+        
+        // Count products by type
+        const productsResponse = await fetch(`${API_URL}/products`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (productsResponse.ok) {
+            const allProducts = await productsResponse.json();
+            const ecommerceCount = allProducts.filter(p => 
+                ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(p.platform)
+            ).length;
+            const robloxCount = allProducts.filter(p => p.platform === 'roblox').length;
+            
+            document.getElementById('totalProducts').textContent = ecommerceCount;
+            document.getElementById('totalRobloxItems').textContent = robloxCount;
+        }
+        
+        document.getElementById('totalStockAlerts').textContent = stats.total_stock_alerts || 0;
+        document.getElementById('totalSavings').textContent = (stats.total_savings || 0).toFixed(2);
+        
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+// ===== TOAST NOTIFICATIONS =====
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    toast.classList.add('show');
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+// ===== UTILITY FUNCTIONS =====
+function truncateUrl(url) {
+    if (url.length <= 50) return url;
+    return url.substring(0, 47) + '...';
+}
+
+function formatPrice(price, platform) {
+    if (platform === 'roblox') {
+        return `${Math.round(price)} R$`;
+    }
+    return `$${price.toFixed(2)}`;
+}
+
+function validatePlatformUrl(url, platform) {
+    const domainPatterns = {
+        amazon: /amazon\.(com|co\.uk|ca|de|fr|es|it|jp|in|com\.mx|com\.br)/i,
+        ebay: /ebay\.(com|co\.uk|ca|de|fr|it|es|com\.au)/i,
+        etsy: /etsy\.com/i,
+        walmart: /walmart\.com/i,
+        storenvy: /storenvy\.com/i,
+        roblox: /roblox\.com/i
+    };
+    
+    if (!platform || !domainPatterns[platform]) {
+        return false;
+    }
+    
+    return domainPatterns[platform].test(url);
+}
+
+// ===== SHARED FUNCTIONS =====
+function renderProductStatus(product, platform = null) {
+    if (!product.last_price) {
+        return `
+            <div class="status-badge status-waiting">
+                <i class="fas fa-clock"></i>
+                Not Checked Yet
+            </div>
+        `;
+    }
+    
+    if (product.status === 'below_target') {
+        const savings = product.target_price - product.last_price;
+        let savingsText;
+        let emoji;
+        
+        if (platform === 'roblox') {
+            savingsText = `${Math.round(savings)} R$`;
+            emoji = '🎮';
+        } else {
+            savingsText = `$${savings.toFixed(2)}`;
+            emoji = '💰';
+        }
+        
+        return `
+            <div class="status-badge status-triggered">
+                <i class="fas fa-check-circle"></i>
+                ${emoji} Target Hit! Save ${savingsText}
+            </div>
+        `;
+    }
+    
+    let statusText = 'Monitoring Price';
+    if (platform === 'roblox') {
+        statusText = 'Watching Robux Price';
+    }
+    
+    return `
+        <div class="status-badge status-waiting">
+            <i class="fas fa-eye"></i>
+            ${statusText}
+        </div>
+    `;
+}
+
+// ===== PRODUCTS MANAGEMENT (Amazon, eBay, Etsy, Walmart, Storenvy) =====
+async function loadProducts() {
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load products');
+        }
+        
+        const allProducts = await response.json();
+        
+        // Filter for e-commerce platforms only
+        const ecommerceProducts = allProducts.filter(product => 
+            ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(product.platform)
+        );
+        
+        const productsList = document.getElementById('productsList');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (ecommerceProducts.length === 0) {
+            productsList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            productsList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            productsList.innerHTML = ecommerceProducts.map(product => {
+                const platform = product.platform || 'storenvy';
+                const config = platformConfigs[platform] || {};
+                
+                return `
+                <div class="card" data-platform="${platform}" id="product-${product.id}">
+                    <div class="platform-badge">
+                        <span>${product.platform_icon || config.icon || '🛒'}</span>
+                        <span style="font-weight: 500;">${product.platform_name || config.name || 'Unknown'}</span>
+                    </div>
+                    <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
+                    <p class="card-subtitle">${truncateUrl(product.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value" id="current-price-${product.id}">
+                                ${product.last_price ? formatPrice(product.last_price, platform) : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value">${formatPrice(product.target_price, platform)}</span>
+                        </div>
+                    </div>
+                    
+                    <div id="status-${product.id}">
+                        ${renderProductStatus(product, platform)}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-external-link-alt"></i> View Product
+                        </a>
+                        <button onclick="deleteProduct(${product.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load products', 'error');
+        console.error('Error loading products:', error);
+    }
+}
+
+function showAddProductModal() {
+    document.getElementById('addProductModal').classList.add('show');
+    document.getElementById('platformSelect').focus();
+}
+
+function closeAddProductModal() {
+    document.getElementById('addProductModal').classList.remove('show');
+    document.getElementById('addProductForm').reset();
+    document.getElementById('productUrl').disabled = true;
+    document.getElementById('productUrl').placeholder = 'Select a platform first...';
+    document.getElementById('urlHint').textContent = '';
+    document.getElementById('platformInfo').style.display = 'none';
+}
+
+function updateUrlPlaceholder() {
+    const platformSelect = document.getElementById('platformSelect');
+    const urlInput = document.getElementById('productUrl');
+    const urlHint = document.getElementById('urlHint');
+    const platformInfo = document.getElementById('platformInfo');
+    const platformTips = document.getElementById('platformTips');
+    
+    const selectedPlatform = platformSelect.value;
+    
+    if (selectedPlatform && platformConfigs[selectedPlatform]) {
+        const config = platformConfigs[selectedPlatform];
+        urlInput.placeholder = config.exampleUrl;
+        urlHint.textContent = `Example: ${config.exampleUrl}`;
+        platformTips.textContent = config.tips;
+        platformInfo.style.display = 'block';
+        urlInput.disabled = false;
+        urlInput.value = '';
+    } else {
+        urlInput.placeholder = 'Select a platform first...';
+        urlHint.textContent = '';
+        platformInfo.style.display = 'none';
+        urlInput.disabled = true;
+    }
+}
+
+async function addProduct(event) {
+    event.preventDefault();
+    
+    const platform = document.getElementById('platformSelect').value;
+    const url = document.getElementById('productUrl').value.trim();
+    const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+    
+    if (!platform) {
+        showToast('Please select an e-commerce platform', 'error');
+        return;
+    }
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid URL and target price', 'error');
+        return;
+    }
+    
+    if (!validatePlatformUrl(url, platform)) {
+        showToast(`This URL doesn't appear to be from ${platformConfigs[platform].name}. Please check the URL and platform selection.`, 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            const platformName = platformConfigs[platform].name;
+            showToast(`✅ ${platformName} product added successfully! Automatic monitoring has started.`);
+            closeAddProductModal();
+            loadProducts();
+            loadStats();
+        } else {
+            showToast(data.error || 'Failed to add product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add product', 'error');
+        console.error('Error adding product:', error);
+    }
+}
+
+async function deleteProduct(productId) {
+    if (!confirm('Are you sure you want to stop tracking this product?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${productId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            showToast('Product removed from tracking');
+            loadProducts();
+            loadStats();
+        } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to remove product', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove product', 'error');
+        console.error('Error deleting product:', error);
+    }
+}
+
+// ===== ROBLOX MANAGEMENT =====
+async function loadRobloxItems() {
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load Roblox items');
+        }
+        
+        const allProducts = await response.json();
+        
+        // Filter for Roblox items only
+        const robloxItems = allProducts.filter(product => product.platform === 'roblox');
+        
+        const robloxList = document.getElementById('robloxList');
+        const emptyState = document.getElementById('robloxEmptyState');
+        
+        if (robloxItems.length === 0) {
+            robloxList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            robloxList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            robloxList.innerHTML = robloxItems.map(item => `
+                <div class="card" data-platform="roblox" id="roblox-${item.id}">
+                    <div class="platform-badge">
+                        <span>🎮</span>
+                        <span style="font-weight: 500;">Roblox UGC</span>
+                    </div>
+                    <h3 class="card-title">${item.title || 'Loading item details...'}</h3>
+                    <p class="card-subtitle">${truncateUrl(item.url)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value robux" id="roblox-price-${item.id}">
+                                ${item.last_price ? `${Math.round(item.last_price)} R$` : '--'}
+                            </span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Target Price</span>
+                            <span class="price-value robux">${Math.round(item.target_price)} R$</span>
+                        </div>
+                    </div>
+                    
+                    <div id="roblox-status-${item.id}">
+                        ${renderProductStatus(item, 'roblox')}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="${item.url}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-external-link-alt"></i> View Item
+                        </a>
+                        <button onclick="deleteRobloxItem(${item.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load Roblox items', 'error');
+        console.error('Error loading Roblox items:', error);
+    }
+}
+
+function showAddRobloxModal() {
+    document.getElementById('addRobloxModal').classList.add('show');
+    document.getElementById('robloxUrl').focus();
+}
+
+function closeAddRobloxModal() {
+    document.getElementById('addRobloxModal').classList.remove('show');
+    document.getElementById('addRobloxForm').reset();
+}
+
+async function addRobloxItem(event) {
+    event.preventDefault();
+    
+    const url = document.getElementById('robloxUrl').value.trim();
+    const targetPrice = parseInt(document.getElementById('robloxTargetPrice').value);
+    
+    if (!url || !targetPrice || targetPrice <= 0) {
+        showToast('Please enter a valid Roblox URL and target price in Robux', 'error');
+        return;
+    }
+    
+    if (!validatePlatformUrl(url, 'roblox')) {
+        showToast('This URL doesn\'t appear to be from Roblox. Please check the URL.', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ url, target_price: targetPrice })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showToast('🎮 Roblox UGC item added successfully! Automatic monitoring has started.');
+            closeAddRobloxModal();
+            loadRobloxItems();
+            loadStats();
+        } else {
+            showToast(data.error || 'Failed to add Roblox item', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add Roblox item', 'error');
+        console.error('Error adding Roblox item:', error);
+    }
+}
+
+async function deleteRobloxItem(itemId) {
+    if (!confirm('Are you sure you want to stop tracking this Roblox item?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/products/${itemId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            showToast('Roblox item removed from tracking');
+            loadRobloxItems();
+            loadStats();
+        } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to remove Roblox item', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove Roblox item', 'error');
+        console.error('Error deleting Roblox item:', error);
+    }
+}
+
+// ===== STOCK MANAGEMENT =====
+async function loadStockAlerts() {
+    try {
+        const response = await fetch(`${API_URL}/stocks`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            if (response.status === 401) {
+                showAuth();
+                return;
+            }
+            throw new Error('Failed to load stock alerts');
+        }
+        
+        const alerts = await response.json();
+        
+        const stocksList = document.getElementById('stocksList');
+        const emptyState = document.getElementById('stocksEmptyState');
+        
+        if (alerts.length === 0) {
+            stocksList.style.display = 'none';
+            emptyState.style.display = 'block';
+        } else {
+            stocksList.style.display = 'grid';
+            emptyState.style.display = 'none';
+            
+            stocksList.innerHTML = alerts.map(alert => `
+                <div class="card" id="stock-${alert.id}">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        ${alert.company_name} (${alert.symbol})
+                    </h3>
+                    <p class="card-subtitle">${formatAlertDescription(alert)}</p>
+                    
+                    <div class="price-info">
+                        <div class="price-item">
+                            <span class="price-label">Current Price</span>
+                            <span class="price-value" id="stock-price-${alert.id}">$${alert.current_price ? alert.current_price.toFixed(2) : '--'}</span>
+                        </div>
+                        <div class="price-item">
+                            <span class="price-label">Threshold</span>
+                            <span class="price-value">${formatThreshold(alert)}</span>
+                        </div>
+                    </div>
+                    
+                    <div id="stock-status-${alert.id}">
+                        ${renderStockStatus(alert)}
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="https://finance.yahoo.com/quote/${alert.symbol}" target="_blank" class="btn btn-primary btn-icon">
+                            <i class="fas fa-chart-line"></i> View Chart
+                        </a>
+                        <button onclick="deleteStockAlert(${alert.id})" class="btn btn-secondary btn-icon">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } catch (error) {
+        showToast('Failed to load stock alerts', 'error');
+        console.error('Error loading stock alerts:', error);
+    }
+}
+
+function formatAlertDescription(alert) {
+    const alertDescriptions = {
+        'price_above': `Alert when price rises above $${alert.threshold}`,
+        'price_below': `Alert when price drops below $${alert.threshold}`,
+        'percent_up': `Alert when price increases by ${alert.threshold}%`,
+        'percent_down': `Alert when price decreases by ${alert.threshold}%`
+    };
+    return alertDescriptions[alert.alert_type] || 'Custom alert';
+}
+
+function formatThreshold(alert) {
+    if (alert.alert_type.includes('percent')) {
+        return `${alert.threshold}%`;
+    }
+    return `$${alert.threshold.toFixed(2)}`;
+}
+
+function renderStockStatus(alert) {
+    if (alert.is_triggered) {
+        return `
+            <div class="status-badge status-triggered">
+                <i class="fas fa-bell"></i>
+                Alert Triggered!
+            </div>
+        `;
+    }
+    
+    if (!alert.current_price) {
+        return `
+            <div class="status-badge status-waiting">
+                <i class="fas fa-clock"></i>
+                Waiting for Data
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="status-badge status-waiting">
+            <i class="fas fa-eye"></i>
+            Monitoring
+        </div>
+    `;
+}
+
+function showAddStockModal() {
+    document.getElementById('addStockModal').classList.add('show');
+    document.getElementById('stockSymbol').focus();
+}
+
+function closeAddStockModal() {
+    document.getElementById('addStockModal').classList.remove('show');
+    document.getElementById('addStockForm').reset();
+    updateThresholdLabel();
+}
+
+function updateThresholdLabel() {
+    const alertType = document.getElementById('alertType').value;
+    const label = document.getElementById('thresholdLabel');
+    const input = document.getElementById('alertThreshold');
+    
+    const labelConfig = {
+        'price_above': { text: '💰 Price Threshold ($)', placeholder: '210.00', step: '0.01' },
+        'price_below': { text: '💰 Price Threshold ($)', placeholder: '180.00', step: '0.01' },
+        'percent_up': { text: '📈 Percentage Threshold (%)', placeholder: '5.0', step: '0.1' },
+        'percent_down': { text: '📉 Percentage Threshold (%)', placeholder: '5.0', step: '0.1' }
+    };
+    
+    const config = labelConfig[alertType] || { text: '🎯 Threshold', placeholder: '', step: '0.01' };
+    
+    label.innerHTML = config.text;
+    input.placeholder = config.placeholder;
+    input.step = config.step
