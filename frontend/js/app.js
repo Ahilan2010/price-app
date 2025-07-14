@@ -1,4 +1,4 @@
-// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
+// PriceTracker JavaScript - Complete Implementation with Auth
 // frontend/js/app.js
 
 const API_URL = 'http://localhost:5000/api';
@@ -121,6 +121,43 @@ async function handleLogin(event) {
         } else {
             const error = await response.json();
             showToast(error.error || 'Login failed', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to login', 'error');
+        console.error('Login error:', error);
+    }
+}
+
+async function handleSignup(event) {
+    event.preventDefault();
+    
+    const data = {
+        first_name: document.getElementById('signupFirstName').value,
+        last_name: document.getElementById('signupLastName').value,
+        email: document.getElementById('signupEmail').value,
+        password: document.getElementById('signupPassword').value,
+        smtp_password: document.getElementById('signupSmtpPassword').value
+    };
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            const responseData = await response.json();
+            currentUser = responseData.user;
+            showToast('Welcome to PriceTracker, ' + currentUser.first_name + '!');
+            showApp();
+            document.getElementById('signupForm').querySelector('form').reset();
+        } else {
+            const error = await response.json();
+            showToast(error.error || 'Signup failed', 'error');
         }
     } catch (error) {
         showToast('Network error: Failed to sign up', 'error');
@@ -233,134 +270,9 @@ function truncateUrl(url) {
 
 function formatPrice(price, platform) {
     if (platform === 'roblox') {
-        return `${Math.round(price)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
-// frontend/js/app.js
-
-const API_URL = 'http://localhost:5000/api';
-
-// User state
-let currentUser = null;
-
-// Platform configurations
-const platformConfigs = {
-    amazon: {
-        name: 'Amazon',
-        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
-        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
-        icon: '🛒'
-    },
-    ebay: {
-        name: 'eBay',
-        exampleUrl: 'https://www.ebay.com/itm/123456789012',
-        tips: 'Use the item URL that contains /itm/ followed by the item number',
-        icon: '🏷️'
-    },
-    etsy: {
-        name: 'Etsy',
-        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
-        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
-        icon: '🎨'
-    },
-    walmart: {
-        name: 'Walmart',
-        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
-        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
-        icon: '🏪'
-    },
-    storenvy: {
-        name: 'Storenvy',
-        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
-        tips: 'Copy the full product URL from the product page',
-        icon: '🏬'
+        return `${Math.round(price)} R$`;
     }
-};
-
-// Auto-refresh state
-let autoRefreshInterval = null;
-
-// ===== AUTH FUNCTIONS =====
-async function checkSession() {
-    try {
-        const response = await fetch(`${API_URL}/auth/session`, {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        if (data.logged_in) {
-            currentUser = data.user;
-            showApp();
-        } else {
-            showAuth();
-        }
-    } catch (error) {
-        console.error('Session check failed:', error);
-        showAuth();
-    }
-}
-
-function showAuth() {
-    document.getElementById('authContainer').style.display = 'flex';
-    document.getElementById('appContainer').style.display = 'none';
-    stopAutoRefresh();
-}
-
-function showApp() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('appContainer').style.display = 'block';
-    
-    // Update user name
-    document.getElementById('userName').textContent = currentUser.first_name;
-    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
-    document.getElementById('accountEmail').textContent = currentUser.email;
-    
-    // Load initial data
-    loadProducts();
-    loadStats();
-    
-    // Start auto-refresh
-    startAutoRefresh();
-}
-
-function showLoginForm() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('signupForm').style.display = 'none';
-}
-
-function showSignupForm() {
-    document.getElementById('signupForm').style.display = 'block';
-    document.getElementById('loginForm').style.display = 'none';
-}
-
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ email, password })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            currentUser = data.user;
-            showToast('Welcome back, ' + currentUser.first_name + '!');
-            showApp();
-            document.getElementById('loginForm').querySelector('form').reset();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Login failed', 'error');
-        }
-    } catch (error) {
-;
-    }
-    return `${price.toFixed(2)}`;
+    return `$${price.toFixed(2)}`;
 }
 
 function validatePlatformUrl(url, platform) {
@@ -397,135 +309,10 @@ function renderProductStatus(product, platform = null) {
         let emoji;
         
         if (platform === 'roblox') {
-            savingsText = `${Math.round(savings)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
-// frontend/js/app.js
-
-const API_URL = 'http://localhost:5000/api';
-
-// User state
-let currentUser = null;
-
-// Platform configurations
-const platformConfigs = {
-    amazon: {
-        name: 'Amazon',
-        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
-        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
-        icon: '🛒'
-    },
-    ebay: {
-        name: 'eBay',
-        exampleUrl: 'https://www.ebay.com/itm/123456789012',
-        tips: 'Use the item URL that contains /itm/ followed by the item number',
-        icon: '🏷️'
-    },
-    etsy: {
-        name: 'Etsy',
-        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
-        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
-        icon: '🎨'
-    },
-    walmart: {
-        name: 'Walmart',
-        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
-        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
-        icon: '🏪'
-    },
-    storenvy: {
-        name: 'Storenvy',
-        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
-        tips: 'Copy the full product URL from the product page',
-        icon: '🏬'
-    }
-};
-
-// Auto-refresh state
-let autoRefreshInterval = null;
-
-// ===== AUTH FUNCTIONS =====
-async function checkSession() {
-    try {
-        const response = await fetch(`${API_URL}/auth/session`, {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        if (data.logged_in) {
-            currentUser = data.user;
-            showApp();
-        } else {
-            showAuth();
-        }
-    } catch (error) {
-        console.error('Session check failed:', error);
-        showAuth();
-    }
-}
-
-function showAuth() {
-    document.getElementById('authContainer').style.display = 'flex';
-    document.getElementById('appContainer').style.display = 'none';
-    stopAutoRefresh();
-}
-
-function showApp() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('appContainer').style.display = 'block';
-    
-    // Update user name
-    document.getElementById('userName').textContent = currentUser.first_name;
-    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
-    document.getElementById('accountEmail').textContent = currentUser.email;
-    
-    // Load initial data
-    loadProducts();
-    loadStats();
-    
-    // Start auto-refresh
-    startAutoRefresh();
-}
-
-function showLoginForm() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('signupForm').style.display = 'none';
-}
-
-function showSignupForm() {
-    document.getElementById('signupForm').style.display = 'block';
-    document.getElementById('loginForm').style.display = 'none';
-}
-
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ email, password })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            currentUser = data.user;
-            showToast('Welcome back, ' + currentUser.first_name + '!');
-            showApp();
-            document.getElementById('loginForm').querySelector('form').reset();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Login failed', 'error');
-        }
-    } catch (error) {
-;
+            savingsText = `${Math.round(savings)} R$`;
             emoji = '🎮';
         } else {
-            savingsText = `${savings.toFixed(2)}`;
+            savingsText = `$${savings.toFixed(2)}`;
             emoji = '💰';
         }
         
@@ -784,132 +571,7 @@ async function loadRobloxItems() {
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
                             <span class="price-value robux" id="roblox-price-${item.id}">
-                                ${item.last_price ? `${Math.round(item.last_price)} R// PriceTracker JavaScript - UPDATED WITH AUTH AND NO FLIGHTS
-// frontend/js/app.js
-
-const API_URL = 'http://localhost:5000/api';
-
-// User state
-let currentUser = null;
-
-// Platform configurations
-const platformConfigs = {
-    amazon: {
-        name: 'Amazon',
-        exampleUrl: 'https://www.amazon.com/dp/B08N5WRWNW',
-        tips: 'Use the product URL from the address bar. Amazon URLs typically contain /dp/ or /gp/product/',
-        icon: '🛒'
-    },
-    ebay: {
-        name: 'eBay',
-        exampleUrl: 'https://www.ebay.com/itm/123456789012',
-        tips: 'Use the item URL that contains /itm/ followed by the item number',
-        icon: '🏷️'
-    },
-    etsy: {
-        name: 'Etsy',
-        exampleUrl: 'https://www.etsy.com/listing/123456789/handmade-product-name',
-        tips: 'Copy the listing URL that contains /listing/ followed by the listing ID',
-        icon: '🎨'
-    },
-    walmart: {
-        name: 'Walmart',
-        exampleUrl: 'https://www.walmart.com/ip/Product-Name/123456789',
-        tips: 'Walmart URLs contain /ip/ followed by the product name and ID',
-        icon: '🏪'
-    },
-    storenvy: {
-        name: 'Storenvy',
-        exampleUrl: 'https://store-name.storenvy.com/products/123456-product-name',
-        tips: 'Copy the full product URL from the product page',
-        icon: '🏬'
-    }
-};
-
-// Auto-refresh state
-let autoRefreshInterval = null;
-
-// ===== AUTH FUNCTIONS =====
-async function checkSession() {
-    try {
-        const response = await fetch(`${API_URL}/auth/session`, {
-            credentials: 'include'
-        });
-        const data = await response.json();
-        
-        if (data.logged_in) {
-            currentUser = data.user;
-            showApp();
-        } else {
-            showAuth();
-        }
-    } catch (error) {
-        console.error('Session check failed:', error);
-        showAuth();
-    }
-}
-
-function showAuth() {
-    document.getElementById('authContainer').style.display = 'flex';
-    document.getElementById('appContainer').style.display = 'none';
-    stopAutoRefresh();
-}
-
-function showApp() {
-    document.getElementById('authContainer').style.display = 'none';
-    document.getElementById('appContainer').style.display = 'block';
-    
-    // Update user name
-    document.getElementById('userName').textContent = currentUser.first_name;
-    document.getElementById('accountName').textContent = `${currentUser.first_name} ${currentUser.last_name || ''}`.trim();
-    document.getElementById('accountEmail').textContent = currentUser.email;
-    
-    // Load initial data
-    loadProducts();
-    loadStats();
-    
-    // Start auto-refresh
-    startAutoRefresh();
-}
-
-function showLoginForm() {
-    document.getElementById('loginForm').style.display = 'block';
-    document.getElementById('signupForm').style.display = 'none';
-}
-
-function showSignupForm() {
-    document.getElementById('signupForm').style.display = 'block';
-    document.getElementById('loginForm').style.display = 'none';
-}
-
-async function handleLogin(event) {
-    event.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({ email, password })
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            currentUser = data.user;
-            showToast('Welcome back, ' + currentUser.first_name + '!');
-            showApp();
-            document.getElementById('loginForm').querySelector('form').reset();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Login failed', 'error');
-        }
-    } catch (error) {
- : '--'}
+                                ${item.last_price ? `${Math.round(item.last_price)} R$` : '--'}
                             </span>
                         </div>
                         <div class="price-item">
@@ -1052,7 +714,7 @@ async function loadStockAlerts() {
                     <div class="price-info">
                         <div class="price-item">
                             <span class="price-label">Current Price</span>
-                            <span class="price-value" id="stock-price-${alert.id}">${alert.current_price ? alert.current_price.toFixed(2) : '--'}</span>
+                            <span class="price-value" id="stock-price-${alert.id}">$${alert.current_price ? alert.current_price.toFixed(2) : '--'}</span>
                         </div>
                         <div class="price-item">
                             <span class="price-label">Threshold</span>
@@ -1083,8 +745,8 @@ async function loadStockAlerts() {
 
 function formatAlertDescription(alert) {
     const alertDescriptions = {
-        'price_above': `Alert when price rises above ${alert.threshold}`,
-        'price_below': `Alert when price drops below ${alert.threshold}`,
+        'price_above': `Alert when price rises above $${alert.threshold}`,
+        'price_below': `Alert when price drops below $${alert.threshold}`,
         'percent_up': `Alert when price increases by ${alert.threshold}%`,
         'percent_down': `Alert when price decreases by ${alert.threshold}%`
     };
@@ -1095,7 +757,7 @@ function formatThreshold(alert) {
     if (alert.alert_type.includes('percent')) {
         return `${alert.threshold}%`;
     }
-    return `${alert.threshold.toFixed(2)}`;
+    return `$${alert.threshold.toFixed(2)}`;
 }
 
 function renderStockStatus(alert) {
@@ -1335,41 +997,4 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('beforeunload', function() {
         stopAutoRefresh();
     });
-}); Failed to login', 'error');
-        console.error('Login error:', error);
-    }
-}
-
-async function handleSignup(event) {
-    event.preventDefault();
-    
-    const data = {
-        first_name: document.getElementById('signupFirstName').value,
-        last_name: document.getElementById('signupLastName').value,
-        email: document.getElementById('signupEmail').value,
-        password: document.getElementById('signupPassword').value,
-        smtp_password: document.getElementById('signupSmtpPassword').value
-    };
-    
-    try {
-        const response = await fetch(`${API_URL}/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify(data)
-        });
-        
-        if (response.ok) {
-            const responseData = await response.json();
-            currentUser = responseData.user;
-            showToast('Welcome to PriceTracker, ' + currentUser.first_name + '!');
-            showApp();
-            document.getElementById('signupForm').querySelector('form').reset();
-        } else {
-            const error = await response.json();
-            showToast(error.error || 'Signup failed', 'error');
-        }
-    } catch (error) {
-        showToast
+});
