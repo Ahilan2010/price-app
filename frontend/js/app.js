@@ -2205,3 +2205,390 @@ function updateThresholdLabel() {
     label.innerHTML = config.text;
     input.placeholder = config.placeholder;
     input.step = config.step
+;
+}
+
+async function addStockAlert(event) {
+    event.preventDefault();
+    
+    const symbol = document.getElementById('stockSymbol').value.toUpperCase().trim();
+    const alertType = document.getElementById('alertType').value;
+    const threshold = parseFloat(document.getElementById('alertThreshold').value);
+    
+    if (!symbol || !alertType || !threshold || threshold <= 0) {
+        showToast('Please fill in all fields with valid values', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/stocks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ 
+                symbol: symbol, 
+                alert_type: alertType, 
+                threshold: threshold 
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showToast(`🚨 Stock alert created for ${symbol}! Automatic monitoring will notify you when conditions are met.`);
+            closeAddStockModal();
+            loadStockAlerts();
+            loadStats();
+        } else {
+            showToast(data.error || 'Failed to add stock alert', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to add stock alert', 'error');
+        console.error('Error adding stock alert:', error);
+    }
+}
+
+async function deleteStockAlert(alertId) {
+    if (!confirm('Are you sure you want to remove this stock alert?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/stocks/${alertId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            showToast('Stock alert removed successfully');
+            loadStockAlerts();
+            loadStats();
+        } else {
+            const data = await response.json();
+            showToast(data.error || 'Failed to remove stock alert', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to remove stock alert', 'error');
+        console.error('Error deleting stock alert:', error);
+    }
+}
+
+// ===== SETTINGS MANAGEMENT =====
+async function loadEmailConfig() {
+    try {
+        // Since email config is now per-user and handled through SMTP password,
+        // we just need to show the current user's configuration status
+        const response = await fetch(`${API_URL}/auth/session`, {
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.logged_in && data.user.has_smtp) {
+                document.getElementById('smtpPassword').placeholder = 'Current password configured (hidden)';
+            } else {
+                document.getElementById('smtpPassword').placeholder = 'Enter your Gmail app password';
+            }
+        }
+    } catch (error) {
+        console.error('Failed to load email config:', error);
+    }
+}
+
+async function handleEmailSettings(event) {
+    event.preventDefault();
+    
+    const smtpPassword = document.getElementById('smtpPassword').value.trim();
+    
+    if (!smtpPassword) {
+        showToast('Please enter your Gmail app password', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/update-smtp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ smtp_password: smtpPassword })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showToast('✅ Email settings updated! You will now receive alerts when deals are found.');
+            document.getElementById('smtpPassword').value = '';
+            document.getElementById('smtpPassword').placeholder = 'Current password configured (hidden)';
+        } else {
+            showToast(data.error || 'Failed to update email settings', 'error');
+        }
+    } catch (error) {
+        showToast('Network error: Failed to update email settings', 'error');
+        console.error('Error updating email settings:', error);
+    }
+}
+
+// ===== EVENT LISTENERS SETUP =====
+function setupEventListeners() {
+    // Modal close on background click
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    });
+    
+    // Alert type change listener for stock modal
+    const alertTypeSelect = document.getElementById('alertType');
+    if (alertTypeSelect) {
+        alertTypeSelect.addEventListener('change', updateThresholdLabel);
+        // Initialize the label
+        updateThresholdLabel();
+    }
+    
+    // Email form submission
+    const emailForm = document.getElementById('emailForm');
+    if (emailForm) {
+        emailForm.addEventListener('submit', handleEmailSettings);
+    }
+    
+    // Platform select change for product modal
+    const platformSelect = document.getElementById('platformSelect');
+    if (platformSelect) {
+        platformSelect.addEventListener('change', updateUrlPlaceholder);
+    }
+    
+    // Auto-focus on modal opens
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Close any open modals
+            document.querySelectorAll('.modal.show').forEach(modal => {
+                modal.classList.remove('show');
+            });
+        }
+    });
+}
+
+// ===== UTILITY FUNCTIONS =====
+function formatLastChecked(timestamp) {
+    if (!timestamp) return 'Never';
+    
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffMins < 1) {
+        return 'Just now';
+    } else if (diffMins < 60) {
+        return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+    } else if (diffHours < 24) {
+        return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+    } else if (diffDays < 7) {
+        return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+    } else {
+        return date.toLocaleDateString();
+    }
+}
+
+function generateProductCard(product, platform) {
+    const config = platformConfigs[platform] || {};
+    const isRoblox = platform === 'roblox';
+    
+    return `
+        <div class="card" data-platform="${platform}" id="product-${product.id}">
+            <div class="platform-badge">
+                <span>${product.platform_icon || config.icon || (isRoblox ? '🎮' : '🛒')}</span>
+                <span style="font-weight: 500;">${product.platform_name || config.name || 'Unknown'}</span>
+            </div>
+            <h3 class="card-title">${product.title || 'Loading product details...'}</h3>
+            <p class="card-subtitle">${truncateUrl(product.url)}</p>
+            
+            <div class="price-info">
+                <div class="price-item">
+                    <span class="price-label">Current Price</span>
+                    <span class="price-value ${isRoblox ? 'robux' : ''}" id="current-price-${product.id}">
+                        ${product.last_price ? formatPrice(product.last_price, platform) : '--'}
+                    </span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Target Price</span>
+                    <span class="price-value ${isRoblox ? 'robux' : ''}">${formatPrice(product.target_price, platform)}</span>
+                </div>
+            </div>
+            
+            <div id="status-${product.id}">
+                ${renderProductStatus(product, platform)}
+            </div>
+            
+            ${product.last_checked ? `
+                <div style="text-align: center; color: #666; font-size: 0.85rem; margin: 12px 0;">
+                    Last checked: ${formatLastChecked(product.last_checked)}
+                </div>
+            ` : ''}
+            
+            <div class="card-actions">
+                <a href="${product.url}" target="_blank" class="btn btn-primary btn-icon">
+                    <i class="fas fa-external-link-alt"></i> ${isRoblox ? 'View Item' : 'View Product'}
+                </a>
+                <button onclick="${isRoblox ? 'deleteRobloxItem' : 'deleteProduct'}(${product.id})" class="btn btn-secondary btn-icon">
+                    <i class="fas fa-trash"></i> Remove
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+function setupKeyboardShortcuts() {
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K to focus on adding products
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                if (pageId === 'productsPage') {
+                    showAddProductModal();
+                } else if (pageId === 'robloxPage') {
+                    showAddRobloxModal();
+                } else if (pageId === 'stocksPage') {
+                    showAddStockModal();
+                }
+            }
+        }
+        
+        // Number keys for quick page navigation
+        if (e.altKey && e.key >= '1' && e.key <= '4') {
+            e.preventDefault();
+            const navItems = document.querySelectorAll('.nav-item');
+            const pageMap = {
+                '1': 'productsPage',
+                '2': 'robloxPage', 
+                '3': 'stocksPage',
+                '4': 'settingsPage'
+            };
+            
+            const pageId = pageMap[e.key];
+            const navItem = navItems[parseInt(e.key) - 1];
+            
+            if (pageId && navItem) {
+                showPage(pageId, navItem);
+            }
+        }
+    });
+}
+
+// ===== APP INITIALIZATION =====
+async function initializeApp() {
+    console.log('🚀 Initializing PriceTracker App...');
+    
+    try {
+        // Set up event listeners
+        setupEventListeners();
+        setupKeyboardShortcuts();
+        
+        // Check user session
+        await checkSession();
+        
+        console.log('✅ App initialized successfully');
+        
+    } catch (error) {
+        console.error('❌ App initialization failed:', error);
+        showToast('Failed to initialize app. Please refresh the page.', 'error');
+    }
+}
+
+// ===== PERIODIC DATA REFRESH =====
+function startPeriodicRefresh() {
+    // Refresh stats every 2 minutes
+    setInterval(() => {
+        if (currentUser) {
+            loadStats();
+        }
+    }, 120000);
+    
+    // Refresh current page data every 5 minutes
+    setInterval(() => {
+        if (currentUser) {
+            const activePage = document.querySelector('.page.active');
+            if (activePage) {
+                const pageId = activePage.id;
+                if (pageId === 'productsPage') {
+                    loadProducts();
+                } else if (pageId === 'robloxPage') {
+                    loadRobloxItems();
+                } else if (pageId === 'stocksPage') {
+                    loadStockAlerts();
+                }
+            }
+        }
+    }, 300000);
+}
+
+// ===== ERROR HANDLING =====
+window.addEventListener('error', function(e) {
+    console.error('Global error caught:', e.error);
+    if (e.error && e.error.message && e.error.message.includes('fetch')) {
+        showToast('Network error: Please check your connection and ensure the backend is running.', 'error');
+    }
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+    console.error('Unhandled promise rejection:', e.reason);
+    if (e.reason && e.reason.message && e.reason.message.includes('fetch')) {
+        showToast('Network error: Failed to connect to server.', 'error');
+    }
+});
+
+// ===== DOCUMENT READY =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM Content Loaded');
+    initializeApp();
+    startPeriodicRefresh();
+});
+
+// ===== PAGE VISIBILITY HANDLING =====
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden && currentUser) {
+        // Page became visible, refresh data
+        loadStats();
+        
+        const activePage = document.querySelector('.page.active');
+        if (activePage) {
+            const pageId = activePage.id;
+            if (pageId === 'productsPage') {
+                loadProducts();
+            } else if (pageId === 'robloxPage') {
+                loadRobloxItems();
+            } else if (pageId === 'stocksPage') {
+                loadStockAlerts();
+            }
+        }
+    }
+});
+
+// ===== SERVICE WORKER REGISTRATION (Optional) =====
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        // Service worker could be added here for offline functionality
+        console.log('🔧 Service Worker support detected');
+    });
+}
+
+console.log('📱 PriceTracker App loaded successfully!');
