@@ -23376,3 +23376,21 @@ SyntaxError: unterminated string literal (detected at line 967)
 2025-07-14 17:18:34,556 - INFO - 127.0.0.1 - - [14/Jul/2025 17:18:34] "[33mGET /css/styles.css HTTP/1.1[0m" 404 -
 2025-07-14 17:18:34,558 - INFO - 127.0.0.1 - - [14/Jul/2025 17:18:34] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
 2025-07-14 17:18:34,563 - INFO - 127.0.0.1 - - [14/Jul/2025 17:18:34] "[33mGET /api/auth/session HTTP/1.1[0m" 404 -
+2025-07-14 18:04:09,225 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:09] "GET / HTTP/1.1" 200 -
+2025-07-14 18:04:09,242 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:09] "GET /css/style.css HTTP/1.1" 200 -
+2025-07-14 18:04:09,245 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:09] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-14 18:04:28,457 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:28] "GET / HTTP/1.1" 200 -
+2025-07-14 18:04:28,472 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:28] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 18:04:28,474 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:28] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 18:04:34,147 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:34] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 18:04:34,161 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:34] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 18:04:34,163 - INFO - 127.0.0.1 - - [14/Jul/2025 18:04:34] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 18:24:52,768 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.1.71:5000
+2025-07-14 18:24:52,769 - INFO - [33mPress CTRL+C to quit[0m
+2025-07-14 20:05:05,556 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 20:05:05,687 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 20:05:05,688 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 20:05:05,897 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
