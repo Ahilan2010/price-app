@@ -23394,3 +23394,505 @@ SyntaxError: unterminated string literal (detected at line 967)
 2025-07-14 20:05:05,687 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
 2025-07-14 20:05:05,688 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
 2025-07-14 20:05:05,897 - INFO - 127.0.0.1 - - [14/Jul/2025 20:05:05] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-14 21:40:15,358 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:15] "GET / HTTP/1.1" 200 -
+2025-07-14 21:40:15,392 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:15] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 21:40:15,400 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:15] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-14 21:40:16,318 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:16] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-14 21:40:16,330 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:16] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-14 21:40:16,331 - INFO - 127.0.0.1 - - [14/Jul/2025 21:40:16] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-15 12:07:52,167 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-15 12:07:52,196 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-15 12:07:52,224 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "GET /js/app.js HTTP/1.1" 200 -
+2025-07-15 12:07:52,283 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 12:07:52,287 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-15 12:07:52,293 - INFO - 127.0.0.1 - - [15/Jul/2025 12:07:52] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 12:08:05,212 - INFO - 🚀 Starting PriceTracker Scheduler Service...
+2025-07-15 12:08:05,212 - INFO - 📦 E-commerce & Roblox Products: Every 6 hours
+2025-07-15 12:08:05,213 - INFO - 📈 Stocks: Every 5 minutes
+2025-07-15 12:08:05,215 - INFO - 🚀 Product scheduler started - will check every 6 hours
+2025-07-15 12:08:05,216 - INFO - 🚀 Stock scheduler started - will check every 5 minutes
+2025-07-15 12:08:05,216 - INFO - ✅ Scheduler service started successfully
+2025-07-15 12:08:05,217 - INFO - 📦 Starting product price check...
+2025-07-15 12:08:05,217 - INFO - 📈 Starting stock price check...
+2025-07-15 12:08:05,231 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:05] "[35m[1mPOST /api/auth/signup HTTP/1.1[0m" 201 -
+2025-07-15 12:08:05,250 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:05] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:05,287 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:05] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:08:05,295 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:05] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:20,347 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:20] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:20,389 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:20] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:08:20,420 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:20] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:30,065 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:30] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:08:30,983 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:30] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 12:08:31,082 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:31] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:31,137 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:31] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 12:08:35,315 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:35] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:08:35,353 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:35] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:08:39,722 - INFO - 127.0.0.1 - - [15/Jul/2025 12:08:39] "POST /api/auth/logout HTTP/1.1" 200 -
+2025-07-15 12:09:36,579 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:36] "POST /api/auth/login HTTP/1.1" 200 -
+2025-07-15 12:09:36,589 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:09:36,594 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:36] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:09:36,598 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:09:39,575 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:09:39,578 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:09:39,586 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:09:52,281 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:09:52,291 - INFO - 127.0.0.1 - - [15/Jul/2025 12:09:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:10:06,594 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:10:06,596 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:06] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:10:06,602 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:10:36,823 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:10:36,825 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:36] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:10:36,833 - INFO - 127.0.0.1 - - [15/Jul/2025 12:10:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:11:06,822 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:06] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:11:06,827 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:11:06,833 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:11:09,291 - INFO - ✅ Stock price check completed
+2025-07-15 12:11:36,812 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:11:36,814 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:36] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:11:36,823 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:11:52,832 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:11:52,847 - INFO - 127.0.0.1 - - [15/Jul/2025 12:11:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:12:06,813 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:12:06,816 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:06] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:12:06,823 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:12:36,816 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:12:36,819 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:36] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:12:36,828 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:12:42,434 - INFO - ✅ Product price check completed
+2025-07-15 12:12:52,816 - INFO - 127.0.0.1 - - [15/Jul/2025 12:12:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:13:06,814 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:13:06,817 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:06] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:13:06,822 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:06] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:13:09,473 - INFO - 📈 Starting stock price check...
+2025-07-15 12:13:39,818 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:13:39,820 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:13:39,834 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:13:42,477 - INFO - 📈 Starting stock price check...
+2025-07-15 12:13:52,819 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:13:52,828 - INFO - 127.0.0.1 - - [15/Jul/2025 12:13:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:14:39,821 - INFO - 127.0.0.1 - - [15/Jul/2025 12:14:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:14:39,824 - INFO - 127.0.0.1 - - [15/Jul/2025 12:14:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:14:39,830 - INFO - 127.0.0.1 - - [15/Jul/2025 12:14:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:15:39,812 - INFO - 127.0.0.1 - - [15/Jul/2025 12:15:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:15:39,813 - INFO - 127.0.0.1 - - [15/Jul/2025 12:15:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:15:39,821 - INFO - 127.0.0.1 - - [15/Jul/2025 12:15:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:15:52,806 - INFO - 127.0.0.1 - - [15/Jul/2025 12:15:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:15:52,815 - INFO - 127.0.0.1 - - [15/Jul/2025 12:15:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:16:33,249 - INFO - ✅ Stock price check completed
+2025-07-15 12:16:39,808 - INFO - 127.0.0.1 - - [15/Jul/2025 12:16:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:16:39,809 - INFO - 127.0.0.1 - - [15/Jul/2025 12:16:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:16:39,819 - INFO - 127.0.0.1 - - [15/Jul/2025 12:16:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:16:51,357 - INFO - ✅ Stock price check completed
+2025-07-15 12:17:39,804 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:17:39,805 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:17:39,813 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:17:52,817 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:17:52,818 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:17:52,823 - INFO - 127.0.0.1 - - [15/Jul/2025 12:17:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:18:39,802 - INFO - 127.0.0.1 - - [15/Jul/2025 12:18:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:18:39,804 - INFO - 127.0.0.1 - - [15/Jul/2025 12:18:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:18:39,812 - INFO - 127.0.0.1 - - [15/Jul/2025 12:18:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:19:39,801 - INFO - 127.0.0.1 - - [15/Jul/2025 12:19:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:19:39,803 - INFO - 127.0.0.1 - - [15/Jul/2025 12:19:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:19:39,811 - INFO - 127.0.0.1 - - [15/Jul/2025 12:19:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:19:52,799 - INFO - 127.0.0.1 - - [15/Jul/2025 12:19:52] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:19:52,805 - INFO - 127.0.0.1 - - [15/Jul/2025 12:19:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:20:39,804 - INFO - 127.0.0.1 - - [15/Jul/2025 12:20:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:20:39,805 - INFO - 127.0.0.1 - - [15/Jul/2025 12:20:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:20:39,812 - INFO - 127.0.0.1 - - [15/Jul/2025 12:20:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:21:39,789 - INFO - 127.0.0.1 - - [15/Jul/2025 12:21:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:21:39,790 - INFO - 127.0.0.1 - - [15/Jul/2025 12:21:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:21:39,800 - INFO - 127.0.0.1 - - [15/Jul/2025 12:21:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:21:51,745 - INFO - 📈 Starting stock price check...
+2025-07-15 12:22:03,950 - INFO - 📈 Starting stock price check...
+2025-07-15 12:22:39,799 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:22:39,813 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:22:39,832 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:22:39,843 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:22:39,857 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:22:52,774 - INFO - 127.0.0.1 - - [15/Jul/2025 12:22:52] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:23:39,782 - INFO - 127.0.0.1 - - [15/Jul/2025 12:23:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:23:39,783 - INFO - 127.0.0.1 - - [15/Jul/2025 12:23:39] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:23:39,792 - INFO - 127.0.0.1 - - [15/Jul/2025 12:23:39] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:15,831 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:15,833 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:24:15,846 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:24:15,850 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:15,853 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:24:15,855 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:15,860 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:15,863 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:15] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:24:28,951 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:28] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 12:24:36,560 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:36] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 12:24:36,576 - INFO - 127.0.0.1 - - [15/Jul/2025 12:24:36] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 12:25:15,849 - INFO - ✅ Stock price check completed
+2025-07-15 12:30:10,525 - INFO - ✅ Stock price check completed
+2025-07-15 12:42:35,922 - INFO - 📈 Starting stock price check...
+2025-07-15 12:42:47,737 - INFO - 📈 Starting stock price check...
+2025-07-15 12:44:54,421 - INFO - ✅ Stock price check completed
+2025-07-15 12:45:21,530 - INFO - ✅ Stock price check completed
+2025-07-15 12:50:21,878 - INFO - 📈 Starting stock price check...
+2025-07-15 12:50:25,111 - INFO - 📈 Starting stock price check...
+2025-07-15 12:53:34,453 - INFO - ✅ Stock price check completed
+2025-07-15 12:53:55,464 - INFO - ✅ Stock price check completed
+2025-07-15 12:58:56,072 - INFO - 📈 Starting stock price check...
+2025-07-15 12:59:34,826 - INFO - 📈 Starting stock price check...
+2025-07-15 13:01:55,194 - INFO - ✅ Stock price check completed
+2025-07-15 13:02:40,636 - INFO - ✅ Stock price check completed
+2025-07-15 13:07:40,918 - INFO - 📈 Starting stock price check...
+2025-07-15 13:07:56,073 - INFO - 📈 Starting stock price check...
+2025-07-15 13:11:13,739 - INFO - ✅ Stock price check completed
+2025-07-15 13:11:18,291 - INFO - ✅ Stock price check completed
+2025-07-15 13:16:18,868 - INFO - 📈 Starting stock price check...
+2025-07-15 13:17:14,178 - INFO - 📈 Starting stock price check...
+2025-07-15 13:19:37,409 - INFO - ✅ Stock price check completed
+2025-07-15 13:20:35,215 - INFO - ✅ Stock price check completed
+2025-07-15 13:25:35,446 - INFO - 📈 Starting stock price check...
+2025-07-15 13:25:38,109 - INFO - 📈 Starting stock price check...
+2025-07-15 13:27:23,311 - INFO - ✅ Stock price check completed
+2025-07-15 13:29:13,756 - INFO - ✅ Stock price check completed
+2025-07-15 13:34:14,590 - INFO - 📈 Starting stock price check...
+2025-07-15 13:34:23,734 - INFO - 📈 Starting stock price check...
+2025-07-15 13:44:01,602 - INFO - ✅ Stock price check completed
+2025-07-15 13:44:30,959 - INFO - ✅ Stock price check completed
+2025-07-15 13:49:31,249 - INFO - 📈 Starting stock price check...
+2025-07-15 13:49:32,155 - INFO - 📈 Starting stock price check...
+2025-07-15 13:52:46,107 - INFO - ✅ Stock price check completed
+2025-07-15 13:54:00,666 - INFO - ✅ Stock price check completed
+2025-07-15 13:59:00,928 - INFO - 📈 Starting stock price check...
+2025-07-15 13:59:16,996 - INFO - 📈 Starting stock price check...
+2025-07-15 14:01:59,819 - INFO - ✅ Stock price check completed
+2025-07-15 14:02:05,066 - INFO - ✅ Stock price check completed
+2025-07-15 14:07:05,383 - INFO - 📈 Starting stock price check...
+2025-07-15 14:07:30,562 - INFO - 📈 Starting stock price check...
+2025-07-15 14:10:49,032 - INFO - ✅ Stock price check completed
+2025-07-15 14:11:09,629 - INFO - ✅ Stock price check completed
+2025-07-15 14:16:10,348 - INFO - 📈 Starting stock price check...
+2025-07-15 14:16:49,381 - INFO - 📈 Starting stock price check...
+2025-07-15 14:20:09,677 - INFO - ✅ Stock price check completed
+2025-07-15 14:20:55,481 - INFO - ✅ Stock price check completed
+2025-07-15 14:25:55,899 - INFO - 📈 Starting stock price check...
+2025-07-15 14:26:10,528 - INFO - 📈 Starting stock price check...
+2025-07-15 14:29:23,083 - INFO - ✅ Stock price check completed
+2025-07-15 14:29:25,205 - INFO - ✅ Stock price check completed
+2025-07-15 14:34:26,109 - INFO - 📈 Starting stock price check...
+2025-07-15 14:35:23,534 - INFO - 📈 Starting stock price check...
+2025-07-15 14:37:11,611 - INFO - ✅ Stock price check completed
+2025-07-15 14:38:10,551 - INFO - ✅ Stock price check completed
+2025-07-15 14:43:10,908 - INFO - 📈 Starting stock price check...
+2025-07-15 14:43:12,587 - INFO - 📈 Starting stock price check...
+2025-07-15 14:46:53,898 - INFO - ✅ Stock price check completed
+2025-07-15 14:47:03,587 - INFO - ✅ Stock price check completed
+2025-07-15 14:52:06,837 - INFO - 📈 Starting stock price check...
+2025-07-15 14:52:16,735 - INFO - 📈 Starting stock price check...
+2025-07-15 15:18:12,619 - INFO - ✅ Stock price check completed
+2025-07-15 15:18:18,677 - INFO - ✅ Stock price check completed
+2025-07-15 15:23:19,294 - INFO - 📈 Starting stock price check...
+2025-07-15 15:24:13,069 - INFO - 📈 Starting stock price check...
+2025-07-15 15:26:23,107 - INFO - ✅ Stock price check completed
+2025-07-15 15:27:24,668 - INFO - ✅ Stock price check completed
+2025-07-15 15:32:25,078 - INFO - 📈 Starting stock price check...
+2025-07-15 15:32:54,062 - INFO - 📈 Starting stock price check...
+2025-07-15 15:35:55,466 - INFO - ✅ Stock price check completed
+2025-07-15 15:36:26,462 - INFO - ✅ Stock price check completed
+2025-07-15 15:41:26,971 - INFO - 📈 Starting stock price check...
+2025-07-15 15:41:55,798 - INFO - 📈 Starting stock price check...
+2025-07-15 15:44:56,534 - INFO - ✅ Stock price check completed
+2025-07-15 15:45:26,767 - INFO - ✅ Stock price check completed
+2025-07-15 15:50:27,014 - INFO - 📈 Starting stock price check...
+2025-07-15 15:50:27,371 - INFO - 📈 Starting stock price check...
+2025-07-15 15:53:57,561 - INFO - ✅ Stock price check completed
+2025-07-15 15:53:57,565 - INFO - ✅ Stock price check completed
+2025-07-15 15:58:57,826 - INFO - 📈 Starting stock price check...
+2025-07-15 15:58:58,263 - INFO - 📈 Starting stock price check...
+2025-07-15 16:02:30,530 - INFO - ✅ Stock price check completed
+2025-07-15 16:02:30,578 - INFO - ✅ Stock price check completed
+2025-07-15 16:07:30,719 - INFO - 📈 Starting stock price check...
+2025-07-15 16:07:31,317 - INFO - 📈 Starting stock price check...
+2025-07-15 16:10:29,032 - INFO - ✅ Stock price check completed
+2025-07-15 16:10:59,754 - INFO - ✅ Stock price check completed
+2025-07-15 16:15:59,828 - INFO - 📈 Starting stock price check...
+2025-07-15 16:16:00,132 - INFO - 📈 Starting stock price check...
+2025-07-15 16:19:31,758 - INFO - ✅ Stock price check completed
+2025-07-15 16:19:31,761 - INFO - ✅ Stock price check completed
+2025-07-15 16:24:32,103 - INFO - 📈 Starting stock price check...
+2025-07-15 16:24:32,424 - INFO - 📈 Starting stock price check...
+2025-07-15 16:28:06,046 - INFO - ✅ Stock price check completed
+2025-07-15 16:28:06,099 - INFO - ✅ Stock price check completed
+2025-07-15 16:33:06,285 - INFO - 📈 Starting stock price check...
+2025-07-15 16:33:06,646 - INFO - 📈 Starting stock price check...
+2025-07-15 16:36:39,166 - INFO - ✅ Stock price check completed
+2025-07-15 16:36:39,168 - INFO - ✅ Stock price check completed
+2025-07-15 16:41:39,586 - INFO - 📈 Starting stock price check...
+2025-07-15 16:41:39,948 - INFO - 📈 Starting stock price check...
+2025-07-15 16:45:09,470 - INFO - ✅ Stock price check completed
+2025-07-15 16:45:09,488 - INFO - ✅ Stock price check completed
+2025-07-15 16:50:09,839 - INFO - 📈 Starting stock price check...
+2025-07-15 16:50:09,979 - INFO - 📈 Starting stock price check...
+2025-07-15 16:53:42,213 - INFO - ✅ Stock price check completed
+2025-07-15 16:53:42,215 - INFO - ✅ Stock price check completed
+2025-07-15 16:58:42,408 - INFO - 📈 Starting stock price check...
+2025-07-15 16:58:42,830 - INFO - 📈 Starting stock price check...
+2025-07-15 17:01:52,469 - INFO - ✅ Stock price check completed
+2025-07-15 17:02:15,573 - INFO - ✅ Stock price check completed
+2025-07-15 17:07:15,853 - INFO - 📈 Starting stock price check...
+2025-07-15 17:07:23,110 - INFO - 📈 Starting stock price check...
+2025-07-15 17:10:41,317 - INFO - ✅ Stock price check completed
+2025-07-15 17:10:54,235 - INFO - ✅ Stock price check completed
+2025-07-15 17:15:55,125 - INFO - 📈 Starting stock price check...
+2025-07-15 17:16:41,758 - INFO - 📈 Starting stock price check...
+2025-07-15 17:19:20,992 - INFO - ✅ Stock price check completed
+2025-07-15 17:19:55,288 - INFO - ✅ Stock price check completed
+2025-07-15 17:24:55,673 - INFO - 📈 Starting stock price check...
+2025-07-15 17:25:21,762 - INFO - 📈 Starting stock price check...
+2025-07-15 17:28:23,944 - INFO - ✅ Stock price check completed
+2025-07-15 17:28:55,915 - INFO - ✅ Stock price check completed
+2025-07-15 17:33:56,611 - INFO - 📈 Starting stock price check...
+2025-07-15 17:34:24,380 - INFO - 📈 Starting stock price check...
+2025-07-15 17:37:30,051 - INFO - ✅ Stock price check completed
+2025-07-15 17:37:45,547 - INFO - ✅ Stock price check completed
+2025-07-15 17:42:45,772 - INFO - 📈 Starting stock price check...
+2025-07-15 17:43:00,713 - INFO - 📈 Starting stock price check...
+2025-07-15 17:46:12,036 - INFO - ✅ Stock price check completed
+2025-07-15 17:46:36,960 - INFO - ✅ Stock price check completed
+2025-07-15 17:51:37,723 - INFO - 📈 Starting stock price check...
+2025-07-15 17:52:12,300 - INFO - 📈 Starting stock price check...
+2025-07-15 17:55:05,616 - INFO - ✅ Stock price check completed
+2025-07-15 17:55:26,115 - INFO - ✅ Stock price check completed
+2025-07-15 18:00:26,461 - INFO - 📈 Starting stock price check...
+2025-07-15 18:00:36,381 - INFO - 📈 Starting stock price check...
+2025-07-15 18:03:34,565 - INFO - ✅ Stock price check completed
+2025-07-15 18:04:16,315 - INFO - ✅ Stock price check completed
+2025-07-15 18:08:16,963 - INFO - 📦 Starting product price check...
+2025-07-15 18:08:34,900 - INFO - 📦 Starting product price check...
+2025-07-15 18:12:42,995 - INFO - ✅ Product price check completed
+2025-07-15 18:13:03,124 - INFO - ✅ Product price check completed
+2025-07-15 18:13:13,078 - INFO - 📈 Starting stock price check...
+2025-07-15 18:14:03,141 - INFO - 📈 Starting stock price check...
+2025-07-15 18:16:13,007 - INFO - ✅ Stock price check completed
+2025-07-15 18:17:06,849 - INFO - ✅ Stock price check completed
+2025-07-15 18:22:07,153 - INFO - 📈 Starting stock price check...
+2025-07-15 18:22:13,548 - INFO - 📈 Starting stock price check...
+2025-07-15 18:25:19,580 - INFO - ✅ Stock price check completed
+2025-07-15 18:25:45,321 - INFO - ✅ Stock price check completed
+2025-07-15 18:30:45,825 - INFO - 📈 Starting stock price check...
+2025-07-15 18:31:19,986 - INFO - 📈 Starting stock price check...
+2025-07-15 18:34:12,561 - INFO - ✅ Stock price check completed
+2025-07-15 18:34:30,923 - INFO - ✅ Stock price check completed
+2025-07-15 18:39:31,297 - INFO - 📈 Starting stock price check...
+2025-07-15 18:39:43,267 - INFO - 📈 Starting stock price check...
+2025-07-15 18:42:10,669 - INFO - ✅ Stock price check completed
+2025-07-15 18:42:33,889 - INFO - ✅ Stock price check completed
+2025-07-15 18:47:34,260 - INFO - 📈 Starting stock price check...
+2025-07-15 18:47:41,417 - INFO - 📈 Starting stock price check...
+2025-07-15 18:51:03,198 - INFO - ✅ Stock price check completed
+2025-07-15 18:51:13,419 - INFO - ✅ Stock price check completed
+2025-07-15 18:56:14,225 - INFO - 📈 Starting stock price check...
+2025-07-15 18:57:03,785 - INFO - 📈 Starting stock price check...
+2025-07-15 18:59:43,233 - INFO - ✅ Stock price check completed
+2025-07-15 19:00:18,250 - INFO - ✅ Stock price check completed
+2025-07-15 19:05:18,517 - INFO - 📈 Starting stock price check...
+2025-07-15 19:05:44,106 - INFO - 📈 Starting stock price check...
+2025-07-15 19:08:44,341 - INFO - ✅ Stock price check completed
+2025-07-15 19:09:16,309 - INFO - ✅ Stock price check completed
+2025-07-15 19:12:02,915 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:02] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-15 19:12:02,942 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:02] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-15 19:12:02,944 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:02] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-15 19:12:02,979 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:02] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:12:03,011 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:03] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:12:03,342 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:03] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-07-15 19:12:11,670 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:11] "[31m[1mPOST /api/auth/login HTTP/1.1[0m" 401 -
+2025-07-15 19:12:17,294 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:17] "POST /api/auth/login HTTP/1.1" 200 -
+2025-07-15 19:12:17,302 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:17] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:17,303 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:17] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:17,314 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:17] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:22,881 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:22] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:22,882 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:22] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:22,887 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:22] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:24,464 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:24] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:24,465 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:24] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:24,470 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:24] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:37,500 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:37] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:37,500 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:37,505 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:42,522 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:42] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:42,524 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:42] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:42,526 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:42] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:45,625 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:45] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:45,628 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:45] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:45,633 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:45] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:47,724 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:47,728 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:47,746 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:47,748 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:47,750 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:47,757 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:51,284 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:51] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:51,285 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:51] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:51,294 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:51] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:53,181 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:53] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:12:53,187 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:53] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:12:53,190 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:53] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:12:56,445 - INFO - 127.0.0.1 - - [15/Jul/2025 19:12:56] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:13:17,306 - INFO - 127.0.0.1 - - [15/Jul/2025 19:13:17] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:13:17,312 - INFO - 127.0.0.1 - - [15/Jul/2025 19:13:17] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:13:47,306 - INFO - 127.0.0.1 - - [15/Jul/2025 19:13:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:13:47,312 - INFO - 127.0.0.1 - - [15/Jul/2025 19:13:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:14:02,986 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:02] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:14:02,996 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:02] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:14:16,777 - INFO - 📈 Starting stock price check...
+2025-07-15 19:14:17,308 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:17] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:14:17,317 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:17] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:14:44,714 - INFO - 📈 Starting stock price check...
+2025-07-15 19:14:47,307 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:14:47,313 - INFO - 127.0.0.1 - - [15/Jul/2025 19:14:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:15:18,004 - INFO - 127.0.0.1 - - [15/Jul/2025 19:15:18] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:15:18,015 - INFO - 127.0.0.1 - - [15/Jul/2025 19:15:18] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:15:48,060 - INFO - 127.0.0.1 - - [15/Jul/2025 19:15:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:15:48,081 - INFO - 127.0.0.1 - - [15/Jul/2025 19:15:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:16:03,983 - INFO - 127.0.0.1 - - [15/Jul/2025 19:16:03] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:16:03,993 - INFO - 127.0.0.1 - - [15/Jul/2025 19:16:03] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:16:49,001 - INFO - 127.0.0.1 - - [15/Jul/2025 19:16:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:16:49,011 - INFO - 127.0.0.1 - - [15/Jul/2025 19:16:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:17:03,223 - INFO - ✅ Stock price check completed
+2025-07-15 19:17:48,715 - INFO - ✅ Stock price check completed
+2025-07-15 19:17:48,991 - INFO - 127.0.0.1 - - [15/Jul/2025 19:17:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:17:49,000 - INFO - 127.0.0.1 - - [15/Jul/2025 19:17:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:18:03,969 - INFO - 127.0.0.1 - - [15/Jul/2025 19:18:03] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:18:03,979 - INFO - 127.0.0.1 - - [15/Jul/2025 19:18:03] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:18:48,968 - INFO - 127.0.0.1 - - [15/Jul/2025 19:18:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:18:48,977 - INFO - 127.0.0.1 - - [15/Jul/2025 19:18:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:19:48,964 - INFO - 127.0.0.1 - - [15/Jul/2025 19:19:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:19:48,970 - INFO - 127.0.0.1 - - [15/Jul/2025 19:19:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:20:03,969 - INFO - 127.0.0.1 - - [15/Jul/2025 19:20:03] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:20:03,977 - INFO - 127.0.0.1 - - [15/Jul/2025 19:20:03] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:20:48,967 - INFO - 127.0.0.1 - - [15/Jul/2025 19:20:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:20:48,976 - INFO - 127.0.0.1 - - [15/Jul/2025 19:20:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:21:48,969 - INFO - 127.0.0.1 - - [15/Jul/2025 19:21:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:21:48,976 - INFO - 127.0.0.1 - - [15/Jul/2025 19:21:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:22:03,972 - INFO - 127.0.0.1 - - [15/Jul/2025 19:22:03] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:22:03,977 - INFO - 127.0.0.1 - - [15/Jul/2025 19:22:03] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:22:48,966 - INFO - 127.0.0.1 - - [15/Jul/2025 19:22:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:22:48,974 - INFO - 127.0.0.1 - - [15/Jul/2025 19:22:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:22:49,081 - INFO - 📈 Starting stock price check...
+2025-07-15 19:23:03,965 - INFO - 📈 Starting stock price check...
+2025-07-15 19:23:49,005 - INFO - 127.0.0.1 - - [15/Jul/2025 19:23:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:23:49,017 - INFO - 127.0.0.1 - - [15/Jul/2025 19:23:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:24:04,001 - INFO - 127.0.0.1 - - [15/Jul/2025 19:24:04] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:24:04,015 - INFO - 127.0.0.1 - - [15/Jul/2025 19:24:04] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:24:49,017 - INFO - 127.0.0.1 - - [15/Jul/2025 19:24:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:24:49,028 - INFO - 127.0.0.1 - - [15/Jul/2025 19:24:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:25:48,989 - INFO - 127.0.0.1 - - [15/Jul/2025 19:25:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:25:49,002 - INFO - 127.0.0.1 - - [15/Jul/2025 19:25:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:26:16,840 - INFO - ✅ Stock price check completed
+2025-07-15 19:26:31,918 - INFO - ✅ Stock price check completed
+2025-07-15 19:26:48,978 - INFO - 127.0.0.1 - - [15/Jul/2025 19:26:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:26:48,984 - INFO - 127.0.0.1 - - [15/Jul/2025 19:26:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:26:48,985 - INFO - 127.0.0.1 - - [15/Jul/2025 19:26:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:26:48,990 - INFO - 127.0.0.1 - - [15/Jul/2025 19:26:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:27:48,964 - INFO - 127.0.0.1 - - [15/Jul/2025 19:27:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:27:48,970 - INFO - 127.0.0.1 - - [15/Jul/2025 19:27:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:28:48,963 - INFO - 127.0.0.1 - - [15/Jul/2025 19:28:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:28:48,972 - INFO - 127.0.0.1 - - [15/Jul/2025 19:28:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:28:48,973 - INFO - 127.0.0.1 - - [15/Jul/2025 19:28:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:28:48,981 - INFO - 127.0.0.1 - - [15/Jul/2025 19:28:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:29:48,962 - INFO - 127.0.0.1 - - [15/Jul/2025 19:29:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:29:48,970 - INFO - 127.0.0.1 - - [15/Jul/2025 19:29:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:30:48,962 - INFO - 127.0.0.1 - - [15/Jul/2025 19:30:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:30:48,970 - INFO - 127.0.0.1 - - [15/Jul/2025 19:30:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:30:48,971 - INFO - 127.0.0.1 - - [15/Jul/2025 19:30:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:30:48,980 - INFO - 127.0.0.1 - - [15/Jul/2025 19:30:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:31:32,594 - INFO - 📈 Starting stock price check...
+2025-07-15 19:31:49,001 - INFO - 127.0.0.1 - - [15/Jul/2025 19:31:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:31:49,011 - INFO - 127.0.0.1 - - [15/Jul/2025 19:31:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:32:17,365 - INFO - 📈 Starting stock price check...
+2025-07-15 19:32:49,025 - INFO - 127.0.0.1 - - [15/Jul/2025 19:32:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:32:49,039 - INFO - 127.0.0.1 - - [15/Jul/2025 19:32:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:32:49,043 - INFO - 127.0.0.1 - - [15/Jul/2025 19:32:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:32:49,057 - INFO - 127.0.0.1 - - [15/Jul/2025 19:32:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:33:48,978 - INFO - 127.0.0.1 - - [15/Jul/2025 19:33:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:33:48,988 - INFO - 127.0.0.1 - - [15/Jul/2025 19:33:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:34:35,904 - INFO - ✅ Stock price check completed
+2025-07-15 19:34:48,976 - INFO - 127.0.0.1 - - [15/Jul/2025 19:34:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:34:48,986 - INFO - 127.0.0.1 - - [15/Jul/2025 19:34:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:34:48,987 - INFO - 127.0.0.1 - - [15/Jul/2025 19:34:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:34:48,994 - INFO - 127.0.0.1 - - [15/Jul/2025 19:34:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:35:23,359 - INFO - ✅ Stock price check completed
+2025-07-15 19:35:48,967 - INFO - 127.0.0.1 - - [15/Jul/2025 19:35:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:35:48,975 - INFO - 127.0.0.1 - - [15/Jul/2025 19:35:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:36:48,958 - INFO - 127.0.0.1 - - [15/Jul/2025 19:36:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:36:48,966 - INFO - 127.0.0.1 - - [15/Jul/2025 19:36:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:36:48,968 - INFO - 127.0.0.1 - - [15/Jul/2025 19:36:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:36:48,975 - INFO - 127.0.0.1 - - [15/Jul/2025 19:36:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:37:48,956 - INFO - 127.0.0.1 - - [15/Jul/2025 19:37:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:37:48,964 - INFO - 127.0.0.1 - - [15/Jul/2025 19:37:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:38:48,956 - INFO - 127.0.0.1 - - [15/Jul/2025 19:38:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:38:48,962 - INFO - 127.0.0.1 - - [15/Jul/2025 19:38:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:38:48,964 - INFO - 127.0.0.1 - - [15/Jul/2025 19:38:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:38:48,971 - INFO - 127.0.0.1 - - [15/Jul/2025 19:38:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:39:48,956 - INFO - 127.0.0.1 - - [15/Jul/2025 19:39:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:39:48,966 - INFO - 127.0.0.1 - - [15/Jul/2025 19:39:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:40:23,666 - INFO - 📈 Starting stock price check...
+2025-07-15 19:40:36,851 - INFO - 📈 Starting stock price check...
+2025-07-15 19:40:48,988 - INFO - 127.0.0.1 - - [15/Jul/2025 19:40:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:40:49,000 - INFO - 127.0.0.1 - - [15/Jul/2025 19:40:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:40:49,002 - INFO - 127.0.0.1 - - [15/Jul/2025 19:40:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:40:49,008 - INFO - 127.0.0.1 - - [15/Jul/2025 19:40:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:41:48,971 - INFO - 127.0.0.1 - - [15/Jul/2025 19:41:48] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:41:48,980 - INFO - 127.0.0.1 - - [15/Jul/2025 19:41:48] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:27,869 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:27,878 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:27,880 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:27,892 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:27,893 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:27,897 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:27] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:33,463 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:33] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:33,467 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:33] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:33,476 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:33] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:35,209 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:35] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:42:35,215 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:35] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:35,222 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:35] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:37,730 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "[36mGET / HTTP/1.1[0m" 304 -
+2025-07-15 19:42:37,748 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "[36mGET /css/style.css HTTP/1.1[0m" 304 -
+2025-07-15 19:42:37,751 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "[36mGET /js/app.js HTTP/1.1[0m" 304 -
+2025-07-15 19:42:37,766 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:42:37,769 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:42:37,774 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:37,776 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:37,780 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:40,778 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:40] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:40,781 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:40] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:40,794 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:40] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:41,931 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:41] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:42:41,935 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:41] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:41,943 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:41] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:47,132 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:47] "GET /api/stocks HTTP/1.1" 200 -
+2025-07-15 19:42:47,134 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:47] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:47,138 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:47] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:49,294 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:49] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:42:49,295 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:42:49,298 - INFO - 127.0.0.1 - - [15/Jul/2025 19:42:49] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:43:07,809 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:43:07,814 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:07] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:43:07,833 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:43:26,318 - INFO - ✅ Stock price check completed
+2025-07-15 19:43:37,956 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:43:37,960 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:43:37,971 - INFO - 127.0.0.1 - - [15/Jul/2025 19:43:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:43:47,201 - INFO - ✅ Stock price check completed
+2025-07-15 19:44:07,934 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:44:07,939 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:07] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:44:07,948 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:44:37,918 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:44:37,921 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:44:37,927 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:44:37,928 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:37] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:44:37,934 - INFO - 127.0.0.1 - - [15/Jul/2025 19:44:37] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:45:07,917 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:45:07,919 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:07] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:45:07,928 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:07] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:45:12,674 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:12] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:45:12,674 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:12] "GET /api/stats HTTP/1.1" 200 -
+2025-07-15 19:45:12,681 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:12] "GET /api/products HTTP/1.1" 200 -
+2025-07-15 19:45:17,725 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:17] "GET /api/auth/session HTTP/1.1" 200 -
+2025-07-15 19:45:28,611 - INFO - 127.0.0.1 - - [15/Jul/2025 19:45:28] "POST /api/auth/logout HTTP/1.1" 200 -
