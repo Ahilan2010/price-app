@@ -13,7 +13,34 @@
         <div class="auth-card">
             <div class="auth-header">
                 <div class="logo">
-                    <i class="fas fa-chart-line"></i>
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Background rounded rectangle -->
+                            <rect x="15" y="15" width="70" height="70" rx="20" ry="20" fill="url(#gradient1)"/>
+                            
+                            <!-- Price tag shape -->
+                            <path d="M25 35 L45 25 L75 25 L75 55 L45 75 L25 55 Z" fill="white" opacity="0.9"/>
+                            
+                            <!-- Hole for the tag -->
+                            <circle cx="35" cy="35" r="4" fill="url(#gradient1)"/>
+                            
+                            <!-- Trend line -->
+                            <polyline points="45,55 50,45 55,40 60,35 65,30" 
+                                      stroke="url(#gradient1)" stroke-width="3" 
+                                      fill="none" stroke-linecap="round"/>
+                            
+                            <!-- Trend arrow -->
+                            <polygon points="63,27 67,31 63,35" fill="url(#gradient1)"/>
+                            
+                            <!-- Gradient definitions -->
+                            <defs>
+                                <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
                     <h1>TagTracker</h1>
                 </div>
                 <p class="auth-subtitle">Smart price monitoring for e-commerce, Roblox, and stocks</p>
@@ -132,7 +159,34 @@
         <!-- Navigation -->
         <nav class="navbar">
             <div class="nav-brand">
-                <i class="fas fa-chart-line"></i>
+                <div class="logo-icon navbar-logo">
+                    <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background rounded rectangle -->
+                        <rect x="15" y="15" width="70" height="70" rx="20" ry="20" fill="url(#gradient1)"/>
+                        
+                        <!-- Price tag shape -->
+                        <path d="M25 35 L45 25 L75 25 L75 55 L45 75 L25 55 Z" fill="white" opacity="0.9"/>
+                        
+                        <!-- Hole for the tag -->
+                        <circle cx="35" cy="35" r="4" fill="url(#gradient1)"/>
+                        
+                        <!-- Trend line -->
+                        <polyline points="45,55 50,45 55,40 60,35 65,30" 
+                                  stroke="url(#gradient1)" stroke-width="3" 
+                                  fill="none" stroke-linecap="round"/>
+                        
+                        <!-- Trend arrow -->
+                        <polygon points="63,27 67,31 63,35" fill="url(#gradient1)"/>
+                        
+                        <!-- Gradient definitions -->
+                        <defs>
+                            <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
                 <span>TagTracker</span>
             </div>
             
@@ -323,6 +377,35 @@
             <div class="settings-content">
                 <div class="settings-section">
                     <h3>
+                        <i class="fas fa-palette"></i>
+                        Appearance
+                    </h3>
+                    <p>Customize how TagTracker looks and feels.</p>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <i class="fas fa-moon"></i>
+                            Dark Mode
+                        </label>
+                        <div class="theme-toggle">
+                            <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                                <i class="fas fa-sun"></i>
+                                Light
+                            </button>
+                            <button class="theme-btn active" data-theme="dark" onclick="setTheme('dark')">
+                                <i class="fas fa-moon"></i>
+                                Dark
+                            </button>
+                            <button class="theme-btn" data-theme="auto" onclick="setTheme('auto')">
+                                <i class="fas fa-desktop"></i>
+                                Auto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>
                         <i class="fas fa-envelope"></i>
                         Email Notifications
                     </h3>
@@ -362,6 +445,7 @@
                             <li>✅ Automatic background monitoring</li>
                             <li>✅ Email notifications</li>
                             <li>✅ User authentication</li>
+                            <li>✅ Dark mode support</li>
                         </ul>
                     </div>
                 </div>
