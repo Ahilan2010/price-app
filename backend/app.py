@@ -68,6 +68,12 @@ def js_files(filename):
     frontend_js = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'js')
     return send_from_directory(frontend_js, filename)
 
+@app.route('/images/<path:filename>')
+def image_files(filename):
+    """Serve images from the frontend images directory"""
+    frontend_images = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'images')
+    return send_from_directory(frontend_images, filename)
+
 # AUTH ROUTES
 @app.route('/api/auth/signup', methods=['POST'])
 def signup():
@@ -427,6 +433,7 @@ def get_stats():
             'triggered_stock_alerts': 0,
             'monitoring_stock_alerts': 0
         })
+
     
     try:
         # Product stats
