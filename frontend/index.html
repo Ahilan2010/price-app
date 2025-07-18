@@ -8,13 +8,67 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Custom Logo SVG embedded for performance -->
+    <svg id="tagtracker-logo" style="display: none;">
+        <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="tagGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ff6b6b;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#ffa726;stop-opacity:1" />
+            </linearGradient>
+        </defs>
+        <g id="logo-symbol">
+            <!-- Background circle -->
+            <circle cx="50" cy="50" r="45" fill="url(#logoGradient)" opacity="0.1"/>
+            
+            <!-- Main tracking radar circles -->
+            <circle cx="50" cy="50" r="35" fill="none" stroke="url(#logoGradient)" stroke-width="3" opacity="0.3"/>
+            <circle cx="50" cy="50" r="25" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.5"/>
+            <circle cx="50" cy="50" r="15" fill="none" stroke="url(#logoGradient)" stroke-width="2" opacity="0.7"/>
+            
+            <!-- Center dot -->
+            <circle cx="50" cy="50" r="3" fill="url(#logoGradient)"/>
+            
+            <!-- Price tag shape -->
+            <path d="M20 25 L35 25 L40 30 L35 35 L20 35 Z" fill="url(#tagGradient)" opacity="0.9"/>
+            <circle cx="25" cy="30" r="2" fill="white"/>
+            
+            <!-- Animated tracking dots -->
+            <circle cx="30" cy="50" r="2" fill="url(#logoGradient)" opacity="0.8">
+                <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="70" cy="50" r="2" fill="url(#logoGradient)" opacity="0.8">
+                <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="50" cy="30" r="2" fill="url(#logoGradient)" opacity="0.8">
+                <animate attributeName="opacity" values="0.8;0.3;0.8" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="50" cy="70" r="2" fill="url(#logoGradient)" opacity="0.8">
+                <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            
+            <!-- Money symbol -->
+            <text x="65" y="75" font-family="Arial Black" font-size="12" fill="url(#logoGradient)" opacity="0.8">$</text>
+            
+            <!-- Cart icon -->
+            <path d="M75 30 L78 30 L80 35 L82 35 L81 32 L85 32 L85 35 L82 35 L80 40 L77 40 Z" fill="url(#logoGradient)" opacity="0.7"/>
+            <circle cx="78" cy="42" r="1" fill="url(#logoGradient)"/>
+            <circle cx="81" cy="42" r="1" fill="url(#logoGradient)"/>
+        </g>
+    </svg>
+
     <!-- Authentication Container -->
     <div id="authContainer" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
                 <div class="logo">
                     <div class="logo-icon">
-                        <img src="logo-base64 auth-logo" alt="TagTracker Logo" width="40" height="40">
+                        <svg width="40" height="40" viewBox="0 0 100 100">
+                            <use href="#logo-symbol"></use>
+                        </svg>
                     </div>
                     <h1>TagTracker</h1>
                 </div>
@@ -135,13 +189,442 @@
         <nav class="navbar">
             <div class="nav-brand">
                 <div class="logo-icon navbar-logo">
-                    <img src="logo-base64 navbar-logo" alt="TagTracker Logo" width="32" height="32"> 
+                    <svg width="32" height="32" viewBox="0 0 100 100">
+                        <use href="#logo-symbol"></use>
+                    </svg>
                 </div>
                 <span>TagTracker</span>
             </div>
             
             <div class="nav-menu">
-                <div class="nav-item active" onclick="showPage('productsPage', this)">
+                <div class="nav-item" onclick="showPage('stocksPage', this)">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Stocks</span>
+                </div>
+                <div class="nav-item" onclick="showPage('settingsPage', this)">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+            
+            <div class="nav-user">
+                <div class="user-dropdown">
+                    <button class="user-button">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <div class="user-name" id="accountName">John Doe</div>
+                                <div class="user-email" id="accountEmail">john@example.com</div>
+                            </div>
+                        </div>
+                        <button class="dropdown-item" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalProducts">0</div>
+                    <div class="stat-label">E-commerce Products</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalRobloxItems">0</div>
+                    <div class="stat-label">Roblox Items</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalStockAlerts">0</div>
+                    <div class="stat-label">Stock Alerts</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-number">$<span id="totalSavings">0.00</span></div>
+                    <div class="stat-label">Actual Savings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- E-commerce Products Page -->
+        <div id="productsPage" class="page active">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-shopping-cart"></i>
+                    E-commerce Products
+                </h2>
+                <button class="btn btn-primary" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Product
+                </button>
+            </div>
+
+            <div id="productsList" class="products-grid">
+                <!-- Products will be loaded here -->
+            </div>
+
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>No products being tracked</h3>
+                <p>Add your first product to start monitoring prices from Amazon, eBay, Etsy, Walmart, and more!</p>
+                <button class="btn btn-primary" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Product
+                </button>
+            </div>
+        </div>
+
+        <!-- Roblox Page -->
+        <div id="robloxPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-gamepad"></i>
+                    Roblox UGC Items
+                </h2>
+                <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Roblox Item
+                </button>
+            </div>
+
+            <div id="robloxList" class="products-grid">
+                <!-- Roblox items will be loaded here -->
+            </div>
+
+            <div id="robloxEmptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3>No Roblox items being tracked</h3>
+                <p>Add Roblox UGC items to monitor their Robux prices and get alerts when they go on sale!</p>
+                <button class="btn btn-primary" onclick="showAddRobloxModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Roblox Item
+                </button>
+            </div>
+        </div>
+
+        <!-- Stocks Page -->
+        <div id="stocksPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Stock Alerts
+                </h2>
+                <button class="btn btn-primary" onclick="showAddStockModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Stock Alert
+                </button>
+            </div>
+
+            <div id="stocksList" class="products-grid">
+                <!-- Stock alerts will be loaded here -->
+            </div>
+
+            <div id="stocksEmptyState" class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>No stock alerts configured</h3>
+                <p>Create alerts for stock price movements and percentage changes to stay informed about your investments!</p>
+                <button class="btn btn-primary" onclick="showAddStockModal()">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Stock Alert
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="settingsPage" class="page">
+            <div class="page-header">
+                <h2>
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </h2>
+            </div>
+
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h3>
+                        <i class="fas fa-palette"></i>
+                        Appearance
+                    </h3>
+                    <p>Customize how TagTracker looks and feels.</p>
+                    
+                    <div class="setting-item">
+                        <label class="setting-label">
+                            <i class="fas fa-moon"></i>
+                            Dark Mode
+                        </label>
+                        <div class="theme-toggle">
+                            <button class="theme-btn" data-theme="light" onclick="setTheme('light')">
+                                <i class="fas fa-sun"></i>
+                                Light
+                            </button>
+                            <button class="theme-btn active" data-theme="dark" onclick="setTheme('dark')">
+                                <i class="fas fa-moon"></i>
+                                Dark
+                            </button>
+                            <button class="theme-btn" data-theme="auto" onclick="setTheme('auto')">
+                                <i class="fas fa-desktop"></i>
+                                Auto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>
+                        <i class="fas fa-envelope"></i>
+                        Email Notifications
+                    </h3>
+                    <p>Configure email alerts to get notified when deals are found or stock alerts trigger.</p>
+                    
+                    <form id="emailForm" class="settings-form">
+                        <div class="form-group">
+                            <label for="smtpPassword">
+                                <i class="fas fa-key"></i>
+                                Gmail App Password
+                            </label>
+                            <input type="password" id="smtpPassword" placeholder="Enter your Gmail app password">
+                            <small class="form-hint">
+                                <i class="fas fa-info-circle"></i>
+                                <a href="https://support.google.com/accounts/answer/185833" target="_blank">Learn how to create a Gmail app password</a>
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Email Settings
+                        </button>
+                    </form>
+                </div>
+
+                <div class="settings-section">
+                    <h3>
+                        <i class="fas fa-info-circle"></i>
+                        About TagTracker
+                    </h3>
+                    <div class="about-content">
+                        <p><strong>Version:</strong> 2.1.0 - FIXED Edition</p>
+                        <p><strong>Features:</strong></p>
+                        <ul>
+                            <li>✅ Multi-platform e-commerce price tracking</li>
+                            <li>✅ Roblox UGC item monitoring</li>
+                            <li>✅ Stock price alerts</li>
+                            <li>✅ Automatic background monitoring</li>
+                            <li>✅ Email notifications</li>
+                            <li>✅ User authentication</li>
+                            <li>✅ Dark mode support</li>
+                            <li>🆕 Fixed Walmart price targeting</li>
+                            <li>🆕 Accurate savings calculation</li>
+                            <li>🆕 Chronological order processing</li>
+                        </ul>
+                        <p><strong>Recent Fixes:</strong></p>
+                        <ul>
+                            <li>🔧 Fixed Walmart price selector to target main product price only</li>
+                            <li>🔧 Fixed savings calculation to show actual savings (not fake numbers)</li>
+                            <li>🔧 Removed platform prioritization - now uses chronological order</li>
+                            <li>🔧 Added custom TagTracker logo with animated elements</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-plus"></i>
+                    Add E-commerce Product
+                </h3>
+                <button class="close-btn" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addProductForm" onsubmit="addProduct(event)">
+                <div class="form-group">
+                    <label for="platformSelect">
+                        <i class="fas fa-store"></i>
+                        E-commerce Platform
+                    </label>
+                    <select id="platformSelect" required onchange="updateUrlPlaceholder()">
+                        <option value="">Choose a platform...</option>
+                        <option value="amazon">🛒 Amazon</option>
+                        <option value="ebay">🏷️ eBay</option>
+                        <option value="etsy">🎨 Etsy</option>
+                        <option value="walmart">🏪 Walmart (FIXED targeting)</option>
+                        <option value="storenvy">🏬 Storenvy</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="productUrl">
+                        <i class="fas fa-link"></i>
+                        Product URL
+                    </label>
+                    <input type="url" id="productUrl" required placeholder="Select a platform first...">
+                    <small id="urlHint" class="form-hint"></small>
+                </div>
+                
+                <div id="platformInfo" style="display: none;" class="platform-info">
+                    <i class="fas fa-lightbulb"></i>
+                    <span id="platformTips"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="targetPrice">
+                        <i class="fas fa-dollar-sign"></i>
+                        Target Price ($)
+                    </label>
+                    <input type="number" id="targetPrice" step="0.01" min="0.01" required placeholder="150.00">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddProductModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Add Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Roblox Modal -->
+    <div id="addRobloxModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-gamepad"></i>
+                    Add Roblox UGC Item
+                </h3>
+                <button class="close-btn" onclick="closeAddRobloxModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addRobloxForm" onsubmit="addRobloxItem(event)">
+                <div class="form-group">
+                    <label for="robloxUrl">
+                        <i class="fas fa-link"></i>
+                        Roblox Item URL
+                    </label>
+                    <input type="url" id="robloxUrl" required placeholder="https://www.roblox.com/catalog/123456789/item-name">
+                    <small class="form-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Copy the URL from the Roblox catalog item page
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="robloxTargetPrice">
+                        <i class="fas fa-coins"></i>
+                        Target Price (Robux)
+                    </label>
+                    <input type="number" id="robloxTargetPrice" min="1" required placeholder="500">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddRobloxModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Add Roblox Item
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Stock Alert Modal -->
+    <div id="addStockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    Add Stock Alert
+                </h3>
+                <button class="close-btn" onclick="closeAddStockModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addStockForm" onsubmit="addStockAlert(event)">
+                <div class="form-group">
+                    <label for="stockSymbol">
+                        <i class="fas fa-building"></i>
+                        Stock Symbol
+                    </label>
+                    <input type="text" id="stockSymbol" required placeholder="AAPL" style="text-transform: uppercase;">
+                </div>
+                
+                <div class="form-group">
+                    <label for="alertType">
+                        <i class="fas fa-bell"></i>
+                        Alert Type
+                    </label>
+                    <select id="alertType" required onchange="updateThresholdLabel()">
+                        <option value="price_above">💰 Price Goes Above</option>
+                        <option value="price_below">💰 Price Goes Below</option>
+                        <option value="percent_up">📈 Price Increases By</option>
+                        <option value="percent_down">📉 Price Decreases By</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label id="thresholdLabel" for="alertThreshold">
+                        💰 Price Threshold ($)
+                    </label>
+                    <input type="number" id="alertThreshold" step="0.01" min="0.01" required placeholder="210.00">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddStockModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Create Alert
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>item active" onclick="showPage('productsPage', this)">
                     <i class="fas fa-shopping-cart"></i>
                     <span>E-commerce</span>
                 </div>

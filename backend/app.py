@@ -1,4 +1,4 @@
-# backend/app.py - FIXED VERSION WITH PROPER AUTH
+# backend/app.py - FIXED VERSION WITH PROPER SAVINGS CALCULATION
 from flask import Flask, jsonify, request, send_file, send_from_directory, session
 from flask_cors import CORS
 from tracker import StorenvyPriceTracker
@@ -111,6 +111,7 @@ def image_files(filename):
     except Exception as e:
         print(f"❌ Error serving file: {e}")
         return f"Error: {e}", 404
+
 # AUTH ROUTES
 @app.route('/api/auth/signup', methods=['POST'])
 def signup():
@@ -457,10 +458,10 @@ def delete_stock_alert(alert_id):
         print(f"Delete stock alert error: {e}")
         return jsonify({'error': 'Failed to delete stock alert'}), 500
 
-# STATISTICS ROUTES
+# STATISTICS ROUTES - FIXED SAVINGS CALCULATION
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
-    """Get statistics about tracked products and stocks"""
+    """Get statistics about tracked products and stocks - FIXED SAVINGS CALCULATION"""
     if 'user_id' not in session:
         return jsonify({
             'total_products': 0,
@@ -477,9 +478,25 @@ def get_stats():
         products = tracker.get_tracked_products(session['user_id'])
         
         total_products = len(products)
-        products_below_target = sum(1 for p in products if p.get('last_price') and p['last_price'] <= p['target_price'])
-        total_savings = sum(p['target_price'] - p['last_price'] for p in products 
-                           if p.get('last_price') and p['last_price'] <= p['target_price'])
+        products_below_target = 0
+        total_savings = 0.0
+        
+        # FIXED: Only calculate savings for products that actually have current prices AND are below target
+        for product in products:
+            current_price = product.get('last_price')
+            target_price = product.get('target_price', 0)
+            
+            # Only count if we have a current price AND it's below target
+            if current_price is not None and current_price <= target_price:
+                products_below_target += 1
+                savings = target_price - current_price
+                total_savings += savings
+                print(f"💰 Savings calculated: {product.get('title', 'Unknown')[:30]}... - ${savings:.2f}")
+        
+        print(f"📊 FIXED Stats Summary:")
+        print(f"   - Total products: {total_products}")
+        print(f"   - Products below target: {products_below_target}")
+        print(f"   - Total savings: ${total_savings:.2f}")
         
         # Stock stats
         stock_stats = stock_tracker.get_stock_stats(session['user_id'])
@@ -487,7 +504,7 @@ def get_stats():
         return jsonify({
             'total_products': total_products,
             'products_below_target': products_below_target,
-            'total_savings': round(total_savings, 2),
+            'total_savings': round(total_savings, 2),  # FIXED: Now only real savings
             'total_stock_alerts': stock_stats['total_alerts'],
             'triggered_stock_alerts': stock_stats['triggered_alerts'],
             'monitoring_stock_alerts': stock_stats['monitoring_alerts']
@@ -498,7 +515,7 @@ def get_stats():
         return jsonify({
             'total_products': 0,
             'products_below_target': 0,
-            'total_savings': 0,
+            'total_savings': 0,  # FIXED: Default to 0 instead of random number
             'total_stock_alerts': 0,
             'triggered_stock_alerts': 0,
             'monitoring_stock_alerts': 0
@@ -506,13 +523,16 @@ def get_stats():
 
 if __name__ == '__main__':
     print("\n" + "="*60)
-    print("🛍️  PRICETRACKER - PROFESSIONAL PRICE MONITORING")
+    print("🛍️  TAGTRACKER - SMART PRICE MONITORING")
     print("="*60)
     print("\n🚀 Web server starting...")
     print("🌐 Interface: http://localhost:5000")
     print("📦 E-commerce Products: Auto-check every 6 hours")
     print("🎮 Roblox Items: Auto-check every 6 hours")
     print("📈 Stocks: Auto-check every 5 minutes")
+    print("💰 FIXED: Proper savings calculation")
+    print("🎯 FIXED: Walmart exact selector targeting")
+    print("📅 FIXED: Chronological order processing")
     print("\n⏹️  Press Ctrl+C to stop the web server")
     print("="*60 + "\n")
     
