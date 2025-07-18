@@ -1,5 +1,5 @@
-// frontend/js/app.js - ENHANCED VERSION WITH IMPROVED FUNCTIONALITY
-// TagTracker JavaScript - Complete Implementation with Enhanced Features
+// frontend/js/app.js - FIXED VERSION WITH REAL SAVINGS CALCULATION
+// TagTracker JavaScript - Complete Implementation with Accurate Savings
 
 const API_URL = window.location.origin + '/api';  // Dynamic API URL based on current host
 
@@ -348,7 +348,7 @@ const authManager = {
     }
 };
 
-// Enhanced data manager
+// Enhanced data manager with REAL SAVINGS CALCULATION
 const dataManager = {
     async loadInitialData() {
         const loadingPromises = [
@@ -368,46 +368,75 @@ const dataManager = {
         }
     },
 
+    // FIXED: Calculate REAL savings based on actual price drops
     async loadStats() {
         try {
-            const response = await fetch(`${API_URL}/stats`, {
-                credentials: 'include',
-                headers: { 'Accept': 'application/json' }
-            });
-            
-            if (!response.ok) {
-                if (response.status === 401) {
-                    authManager.showAuth();
-                    return;
-                }
-                throw new Error(`Failed to load stats: ${response.status}`);
-            }
-            
-            const stats = await response.json();
-            
-            // Count products by type
+            // Get all products to calculate REAL savings
             const productsResponse = await fetch(`${API_URL}/products`, {
                 credentials: 'include',
                 headers: { 'Accept': 'application/json' }
             });
             
-            if (productsResponse.ok) {
-                const allProducts = await productsResponse.json();
-                const ecommerceCount = allProducts.filter(p => 
-                    ['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(p.platform)
-                ).length;
-                const robloxCount = allProducts.filter(p => p.platform === 'roblox').length;
-                
-                // Update stats with animation
-                this.animateNumber('totalProducts', ecommerceCount);
-                this.animateNumber('totalRobloxItems', robloxCount);
+            if (!productsResponse.ok) {
+                if (productsResponse.status === 401) {
+                    authManager.showAuth();
+                    return;
+                }
+                throw new Error(`Failed to load products: ${productsResponse.status}`);
             }
             
-            this.animateNumber('totalStockAlerts', stats.total_stock_alerts || 0);
-            this.animateNumber('totalSavings', stats.total_savings || 0, true);
+            const allProducts = await productsResponse.json();
+            
+            // Calculate REAL SAVINGS - only from products that are actually below target
+            let totalRealSavings = 0;
+            let ecommerceCount = 0;
+            let robloxCount = 0;
+            
+            allProducts.forEach(product => {
+                const platform = product.platform;
+                
+                // Count by platform type
+                if (['amazon', 'ebay', 'etsy', 'walmart', 'storenvy'].includes(platform)) {
+                    ecommerceCount++;
+                } else if (platform === 'roblox') {
+                    robloxCount++;
+                }
+                
+                // Calculate REAL savings only for products below target with valid prices
+                if (product.last_price && product.target_price && product.last_price < product.target_price) {
+                    const savings = product.target_price - product.last_price;
+                    totalRealSavings += savings;
+                    console.log(`💰 Real savings found: ${product.title} - $${savings.toFixed(2)}`);
+                }
+            });
+            
+            // Get stock alerts count
+            const stockResponse = await fetch(`${API_URL}/stocks`, {
+                credentials: 'include',
+                headers: { 'Accept': 'application/json' }
+            });
+            
+            let stockAlertsCount = 0;
+            if (stockResponse.ok) {
+                const stocks = await stockResponse.json();
+                stockAlertsCount = stocks.length;
+            }
+            
+            // Update stats with animation - using REAL calculated savings
+            this.animateNumber('totalProducts', ecommerceCount);
+            this.animateNumber('totalRobloxItems', robloxCount);
+            this.animateNumber('totalStockAlerts', stockAlertsCount);
+            this.animateNumber('totalSavings', totalRealSavings, true);
+            
+            console.log(`📊 Stats updated - Real savings: $${totalRealSavings.toFixed(2)}`);
             
         } catch (error) {
             console.error('❌ Failed to load stats:', error);
+            // Set default values on error
+            this.animateNumber('totalProducts', 0);
+            this.animateNumber('totalRobloxItems', 0);
+            this.animateNumber('totalStockAlerts', 0);
+            this.animateNumber('totalSavings', 0, true);
         }
     },
 
@@ -1559,4 +1588,4 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-console.log('📱 TagTracker App Script Loaded Successfully!');
+console.log('📱 TagTracker App Script Loaded Successfully - REAL SAVINGS EDITION!');
