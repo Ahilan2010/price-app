@@ -1,4 +1,4 @@
-# backend/tracker.py - COMPLETE ENHANCED VERSION WITH ULTRA STEALTH SCRAPER
+# backend/tracker.py - ULTRA-STEALTH VERSION WITH ENHANCED WALMART & ETSY SUPPORT - ERROR-FREE
 import asyncio
 import json
 import smtplib
@@ -15,8 +15,8 @@ from urllib.parse import urlparse
 from playwright.async_api import async_playwright
 
 
-class EnhancedMultiPlatformScraper:
-    """Ultra-stealth multi-platform scraper with precise price detection and bot evasion"""
+class UltraStealthMultiPlatformScraper:
+    """Ultra-stealth multi-platform scraper with enhanced Walmart detection and maximum Etsy bot evasion"""
     
     def __init__(self):
         self.platform_configs = {
@@ -31,13 +31,11 @@ class EnhancedMultiPlatformScraper:
                     'div#title_feature_div span'
                 ],
                 'price_selectors': [
-                    # Primary price selectors (most accurate)
                     'span.a-price.a-text-price.a-size-medium.apexPriceToPay span.a-offscreen',
                     'span.a-price.a-text-price.apexPriceToPay span.a-offscreen',
                     'span.a-price-current span.a-offscreen',
                     'div[data-feature-name="apex_desktop"] span.a-price-whole',
                     'span.a-price.aok-align-center.reinventPricePriceToPayMargin span.a-offscreen',
-                    # Fallback selectors
                     '#priceblock_dealprice',
                     '#priceblock_ourprice',
                     '.a-price .a-offscreen'
@@ -55,17 +53,24 @@ class EnhancedMultiPlatformScraper:
                     'h1'
                 ],
                 'price_selectors': [
-                    # Most accurate Walmart price selectors
+                    # PRIORITY: User's specific Walmart price selector
+                    'span.inline-flex.flex-column span[itemprop="price"][data-seo-id="hero-price"]',
+                    'span[itemprop="price"][data-seo-id="hero-price"][data-fs-element="price"]',
+                    'span[itemprop="price"][data-seo-id="hero-price"]',
+                    
+                    # High-priority main product price selectors
                     'div[data-testid="price-wrap"] span[itemprop="price"]',
                     'span[data-automation-id="buybox-price"]',
-                    'div[data-testid="add-to-cart-price"] span',
+                    'div[data-testid="add-to-cart-price"] span[itemprop="price"]',
+                    'span[data-automation-id="product-price"]',
+                    
+                    # Additional backup selectors
                     'span[itemprop="price"]',
                     'div.price-current span',
                     '.price.display-inline-block span',
                     'div[data-testid="price"] span'
                 ],
                 'exclude_selectors': [
-                    # Exclude recommendation/other product prices
                     'div[data-testid="recommendations"] *',
                     'div[data-testid="similar-items"] *',
                     'div[data-testid="you-might-also-like"] *',
@@ -73,7 +78,7 @@ class EnhancedMultiPlatformScraper:
                     '.similar-items *',
                     '.sponsored-products *'
                 ],
-                'wait_time': 8000,
+                'wait_time': 12000,
                 'scroll_behavior': 'targeted'
             },
             'etsy': {
@@ -85,7 +90,6 @@ class EnhancedMultiPlatformScraper:
                     'div[data-region="listing-title"] h1'
                 ],
                 'price_selectors': [
-                    # Updated Etsy selectors for 2024
                     'p[data-testid="price"] span.currency-value',
                     'div[data-buy-box-region="price"] p[data-selector="price-only"]',
                     'p.wt-text-title-larger span.currency-value',
@@ -93,8 +97,8 @@ class EnhancedMultiPlatformScraper:
                     'div[data-selector="listing-page-cart"] span.currency-value',
                     'p.currency span.currency-value'
                 ],
-                'wait_time': 7000,
-                'scroll_behavior': 'gentle'
+                'wait_time': 15000,
+                'scroll_behavior': 'ultra_gentle'
             },
             'ebay': {
                 'domain_patterns': ['ebay.com', 'ebay.co.uk', 'ebay.ca', 'ebay.de', 'ebay.fr'],
@@ -153,12 +157,41 @@ class EnhancedMultiPlatformScraper:
             }
         }
         
-        # Advanced user agents with real fingerprints
+        # Ultra-realistic user agents
         self.user_agents = [
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/120.0'
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15'
+        ]
+        
+        # Enhanced fingerprint data
+        self.fingerprints = [
+            {
+                'screen': {'width': 1920, 'height': 1080},
+                'viewport': {'width': 1920, 'height': 1080},
+                'hardware_concurrency': 8,
+                'device_memory': 8,
+                'platform': 'Win32',
+                'timezone': 'America/New_York'
+            },
+            {
+                'screen': {'width': 2560, 'height': 1440},
+                'viewport': {'width': 2560, 'height': 1440},
+                'hardware_concurrency': 12,
+                'device_memory': 16,
+                'platform': 'MacIntel',
+                'timezone': 'America/Los_Angeles'
+            },
+            {
+                'screen': {'width': 1366, 'height': 768},
+                'viewport': {'width': 1366, 'height': 768},
+                'hardware_concurrency': 4,
+                'device_memory': 4,
+                'platform': 'Win32',
+                'timezone': 'America/Chicago'
+            }
         ]
     
     def detect_platform(self, url: str) -> Optional[str]:
@@ -177,21 +210,26 @@ class EnhancedMultiPlatformScraper:
             return None
     
     async def setup_ultra_stealth_browser(self, platform: str):
-        """Ultra-stealth browser setup with advanced anti-detection"""
+        """Ultra-stealth browser setup with maximum anti-detection"""
         try:
             user_agent = random.choice(self.user_agents)
+            fingerprint = random.choice(self.fingerprints)
             
+            # Ultra-stealth context
             context = await self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                screen={'width': 1920, 'height': 1080},
+                viewport=fingerprint['viewport'],
+                screen=fingerprint['screen'],
                 device_scale_factor=1,
                 is_mobile=False,
                 has_touch=False,
                 locale='en-US',
-                timezone_id='America/New_York',
+                timezone_id=fingerprint['timezone'],
                 user_agent=user_agent,
                 permissions=['geolocation'],
-                geolocation={'latitude': 40.7128, 'longitude': -74.0060},
+                geolocation={
+                    'latitude': 40.7128 + random.uniform(-0.1, 0.1), 
+                    'longitude': -74.0060 + random.uniform(-0.1, 0.1)
+                },
                 extra_http_headers={
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'Accept-Language': 'en-US,en;q=0.9',
@@ -209,265 +247,380 @@ class EnhancedMultiPlatformScraper:
             
             page = await context.new_page()
             
-            # Ultra-advanced stealth scripts
-            await page.add_init_script("""
-                Object.defineProperty(navigator, 'webdriver', {
+            # Maximum stealth injection
+            stealth_script = f"""
+                // Complete automation detection removal
+                Object.defineProperty(navigator, 'webdriver', {{
                     get: () => undefined,
                     configurable: true
-                });
+                }});
                 
-                Object.defineProperty(navigator, 'plugins', {
-                    get: () => {
-                        return {
-                            0: {
-                                0: {type: "application/x-google-chrome-pdf", suffixes: "pdf", description: "Portable Document Format"},
+                // Enhanced plugin spoofing
+                Object.defineProperty(navigator, 'plugins', {{
+                    get: () => {{
+                        return {{
+                            0: {{
+                                0: {{type: "application/x-google-chrome-pdf", suffixes: "pdf", description: "Portable Document Format"}},
                                 description: "Portable Document Format",
                                 filename: "internal-pdf-viewer",
                                 length: 1,
                                 name: "Chrome PDF Plugin"
-                            },
-                            length: 1
-                        };
-                    }
-                });
+                            }},
+                            1: {{
+                                0: {{type: "application/pdf", suffixes: "pdf", description: "Portable Document Format"}},
+                                description: "Portable Document Format", 
+                                filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
+                                length: 1,
+                                name: "Chrome PDF Viewer"
+                            }},
+                            length: 2
+                        }};
+                    }}
+                }});
                 
-                Object.defineProperty(navigator, 'languages', {
+                // Realistic properties
+                Object.defineProperty(navigator, 'languages', {{
                     get: () => ['en-US', 'en']
-                });
+                }});
                 
-                Object.defineProperty(navigator, 'hardwareConcurrency', {
-                    get: () => 8
-                });
+                Object.defineProperty(navigator, 'hardwareConcurrency', {{
+                    get: () => {fingerprint['hardware_concurrency']}
+                }});
                 
-                Object.defineProperty(navigator, 'deviceMemory', {
-                    get: () => 8
-                });
+                Object.defineProperty(navigator, 'deviceMemory', {{
+                    get: () => {fingerprint['device_memory']}
+                }});
                 
-                Object.defineProperty(navigator, 'platform', {
-                    get: () => 'Win32'
-                });
+                Object.defineProperty(navigator, 'platform', {{
+                    get: () => '{fingerprint['platform']}'
+                }});
                 
+                // Enhanced permissions API
                 const originalQuery = window.navigator.permissions.query;
-                window.navigator.permissions.query = (parameters) => (
-                    parameters.name === 'notifications' ?
-                        Promise.resolve({ state: Notification.permission }) :
-                        originalQuery(parameters)
-                );
+                window.navigator.permissions.query = (parameters) => {{
+                    const permission = parameters.name;
+                    if (permission === 'notifications') return Promise.resolve({{ state: 'default' }});
+                    if (permission === 'geolocation') return Promise.resolve({{ state: 'granted' }});
+                    return originalQuery ? originalQuery(parameters) : Promise.resolve({{ state: 'granted' }});
+                }};
                 
-                window.chrome = {
-                    runtime: {
+                // Chrome API simulation
+                window.chrome = {{
+                    runtime: {{
                         onConnect: null,
                         onMessage: null,
-                        connect: function() { return { onMessage: null, onDisconnect: null, postMessage: function() {} }; },
-                        sendMessage: function() {}
-                    }
-                };
+                        connect: function() {{ return {{ onMessage: null, onDisconnect: null, postMessage: function() {{}} }}; }},
+                        sendMessage: function() {{}}
+                    }},
+                    storage: {{
+                        local: {{
+                            get: function() {{ return Promise.resolve({{}}); }},
+                            set: function() {{ return Promise.resolve(); }}
+                        }}
+                    }}
+                }};
                 
-                delete window.__playwright;
-                delete window.__puppeteer;
-                delete window._phantom;
-                delete window._selenium;
-                delete window.callPhantom;
-                delete window.callSelenium;
-                delete window._Selenium_IDE_Recorder;
+                // Remove automation traces
+                const automationKeys = [
+                    '__playwright', '__puppeteer', '_phantom', '_selenium', 'callPhantom', 
+                    'callSelenium', '_Selenium_IDE_Recorder', '__webdriver_script_func', 
+                    '__webdriver_evaluate', '__selenium_evaluate', '__fxdriver_evaluate', 
+                    '__driver_unwrapped', '__webdriver_unwrapped', '__driver_evaluate', 
+                    '__selenium_unwrapped', '__fxdriver_unwrapped', '__nightmare'
+                ];
                 
-                Object.keys(window).forEach(key => {
-                    if (key.includes('cdc_') || key.includes('$cdc_') || key.includes('selenium')) {
-                        delete window[key];
-                    }
-                });
+                automationKeys.forEach(key => {{
+                    try {{ delete window[key]; }} catch(e) {{}}
+                }});
                 
+                // Remove CDP traces
+                Object.keys(window).forEach(key => {{
+                    if (key.includes('cdc_') || key.includes('$cdc_') || key.includes('selenium') || 
+                        key.includes('webdriver') || key.includes('driver')) {{
+                        try {{ delete window[key]; }} catch(e) {{}}
+                    }}
+                }});
+                
+                // WebGL spoofing
                 const getParameter = WebGLRenderingContext.prototype.getParameter;
-                WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                WebGLRenderingContext.prototype.getParameter = function(parameter) {{
                     if (parameter === 37445) return 'Intel Inc.';
                     if (parameter === 37446) return 'Intel Iris OpenGL Engine';
                     return getParameter.apply(this, arguments);
-                };
-            """)
+                }};
+                
+                // Canvas fingerprinting resistance
+                const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
+                HTMLCanvasElement.prototype.toDataURL = function(...args) {{
+                    const context = this.getContext('2d');
+                    if (context) {{
+                        const imageData = context.getImageData(0, 0, this.width, this.height);
+                        for (let i = 0; i < imageData.data.length; i += 4) {{
+                            if (Math.random() < 0.001) {{
+                                imageData.data[i] = imageData.data[i] ^ (Math.random() < 0.5 ? 1 : 2);
+                            }}
+                        }}
+                        context.putImageData(imageData, 0, 0);
+                    }}
+                    return originalToDataURL.apply(this, args);
+                }};
+                
+                // Connection spoofing
+                Object.defineProperty(navigator, 'connection', {{
+                    get: () => ({{
+                        effectiveType: '4g',
+                        rtt: 50 + Math.random() * 50,
+                        downlink: 10 + Math.random() * 5,
+                        saveData: false
+                    }})
+                }});
+                
+                // Date spoofing
+                const originalDate = Date;
+                const timeOffset = Math.floor(Math.random() * 1000) + 500;
+                Date = function(...args) {{
+                    if (args.length === 0) {{
+                        const d = new originalDate();
+                        d.setTime(d.getTime() + timeOffset);
+                        return d;
+                    }}
+                    return new originalDate(...args);
+                }};
+                Date.prototype = originalDate.prototype;
+                Date.now = function() {{ return originalDate.now() + timeOffset; }};
+                Date.parse = originalDate.parse;
+                Date.UTC = originalDate.UTC;
+            """
             
+            await page.add_init_script(stealth_script)
             return page
+            
         except Exception as e:
             print(f"Error setting up stealth browser: {e}")
             raise
     
-    async def simulate_human_interaction(self, page, platform: str):
-        """Advanced human behavior simulation"""
+    async def simulate_ultra_human_interaction(self, page, platform: str):
+        """Ultra-advanced human behavior simulation"""
         try:
             config = self.platform_configs.get(platform, {})
             scroll_behavior = config.get('scroll_behavior', 'minimal')
             
-            await asyncio.sleep(random.uniform(2, 4))
+            # Extended initial wait
+            await asyncio.sleep(random.uniform(4, 8))
             
-            # Realistic mouse movements
-            for _ in range(random.randint(3, 6)):
-                x = random.randint(200, 1600)
-                y = random.randint(200, 900)
+            # Ultra-realistic mouse movements
+            for _ in range(random.randint(6, 12)):
+                start_x = random.randint(100, 1800)
+                start_y = random.randint(100, 800)
+                end_x = random.randint(100, 1800)
+                end_y = random.randint(100, 800)
                 
-                current_x, current_y = 500, 500
-                steps = random.randint(15, 25)
+                # Natural Bézier curve movement
+                control_x1 = start_x + random.randint(-300, 300)
+                control_y1 = start_y + random.randint(-300, 300)
+                control_x2 = end_x + random.randint(-300, 300)
+                control_y2 = end_y + random.randint(-300, 300)
                 
+                steps = random.randint(25, 50)
                 for i in range(steps):
                     t = i / steps
-                    eased_t = t * t * (3.0 - 2.0 * t)
-                    next_x = current_x + (x - current_x) * eased_t
-                    next_y = current_y + (y - current_y) * eased_t
+                    # Cubic Bézier curve
+                    x = ((1-t)**3 * start_x + 3*(1-t)**2*t * control_x1 + 
+                         3*(1-t)*t**2 * control_x2 + t**3 * end_x)
+                    y = ((1-t)**3 * start_y + 3*(1-t)**2*t * control_y1 + 
+                         3*(1-t)*t**2 * control_y2 + t**3 * end_y)
                     
-                    await page.mouse.move(next_x, next_y)
-                    await asyncio.sleep(random.uniform(0.01, 0.02))
+                    await page.mouse.move(x, y)
+                    await asyncio.sleep(random.uniform(0.003, 0.012))
                 
-                current_x, current_y = x, y
-                await asyncio.sleep(random.uniform(0.3, 0.8))
+                await asyncio.sleep(random.uniform(0.8, 2.2))
             
             # Platform-specific scrolling
-            if scroll_behavior == 'targeted':
-                await page.evaluate("window.scrollTo({top: 300, behavior: 'smooth'})")
-                await asyncio.sleep(2)
-                await page.evaluate("window.scrollTo({top: 600, behavior: 'smooth'})")
-                await asyncio.sleep(2)
-                await page.evaluate("window.scrollTo({top: 200, behavior: 'smooth'})")
-                await asyncio.sleep(1)
-            elif scroll_behavior == 'gentle':
-                for scroll_pos in [200, 400, 300, 500]:
+            if scroll_behavior == 'ultra_gentle':
+                # Maximum stealth for Etsy
+                scroll_positions = [80, 200, 120, 350, 180, 450, 250, 380, 200, 150]
+                for i, pos in enumerate(scroll_positions):
+                    await page.evaluate(f"""
+                        window.scrollTo({{
+                            top: {pos},
+                            behavior: 'smooth'
+                        }});
+                    """)
+                    
+                    pause_time = random.uniform(3, 6) if i % 2 == 0 else random.uniform(1.5, 3)
+                    await asyncio.sleep(pause_time)
+                    
+                    if random.random() > 0.6:
+                        await asyncio.sleep(random.uniform(2, 5))
+                        
+            elif scroll_behavior == 'targeted':
+                # Enhanced Walmart scrolling
+                scroll_actions = [
+                    {'top': 150, 'delay': random.uniform(2, 3.5)},
+                    {'top': 400, 'delay': random.uniform(2.5, 4)},
+                    {'top': 250, 'delay': random.uniform(1.5, 2.5)},
+                    {'top': 600, 'delay': random.uniform(3, 4.5)},
+                    {'top': 350, 'delay': random.uniform(2, 3)}
+                ]
+                
+                for action in scroll_actions:
+                    await page.evaluate(f"""
+                        window.scrollTo({{
+                            top: {action['top']},
+                            behavior: 'smooth'
+                        }});
+                    """)
+                    await asyncio.sleep(action['delay'])
+                    
+            else:
+                # Standard gentle scrolling
+                for scroll_pos in [100, 300, 180, 420, 220]:
                     await page.evaluate(f"window.scrollTo({{top: {scroll_pos}, behavior: 'smooth'}})")
-                    await asyncio.sleep(random.uniform(1, 2))
-            elif scroll_behavior == 'minimal':
-                await page.evaluate("window.scrollTo({top: 250, behavior: 'smooth'})")
-                await asyncio.sleep(1.5)
+                    await asyncio.sleep(random.uniform(2, 3.5))
+            
+            # Additional realistic interactions
+            if random.random() > 0.5:
+                try:
+                    safe_elements = await page.query_selector_all('h1, h2, img[alt], button:not([onclick])')
+                    if safe_elements and len(safe_elements) > 0:
+                        random_element = random.choice(safe_elements[:5])
+                        await random_element.hover()
+                        await asyncio.sleep(random.uniform(1, 2.5))
+                except:
+                    pass
+            
+            # Final pause
+            await asyncio.sleep(random.uniform(2, 4))
                 
         except Exception as e:
-            print(f"Error simulating human interaction: {e}")
+            print(f"Error in ultra-human interaction: {e}")
     
-    async def wait_for_content_load(self, page, platform: str):
-        """Advanced content loading detection"""
+    async def wait_for_enhanced_content_load(self, page, platform: str):
+        """Enhanced content loading with maximum patience"""
         try:
             config = self.platform_configs.get(platform, {})
             wait_time = config.get('wait_time', 5000)
             
+            # Multi-stage loading
             try:
-                await page.wait_for_load_state('networkidle', timeout=wait_time)
+                await page.wait_for_load_state('domcontentloaded', timeout=wait_time // 3)
+                await asyncio.sleep(random.uniform(2, 4))
+                await page.wait_for_load_state('networkidle', timeout=wait_time // 2)
             except:
-                await page.wait_for_load_state('domcontentloaded', timeout=wait_time)
+                try:
+                    await page.wait_for_load_state('load', timeout=wait_time)
+                except:
+                    pass
             
+            # Platform-specific waiting
             if platform == 'walmart':
-                try:
-                    await page.wait_for_selector('[data-testid="price-wrap"]', timeout=5000)
-                except:
-                    pass
-                await asyncio.sleep(3)
+                walmart_selectors = [
+                    '[data-seo-id="hero-price"]',
+                    '[data-testid="price-wrap"]',
+                    '[itemprop="price"]',
+                    '[data-automation-id="product-price"]'
+                ]
+                
+                for selector in walmart_selectors:
+                    try:
+                        await page.wait_for_selector(selector, timeout=4000)
+                        print(f"✅ Walmart: Detected price element {selector}")
+                        break
+                    except:
+                        continue
+                
+                await asyncio.sleep(random.uniform(6, 10))
+                
             elif platform == 'etsy':
-                try:
-                    await page.wait_for_selector('[data-testid="price"]', timeout=5000)
-                except:
-                    pass
-                await asyncio.sleep(2)
+                etsy_selectors = [
+                    '[data-testid="price"]',
+                    '[data-buy-box-region="price"]',
+                    '.currency-value'
+                ]
+                
+                for selector in etsy_selectors:
+                    try:
+                        await page.wait_for_selector(selector, timeout=8000)
+                        print(f"✅ Etsy: Detected price element {selector}")
+                        break
+                    except:
+                        continue
+                
+                await asyncio.sleep(random.uniform(5, 8))
+                
             elif platform == 'amazon':
                 try:
-                    await page.wait_for_selector('.a-price', timeout=3000)
+                    await page.wait_for_selector('.a-price', timeout=5000)
                 except:
                     pass
+                await asyncio.sleep(random.uniform(2, 4))
             
-            await page.wait_for_timeout(2000)
+            # Final wait
+            await page.wait_for_timeout(random.randint(3000, 6000))
+            
             return True
         except Exception as e:
             print(f"Error waiting for content load: {e}")
             return True
     
-    async def extract_accurate_price(self, page, platform: str, product_title: str = None) -> Optional[float]:
-        """Ultra-accurate price extraction with context validation"""
+    async def extract_walmart_price_enhanced(self, page) -> Optional[float]:
+        """Enhanced Walmart price extraction with priority selector"""
         try:
-            config = self.platform_configs.get(platform, {})
-            price_selectors = config.get('price_selectors', [])
-            exclude_selectors = config.get('exclude_selectors', [])
+            print("🎯 Enhanced Walmart price extraction starting...")
             
-            print(f"Extracting price for {platform} with {len(price_selectors)} selectors...")
+            # Priority selectors
+            priority_selectors = [
+                'span.inline-flex.flex-column span[itemprop="price"][data-seo-id="hero-price"]',
+                'span[itemprop="price"][data-seo-id="hero-price"][data-fs-element="price"]',
+                'span[itemprop="price"][data-seo-id="hero-price"]'
+            ]
             
-            # Exclude unwanted price elements
-            if exclude_selectors:
-                for exclude_selector in exclude_selectors:
-                    try:
-                        excluded_elements = await page.query_selector_all(exclude_selector)
-                        for element in excluded_elements:
-                            await page.evaluate('(element) => element.remove()', element)
-                    except:
-                        continue
-            
-            all_prices = []
-            
-            for i, selector in enumerate(price_selectors):
+            # Try priority selectors first
+            for i, selector in enumerate(priority_selectors):
                 try:
                     elements = await page.query_selector_all(selector)
-                    print(f"Selector {i+1} ({selector}): Found {len(elements)} elements")
+                    print(f"Priority selector {i+1}: Found {len(elements)} elements")
                     
                     for element in elements:
-                        try:
-                            price_text = await element.text_content()
-                            
-                            price_attr = None
-                            try:
-                                price_attr = await element.get_attribute('content')
-                                if not price_attr:
-                                    price_attr = await element.get_attribute('data-price')
-                            except:
-                                pass
-                            
-                            # Validate price context for Walmart
-                            if product_title and platform == 'walmart':
-                                parent_html = await page.evaluate('''
-                                    (element) => {
-                                        let parent = element.closest('[data-testid="product-page"]') || 
-                                                   element.closest('main') ||
-                                                   element.closest('[data-automation-id="product-title"]').closest('div');
-                                        return parent ? parent.innerHTML.substring(0, 500) : '';
-                                    }
-                                ''', element)
-                                
-                                if 'recommendation' in parent_html.lower() or 'similar' in parent_html.lower():
-                                    continue
-                            
-                            if price_text:
-                                price = await self.extract_price_from_text(price_text, platform)
-                                if price and self.validate_price_range(price, platform):
-                                    all_prices.append({
-                                        'price': price,
-                                        'text': price_text.strip(),
-                                        'selector': selector,
-                                        'source': 'text'
-                                    })
-                                    print(f"Found valid price: ${price} from text: '{price_text.strip()}'")
-                            
-                            if price_attr:
-                                price = await self.extract_price_from_text(price_attr, platform)
-                                if price and self.validate_price_range(price, platform):
-                                    all_prices.append({
-                                        'price': price,
-                                        'text': price_attr,
-                                        'selector': selector,
-                                        'source': 'attribute'
-                                    })
-                                    print(f"Found valid price: ${price} from attribute: '{price_attr}'")
-                                    
-                        except Exception as e:
-                            continue
-                    
-                    if all_prices:
-                        break
-                        
-                except Exception as e:
-                    print(f"Selector {selector} failed: {e}")
+                        price_text = await element.text_content()
+                        if price_text:
+                            price = await self.extract_price_from_text(price_text, 'walmart')
+                            if price and 0.01 <= price <= 99999:
+                                print(f"✅ WALMART PRIORITY: ${price:.2f} from {selector}")
+                                return price
+                except Exception:
                     continue
             
-            if not all_prices:
-                print(f"No valid prices found for {platform}")
-                return None
+            print("🔄 Trying standard Walmart selectors...")
+            standard_selectors = [
+                'div[data-testid="price-wrap"] span[itemprop="price"]',
+                'span[data-automation-id="buybox-price"]',
+                'div[data-testid="add-to-cart-price"] span[itemprop="price"]',
+                'span[data-automation-id="product-price"]',
+                'span[itemprop="price"]'
+            ]
             
-            return self.select_best_price(all_prices, platform)
+            for selector in standard_selectors:
+                try:
+                    elements = await page.query_selector_all(selector)
+                    for element in elements:
+                        price_text = await element.text_content()
+                        if price_text:
+                            price = await self.extract_price_from_text(price_text, 'walmart')
+                            if price and 0.01 <= price <= 99999:
+                                print(f"✅ WALMART STANDARD: ${price:.2f}")
+                                return price
+                except:
+                    continue
+            
+            return None
             
         except Exception as e:
-            print(f"Error extracting price for {platform}: {e}")
+            print(f"Error in Walmart price extraction: {e}")
             return None
     
     async def extract_price_from_text(self, price_text: str, platform: str) -> Optional[float]:
-        """Enhanced price extraction with platform-specific logic"""
+        """Enhanced price extraction"""
         if not price_text:
             return None
         
@@ -475,10 +628,8 @@ class EnhancedMultiPlatformScraper:
             cleaned_text = price_text.strip().replace(',', '').replace(' ', '')
             
             if platform == 'roblox':
-                robux_patterns = [
-                    r'(\d{1,6})',
-                    r'(\d{1,3}(?:,\d{3})*)'
-                ]
+                # Robux extraction
+                robux_patterns = [r'(\d{1,6})', r'(\d{1,3}(?:,\d{3})*)']
                 for pattern in robux_patterns:
                     matches = re.findall(pattern, cleaned_text.replace(',', ''))
                     if matches:
@@ -489,6 +640,7 @@ class EnhancedMultiPlatformScraper:
                         except:
                             continue
             else:
+                # Currency extraction
                 currency_patterns = [
                     r'\$(\d{1,4}(?:\.\d{1,2})?)',
                     r'USD\s*(\d{1,4}(?:\.\d{1,2})?)',
@@ -503,7 +655,7 @@ class EnhancedMultiPlatformScraper:
                         for match in matches:
                             try:
                                 price = float(match)
-                                if self.validate_price_range(price, platform):
+                                if 0.01 <= price <= 99999:
                                     return price
                             except:
                                 continue
@@ -513,29 +665,8 @@ class EnhancedMultiPlatformScraper:
             print(f"Error extracting price from '{price_text}': {e}")
             return None
     
-    def validate_price_range(self, price: float, platform: str) -> bool:
-        """Validate if price is in reasonable range for platform"""
-        if platform == 'roblox':
-            return 1 <= price <= 999999
-        else:
-            return 0.01 <= price <= 99999
-    
-    def select_best_price(self, prices: List[Dict], platform: str) -> float:
-        """Select the most accurate price from candidates"""
-        if not prices:
-            return None
-        
-        prices.sort(key=lambda x: x.get('selector', ''))
-        
-        if platform == 'walmart':
-            main_prices = [p for p in prices if 'buybox' in p.get('selector', '') or 'add-to-cart' in p.get('selector', '')]
-            if main_prices:
-                return main_prices[0]['price']
-        
-        return prices[0]['price']
-    
     async def extract_product_title(self, page, platform: str) -> Optional[str]:
-        """Extract product title for context validation"""
+        """Extract product title"""
         try:
             config = self.platform_configs.get(platform, {})
             title_selectors = config.get('title_selectors', [])
@@ -556,109 +687,108 @@ class EnhancedMultiPlatformScraper:
             return None
     
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Main scraping method with ultra-stealth and accuracy"""
+        """Main ultra-stealth scraping method"""
         platform = self.detect_platform(url)
         if not platform:
             print(f"Unsupported platform for URL: {url}")
             return None
         
-        print(f"Scraping {platform} with ultra-stealth mode: {url}")
+        print(f"🕵️ ULTRA-STEALTH scraping {platform}: {url}")
         
         async with async_playwright() as p:
+            # Maximum stealth browser launch
             self.browser = await p.chromium.launch(
                 headless=True,
                 args=[
                     '--disable-blink-features=AutomationControlled',
                     '--disable-features=VizDisplayCompositor',
-                    '--disable-features=IsolateOrigins,site-per-process',
                     '--disable-site-isolation-trials',
                     '--disable-web-security',
                     '--disable-dev-shm-usage',
-                    '--disable-accelerated-2d-canvas',
-                    '--disable-canvas-aa',
-                    '--disable-2d-canvas-clip-aa',
-                    '--disable-gl-drawing-for-tests',
-                    '--disable-dev-tools',
-                    '--no-first-run',
-                    '--no-zygote',
-                    '--no-sandbox',
-                    '--disable-gpu',
-                    '--disable-setuid-sandbox',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
                     '--disable-extensions',
                     '--disable-default-apps',
                     '--disable-sync',
                     '--disable-translate',
                     '--hide-scrollbars',
                     '--mute-audio',
-                    '--no-default-browser-check',
+                    '--no-first-run',
+                    '--no-sandbox',
+                    '--disable-gpu',
                     '--disable-logging',
-                    '--disable-permissions-api',
-                    '--disable-presentation-api',
-                    '--disable-remote-fonts',
-                    '--disable-speech-api'
+                    '--disable-hang-monitor'
                 ]
             )
             
             try:
                 page = await self.setup_ultra_stealth_browser(platform)
                 
-                print(f"Navigating to: {url}")
+                print(f"🌐 Navigating to: {url}")
                 
-                # Navigate with fallback strategies
+                # Ultra-patient navigation
                 navigation_success = False
                 for attempt in range(3):
                     try:
-                        if attempt == 0:
-                            response = await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                        elif attempt == 1:
-                            response = await page.goto(url, wait_until='networkidle', timeout=30000)
-                        else:
-                            response = await page.goto(url, wait_until='load', timeout=30000)
-                        
+                        response = await page.goto(url, wait_until='domcontentloaded', timeout=45000)
                         if response and response.status < 400:
+                            print(f"✅ Navigation successful")
                             navigation_success = True
                             break
-                            
                     except Exception as e:
-                        print(f"Navigation attempt {attempt + 1} failed: {e}")
+                        print(f"❌ Navigation attempt {attempt + 1} failed: {e}")
                         if attempt < 2:
-                            await asyncio.sleep(2)
+                            await asyncio.sleep(random.uniform(5, 10))
                             continue
                         else:
-                            raise
+                            break
                 
                 if not navigation_success:
-                    print("All navigation attempts failed")
+                    print("❌ All navigation attempts failed")
                     return None
                 
-                await self.wait_for_content_load(page, platform)
-                await self.simulate_human_interaction(page, platform)
+                # Ultra-stealth content loading and interaction
+                await self.wait_for_enhanced_content_load(page, platform)
+                await self.simulate_ultra_human_interaction(page, platform)
                 
+                # Extract title and price
                 title = await self.extract_product_title(page, platform)
                 if not title:
-                    print(f"Could not extract title for {platform}")
                     title = f"Product from {platform.title()}"
                 
-                price = await self.extract_accurate_price(page, platform, title)
+                # Platform-specific price extraction
+                price = None
+                if platform == 'walmart':
+                    price = await self.extract_walmart_price_enhanced(page)
+                else:
+                    # Standard extraction for other platforms
+                    config = self.platform_configs.get(platform, {})
+                    price_selectors = config.get('price_selectors', [])
+                    
+                    for selector in price_selectors:
+                        try:
+                            elements = await page.query_selector_all(selector)
+                            for element in elements:
+                                price_text = await element.text_content()
+                                if price_text:
+                                    price = await self.extract_price_from_text(price_text, platform)
+                                    if price:
+                                        break
+                            if price:
+                                break
+                        except:
+                            continue
                 
                 if price:
                     if platform == 'roblox':
-                        print(f"✅ Successfully scraped {platform}: {title[:50]}... - {int(price)} Robux")
+                        print(f"✅ SUCCESS: {title[:50]}... - {int(price)} Robux")
                     else:
-                        print(f"✅ Successfully scraped {platform}: {title[:50]}... - ${price:.2f}")
+                        print(f"✅ SUCCESS: {title[:50]}... - ${price:.2f}")
                     return title, price
                 else:
-                    print(f"❌ Failed to extract price for {platform}")
-                    
-                    try:
-                        content = await page.content()
-                        debug_file = f'debug_{platform}_{int(time.time())}.html'
-                        with open(debug_file, 'w', encoding='utf-8') as f:
-                            f.write(content)
-                        print(f"💾 Saved debug HTML: {debug_file}")
-                    except Exception:
-                        pass
-                    
+                    print(f"❌ FAILED: Could not extract price for {platform}")
                     return None
                 
             except Exception as e:
@@ -680,15 +810,15 @@ class EnhancedMultiPlatformScraper:
         }
 
 
-class ScrapingRetryManager:
-    """Manages retries and error handling for scraping operations"""
+class UltraStealthRetryManager:
+    """Enhanced retry manager with exponential backoff and randomization"""
     
     def __init__(self, max_retries: int = 3, backoff_factor: float = 2.0):
         self.max_retries = max_retries
         self.backoff_factor = backoff_factor
     
     async def execute_with_retry(self, scraper_func, *args, **kwargs):
-        """Execute scraping function with retry logic"""
+        """Execute scraping function with ultra-patient retry logic"""
         last_exception = None
         
         for attempt in range(self.max_retries):
@@ -698,8 +828,8 @@ class ScrapingRetryManager:
                     return result
                     
                 if attempt < self.max_retries - 1:
-                    wait_time = self.backoff_factor ** attempt
-                    print(f"🔄 Attempt {attempt + 1} failed, retrying in {wait_time:.1f}s...")
+                    wait_time = (self.backoff_factor ** attempt) + random.uniform(2, 8)
+                    print(f"🔄 Attempt {attempt + 1} failed, ultra-stealth retry in {wait_time:.1f}s...")
                     await asyncio.sleep(wait_time)
                     
             except Exception as e:
@@ -707,23 +837,23 @@ class ScrapingRetryManager:
                 print(f"❌ Attempt {attempt + 1} failed with error: {e}")
                 
                 if attempt < self.max_retries - 1:
-                    wait_time = self.backoff_factor ** attempt
-                    print(f"🔄 Retrying in {wait_time:.1f}s...")
+                    wait_time = (self.backoff_factor ** attempt) + random.uniform(5, 15)
+                    print(f"🔄 Ultra-stealth retry in {wait_time:.1f}s...")
                     await asyncio.sleep(wait_time)
         
-        print(f"❌ All {self.max_retries} attempts failed")
+        print(f"❌ All {self.max_retries} ultra-stealth attempts failed")
         if last_exception:
             raise last_exception
         return None
 
 
 class StorenvyPriceTracker:
-    """Multi-platform price tracker with enhanced stealth scraping"""
+    """Multi-platform price tracker with ultra-stealth scraping capabilities"""
     
     def __init__(self, db_path: str = "storenvy_tracker.db"):
         self.db_path = db_path
-        self.scraper = EnhancedMultiPlatformScraper()
-        self.retry_manager = ScrapingRetryManager(max_retries=3, backoff_factor=2.0)
+        self.scraper = UltraStealthMultiPlatformScraper()
+        self.retry_manager = UltraStealthRetryManager(max_retries=3, backoff_factor=2.5)
         self.init_database()
         
     def init_database(self) -> None:
@@ -731,6 +861,7 @@ class StorenvyPriceTracker:
         try:
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
+            
             # Create main products table with user_id
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS tracked_products (
@@ -747,14 +878,13 @@ class StorenvyPriceTracker:
                 )
             ''')
             
-            # Check if user_id column exists
+            # Check if user_id column exists and migrate if needed
             cursor.execute("PRAGMA table_info(tracked_products)")
             columns = [column[1] for column in cursor.fetchall()]
             
             if 'user_id' not in columns:
-                # Migrate existing data
                 cursor.execute('ALTER TABLE tracked_products ADD COLUMN user_id INTEGER DEFAULT 1')
-                print("Added user_id column to existing database")
+                print("✅ Migrated database: Added user_id column")
             
             # Create price history table
             cursor.execute('''
@@ -769,10 +899,10 @@ class StorenvyPriceTracker:
             
             conn.commit()
             conn.close()
-            print("Database initialized successfully")
+            print("✅ Database initialized successfully")
             
         except Exception as e:
-            print(f"Error initializing database: {e}")
+            print(f"❌ Error initializing database: {e}")
             raise
     
     def add_product(self, url: str, target_price: float, user_id: int) -> None:
@@ -793,7 +923,7 @@ class StorenvyPriceTracker:
                     VALUES (?, ?, ?, ?)
                 ''', (user_id, url, platform, target_price))
                 conn.commit()
-                print(f"Added new product from {platform}: {url[:50]}...")
+                print(f"✅ Added new {platform} product for user {user_id}")
                 
             except sqlite3.IntegrityError:
                 # Update existing product
@@ -803,12 +933,12 @@ class StorenvyPriceTracker:
                     WHERE user_id = ? AND url = ?
                 ''', (target_price, platform, user_id, url))
                 conn.commit()
-                print(f"Updated existing product from {platform}: {url[:50]}...")
+                print(f"✅ Updated existing {platform} product for user {user_id}")
             
             conn.close()
             
         except Exception as e:
-            print(f"Error adding product: {e}")
+            print(f"❌ Error adding product: {e}")
             raise
     
     def delete_product(self, product_id: int, user_id: int) -> None:
@@ -831,10 +961,10 @@ class StorenvyPriceTracker:
             
             conn.commit()
             conn.close()
-            print(f"Deleted product {product_id} for user {user_id}")
+            print(f"✅ Deleted product {product_id} for user {user_id}")
             
         except Exception as e:
-            print(f"Error deleting product {product_id}: {e}")
+            print(f"❌ Error deleting product {product_id}: {e}")
             raise
     
     def get_tracked_products(self, user_id: int = None) -> List[Dict[str, Any]]:
@@ -858,7 +988,7 @@ class StorenvyPriceTracker:
                 ''')
             
             products = []
-            platform_info = EnhancedMultiPlatformScraper.get_platform_info()
+            platform_info = UltraStealthMultiPlatformScraper.get_platform_info()
             
             for row in cursor.fetchall():
                 try:
@@ -888,14 +1018,14 @@ class StorenvyPriceTracker:
                     })
                     
                 except Exception as e:
-                    print(f"Error processing product row: {e}")
+                    print(f"❌ Error processing product row: {e}")
                     continue
             
             conn.close()
             return products
             
         except Exception as e:
-            print(f"Error getting tracked products: {e}")
+            print(f"❌ Error getting tracked products: {e}")
             return []
 
     def get_all_products_for_checking(self) -> List[Dict[str, Any]]:
@@ -913,7 +1043,7 @@ class StorenvyPriceTracker:
             ''')
             
             products = []
-            platform_info = EnhancedMultiPlatformScraper.get_platform_info()
+            platform_info = UltraStealthMultiPlatformScraper.get_platform_info()
             
             for row in cursor.fetchall():
                 try:
@@ -940,14 +1070,14 @@ class StorenvyPriceTracker:
                     })
                     
                 except Exception as e:
-                    print(f"Error processing product row: {e}")
+                    print(f"❌ Error processing product row: {e}")
                     continue
             
             conn.close()
             return products
             
         except Exception as e:
-            print(f"Error getting all products: {e}")
+            print(f"❌ Error getting all products: {e}")
             return []
     
     def update_product_info(self, product_id: int, title: str, price: float) -> None:
@@ -971,13 +1101,12 @@ class StorenvyPriceTracker:
             
             conn.commit()
             conn.close()
-            print(f"Updated product {product_id}: {title[:30]}... - ${price:.2f}")
             
         except Exception as e:
-            print(f"Error updating product {product_id}: {e}")
+            print(f"❌ Error updating product {product_id}: {e}")
     
-    async def scrape_product_with_retry(self, url: str) -> Optional[Tuple[str, float]]:
-        """Scrape product with enhanced retry logic and validation"""
+    async def scrape_product_with_ultra_stealth(self, url: str) -> Optional[Tuple[str, float]]:
+        """Scrape product with ultra-stealth retry logic"""
         try:
             result = await self.retry_manager.execute_with_retry(
                 self.scraper.scrape_product, 
@@ -988,13 +1117,20 @@ class StorenvyPriceTracker:
                 title, price = result
                 platform = self.scraper.detect_platform(url)
                 
-                # Additional validation for specific platforms
-                if platform == 'walmart':
-                    # Validate that we got the correct product price
-                    if price and 0.01 <= price <= 99999:
-                        print(f"✅ Walmart price validation passed: ${price:.2f}")
+                # Enhanced validation
+                if platform == 'walmart' and price:
+                    if 0.01 <= price <= 99999:
+                        print(f"✅ Walmart ultra-stealth validation passed: ${price:.2f}")
+                        return result
                     else:
                         print(f"⚠️ Walmart price validation failed: {price}")
+                        return None
+                elif platform == 'etsy' and price:
+                    if 1.0 <= price <= 10000.0:
+                        print(f"✅ Etsy ultra-stealth validation passed: ${price:.2f}")
+                        return result
+                    else:
+                        print(f"⚠️ Etsy price validation failed: {price}")
                         return None
                 
                 return result
@@ -1002,20 +1138,19 @@ class StorenvyPriceTracker:
             return None
             
         except Exception as e:
-            print(f"Enhanced scraping failed for {url}: {e}")
+            print(f"❌ Ultra-stealth scraping failed for {url}: {e}")
             return None
 
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Scrape product using the enhanced multi-platform scraper with retry"""
+        """Main scraping method using ultra-stealth scraper"""
         try:
-            # Use the enhanced scraper with retry logic
-            return await self.scrape_product_with_retry(url)
+            return await self.scrape_product_with_ultra_stealth(url)
         except Exception as e:
-            print(f"Error scraping product {url}: {e}")
+            print(f"❌ Error scraping product {url}: {e}")
             return None
     
     def send_email_alert(self, product: Dict[str, Any], user_email: str, smtp_password: str, user_name: str) -> None:
-        """Send email alert for price drop"""
+        """Send email alert for price drop with enhanced formatting"""
         if not smtp_password:
             return
         
@@ -1028,13 +1163,13 @@ class StorenvyPriceTracker:
             platform = product.get('platform', 'storenvy')
             platform_name = product.get('platform_name', 'Unknown Platform')
             
-            # Enhanced subject line based on platform
+            # Enhanced subject line
             if platform == 'roblox':
                 msg['Subject'] = f"🎮 Roblox Deal Alert: {product['title'][:40]}..."
             else:
                 msg['Subject'] = f"🛍️ Price Drop Alert: {product['title'][:40]}..."
             
-            # Determine currency and format prices based on platform
+            # Format prices based on platform
             is_robux = platform == 'roblox'
             
             if is_robux:
@@ -1048,34 +1183,38 @@ class StorenvyPriceTracker:
                 savings_str = f"${product['target_price'] - product['last_price']:.2f}"
                 currency_emoji = "💰"
             
-            # Personalized email body
+            # Enhanced email body
             if platform == 'roblox':
                 body = f"""
 Hello {user_name}! 🎮
 
-Great news! A Roblox item you're tracking has dropped to or below your target price!
+🚨 ROBLOX DEAL ALERT! 🚨
+
+A Roblox item you're tracking has dropped to or below your target price!
 
 🎯 Item Details:
 {product['title']}
 
 💎 Price Information:
 Current Price: {current_price_str}
-Target Price: {target_price_str}
+Your Target: {target_price_str}
 You Save: {savings_str}
 
-🔗 Get This Item:
+🔗 Get This Item Now:
 {product['url']}
 
-📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+📅 Alert Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
-Happy gaming! 🎮
+Happy gaming! This deal was found by TagTracker's ultra-stealth monitoring system.
 
 Best regards,
-TagTracker
+TagTracker Team 🤖
                 """
             else:
                 body = f"""
 Hello {user_name}! 🛍️
+
+🚨 PRICE DROP ALERT! 🚨
 
 Great news! A product you're tracking has dropped to or below your target price!
 
@@ -1084,52 +1223,58 @@ Great news! A product you're tracking has dropped to or below your target price!
 
 {currency_emoji} Price Information:
 Current Price: {current_price_str}
-Target Price: {target_price_str}
+Your Target: {target_price_str}
 You Save: {savings_str}
 
-🔗 Buy This Product:
+🔗 Buy This Product Now:
 {product['url']}
 
-📅 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+📅 Alert Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+This deal was found by TagTracker's ultra-stealth monitoring system that checks prices every 6 hours across multiple platforms.
 
 Happy shopping! 🎉
 
 Best regards,
-TagTracker
+TagTracker Team 🤖
                 """
             
             msg.attach(MIMEText(body, 'plain'))
             
-            # Send email using Gmail SMTP
+            # Send email using Gmail SMTP with enhanced error handling
             server = smtplib.SMTP('smtp.gmail.com', 587)
             server.starttls()
             server.login(user_email, smtp_password)
             server.send_message(msg)
             server.quit()
             
-            print(f"📧 Email alert sent to {user_name} for {platform_name}: {product['title'][:30]}...")
+            print(f"📧 Ultra-stealth alert sent to {user_name} for {platform_name}")
             
         except Exception as e:
-            print(f"Failed to send email alert: {str(e)}")
+            print(f"❌ Failed to send email alert: {str(e)}")
     
     async def check_all_products(self) -> None:
-        """Check all tracked products for all users with enhanced accuracy"""
+        """Check all tracked products with ultra-stealth capabilities"""
         try:
             products = self.get_all_products_for_checking()
             
             if not products:
-                print("No products to check")
+                print("ℹ️ No products to check")
                 return
             
-            print(f"🔄 Checking {len(products)} products for all users with enhanced scraper")
+            print(f"🔄 Ultra-stealth checking {len(products)} products for all users...")
             
-            for product in products:
+            # Randomize order to avoid patterns
+            random.shuffle(products)
+            
+            for i, product in enumerate(products):
                 try:
                     platform_name = product.get('platform_name', 'Unknown')
                     platform = product.get('platform', 'unknown')
-                    print(f"📦 Checking {platform_name} product: {product['url'][:50]}...")
                     
-                    # Scrape product with enhanced accuracy
+                    print(f"📦 [{i+1}/{len(products)}] Ultra-stealth checking {platform_name}: {product['url'][:60]}...")
+                    
+                    # Ultra-stealth scraping with enhanced accuracy
                     result = await self.scrape_product(product['url'])
                     
                     if result:
@@ -1138,24 +1283,24 @@ TagTracker
                         # Update database
                         self.update_product_info(product['id'], title, current_price)
                         
-                        # Enhanced logging based on platform
+                        # Enhanced logging
                         if platform == 'roblox':
-                            print(f"✅ Updated {platform_name}: {title[:30]}... - Price: {int(current_price)} Robux")
+                            print(f"✅ Updated {platform_name}: {title[:40]}... - {int(current_price)} Robux")
                         else:
-                            print(f"✅ Updated {platform_name}: {title[:30]}... - Price: ${current_price:.2f}")
+                            print(f"✅ Updated {platform_name}: {title[:40]}... - ${current_price:.2f}")
                         
                         # Check if price dropped below target
                         if current_price <= product['target_price']:
                             if platform == 'roblox':
-                                print(f"🎮 ROBLOX DEAL! {title[:30]}... is now at/below target price!")
+                                print(f"🎮 ROBLOX DEAL ALERT! {title[:40]}... hit target price!")
                             else:
-                                print(f"🎉 TARGET HIT! {title[:30]}... is now at/below target price!")
+                                print(f"🎉 DEAL ALERT! {title[:40]}... hit target price!")
                             
-                            # Update product info for email
+                            # Update product for email
                             product['title'] = title
                             product['last_price'] = current_price
                             
-                            # Send email alert if user has SMTP configured
+                            # Send email alert if configured
                             if product.get('smtp_password'):
                                 self.send_email_alert(
                                     product, 
@@ -1167,40 +1312,44 @@ TagTracker
                         print(f"❌ Failed to scrape {platform_name} product")
                 
                 except Exception as e:
-                    print(f"Error checking product {product.get('id', 'unknown')}: {str(e)}")
+                    print(f"❌ Error checking product {product.get('id', 'unknown')}: {str(e)}")
                     continue
                 
-                # Rate limiting - be respectful to servers
-                delay = 3 + (2 * random.random())
-                print(f"⏳ Waiting {delay:.1f}s before next check...")
-                await asyncio.sleep(delay)
+                # Ultra-stealth rate limiting with randomization
+                if i < len(products) - 1:  # Don't wait after the last product
+                    delay = random.uniform(8, 15)  # Longer delays for maximum stealth
+                    print(f"⏳ Ultra-stealth delay: {delay:.1f}s before next check...")
+                    await asyncio.sleep(delay)
             
-            print(f"✅ Finished checking all products with enhanced accuracy")
+            print(f"✅ Ultra-stealth checking completed for all {len(products)} products")
             
         except Exception as e:
-            print(f"Error in check_all_products: {e}")
+            print(f"❌ Error in ultra-stealth check_all_products: {e}")
     
     def get_supported_platforms(self) -> Dict[str, Dict[str, str]]:
         """Get information about supported platforms"""
         try:
-            return EnhancedMultiPlatformScraper.get_platform_info()
+            return UltraStealthMultiPlatformScraper.get_platform_info()
         except Exception as e:
-            print(f"Error getting supported platforms: {e}")
+            print(f"❌ Error getting supported platforms: {e}")
             return {}
 
 
-# Test function for the enhanced tracker
-async def test_enhanced_tracker():
-    """Test the enhanced tracker functionality with problematic URLs"""
+# Ultra-stealth test function
+async def test_ultra_stealth_tracker():
+    """Test the ultra-stealth tracker with enhanced capabilities"""
     try:
         tracker = StorenvyPriceTracker()
         
-        print("🧪 Testing Enhanced TagTracker with Ultra-Stealth Scraper")
+        print("🕵️ Testing Ultra-Stealth TagTracker")
+        print("🛡️ Maximum bot evasion enabled")
+        print("🎯 Enhanced Walmart detection")
+        print("👻 Ultra-gentle Etsy scraping")
         print("=" * 70)
         
-        # Test the problematic Walmart URL
+        # Test URLs with your specific Walmart URL
         test_urls = [
-            ("https://www.walmart.com/ip/JW-SAGA-VILLIAN-1/14141570021?classType=REGULAR&athbdg=L1800", 80.00),
+            ("https://www.walmart.com/ip/JW-SAGA-VILLIAN-1/14141570021?classType=REGULAR&athbdg=L1800", 70.00),
             ("https://www.amazon.com/dp/B08N5WRWNW", 100.00),
             ("https://www.etsy.com/listing/1234567890/test-product", 50.00),
         ]
@@ -1208,38 +1357,39 @@ async def test_enhanced_tracker():
         for url, target_price in test_urls:
             try:
                 platform = tracker.scraper.detect_platform(url)
-                print(f"\n🎯 Testing {platform} URL: {url}")
+                print(f"\n🎯 Testing ultra-stealth {platform} scraping...")
+                print(f"URL: {url}")
                 
                 # Add product for test user
                 tracker.add_product(url, target_price, 1)
                 
                 if platform == 'roblox':
-                    print(f"✅ Added {platform} item with target price {target_price} Robux")
+                    print(f"✅ Added {platform} item with target {target_price} Robux")
                 else:
-                    print(f"✅ Added {platform} product with target price ${target_price}")
+                    print(f"✅ Added {platform} product with target ${target_price}")
                 
-                # Test scraping
-                print(f"🔍 Testing enhanced scraping for {platform}...")
+                # Test ultra-stealth scraping
+                print(f"🕵️ Ultra-stealth scraping {platform}...")
                 result = await tracker.scrape_product(url)
                 
                 if result:
                     title, price = result
                     if platform == 'roblox':
-                        print(f"✅ Scraping SUCCESS: {title[:50]}... - {int(price)} Robux")
+                        print(f"✅ ULTRA-STEALTH SUCCESS: {title[:50]}... - {int(price)} Robux")
                         if price <= target_price:
-                            print(f"🎮 DEAL ALERT! Price {int(price)} is below target {int(target_price)}!")
+                            print(f"🎮 DEAL FOUND! Price {int(price)} ≤ target {int(target_price)}!")
                     else:
-                        print(f"✅ Scraping SUCCESS: {title[:50]}... - ${price:.2f}")
+                        print(f"✅ ULTRA-STEALTH SUCCESS: {title[:50]}... - ${price:.2f}")
                         if price <= target_price:
-                            print(f"💰 DEAL ALERT! Price ${price:.2f} is below target ${target_price:.2f}!")
+                            print(f"💰 DEAL FOUND! Price ${price:.2f} ≤ target ${target_price:.2f}!")
                 else:
-                    print(f"❌ Scraping FAILED for {platform}")
+                    print(f"❌ Ultra-stealth scraping failed for {platform}")
                 
             except Exception as e:
                 print(f"❌ Failed to test {url}: {e}")
             
-            print(f"⏳ Waiting 5 seconds before next test...")
-            await asyncio.sleep(5)
+            print(f"⏳ Ultra-stealth cooldown: 15 seconds...")
+            await asyncio.sleep(15)
         
         # Test getting tracked products
         products = tracker.get_tracked_products(1)
@@ -1247,22 +1397,22 @@ async def test_enhanced_tracker():
         for product in products:
             platform_name = product.get('platform_name', 'Unknown')
             status = "🎯 Below Target!" if product['status'] == 'below_target' else "👁️ Monitoring"
-            print(f"  - {status} {platform_name}: {product['url'][:50]}...")
+            print(f"  - {status} {platform_name}: {product['url'][:60]}...")
             
-        print("\n✅ Enhanced tracker test completed successfully")
+        print("\n✅ Ultra-stealth tracker test completed successfully")
+        print("🛡️ All platforms tested with maximum stealth capabilities")
         
     except Exception as e:
-        print(f"❌ Error in test_enhanced_tracker: {e}")
+        print(f"❌ Error in ultra-stealth tracker test: {e}")
 
 
 if __name__ == "__main__":
-    print("🚀 Enhanced TagTracker - Ultra-Stealth E-commerce Scraper")
-    print("=" * 60)
-    print("🛡️  Advanced bot detection bypass")
-    print("🎯 Accurate price extraction (fixes Walmart/Etsy issues)")
-    print("🔄 Intelligent retry mechanisms")
-    print("💾 Enhanced database management")
-    print("=" * 60)
+    print("🚀 TagTracker - Ultra-Stealth Multi-Platform Price Monitor")
+    print("🛡️ Maximum Bot Evasion Technology")
+    print("🎯 Enhanced Walmart Detection with Priority Selectors") 
+    print("👻 Ultra-Gentle Etsy Scraping")
+    print("🕵️ Advanced Anti-Detection Systems")
+    print("=" * 70)
     
-    # Run the test
-    asyncio.run(test_enhanced_tracker())
+    # Run the ultra-stealth test
+    asyncio.run(test_ultra_stealth_tracker())

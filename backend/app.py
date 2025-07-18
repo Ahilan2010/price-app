@@ -71,9 +71,46 @@ def js_files(filename):
 @app.route('/images/<path:filename>')
 def image_files(filename):
     """Serve images from the frontend images directory"""
-    frontend_images = os.path.join(os.path.dirname(__file__), '..', 'frontend', 'images')
-    return send_from_directory(frontend_images, filename)
-
+    import os
+    
+    # Debug logging
+    print(f"\n🖼️  IMAGE REQUEST DEBUG:")
+    print(f"📁 Requested filename: {filename}")
+    
+    # Get the current file's directory (backend/)
+    current_dir = os.path.dirname(__file__)
+    print(f"📂 Current directory (backend/): {current_dir}")
+    
+    # Build path to frontend/images
+    frontend_images = os.path.join(current_dir, '..', 'frontend', 'images')
+    print(f"🎯 Target images directory: {frontend_images}")
+    
+    # Get absolute path
+    abs_images_path = os.path.abspath(frontend_images)
+    print(f"🔍 Absolute images path: {abs_images_path}")
+    
+    # Check if directory exists
+    print(f"📁 Images directory exists: {os.path.exists(abs_images_path)}")
+    
+    # Check if specific file exists
+    full_file_path = os.path.join(abs_images_path, filename)
+    print(f"📄 Full file path: {full_file_path}")
+    print(f"📄 File exists: {os.path.exists(full_file_path)}")
+    
+    # List all files in the images directory
+    if os.path.exists(abs_images_path):
+        files = os.listdir(abs_images_path)
+        print(f"📋 Files in images directory: {files}")
+    else:
+        print("❌ Images directory not found!")
+    
+    print("=" * 50)
+    
+    try:
+        return send_from_directory(frontend_images, filename)
+    except Exception as e:
+        print(f"❌ Error serving file: {e}")
+        return f"Error: {e}", 404
 # AUTH ROUTES
 @app.route('/api/auth/signup', methods=['POST'])
 def signup():

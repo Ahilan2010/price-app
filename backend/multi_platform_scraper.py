@@ -1,4 +1,4 @@
-# backend/enhanced_multi_platform_scraper.py - ULTRA STEALTH VERSION WITH ACCURATE PRICE DETECTION
+# backend/multi_platform_scraper.py - ULTRA STEALTH VERSION WITH ENHANCED WALMART DETECTION
 import asyncio
 import re
 import random
@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 class EnhancedMultiPlatformScraper:
-    """Ultra-stealth multi-platform scraper with precise price detection and bot evasion"""
+    """Ultra-stealth multi-platform scraper with enhanced Walmart detection and maximum bot evasion"""
     
     def __init__(self):
         self.platform_configs = {
@@ -26,13 +26,11 @@ class EnhancedMultiPlatformScraper:
                     'div#title_feature_div span'
                 ],
                 'price_selectors': [
-                    # Primary price selectors (most accurate)
                     'span.a-price.a-text-price.a-size-medium.apexPriceToPay span.a-offscreen',
                     'span.a-price.a-text-price.apexPriceToPay span.a-offscreen',
                     'span.a-price-current span.a-offscreen',
                     'div[data-feature-name="apex_desktop"] span.a-price-whole',
                     'span.a-price.aok-align-center.reinventPricePriceToPayMargin span.a-offscreen',
-                    # Fallback selectors
                     '#priceblock_dealprice',
                     '#priceblock_ourprice',
                     '.a-price .a-offscreen'
@@ -50,14 +48,23 @@ class EnhancedMultiPlatformScraper:
                     'h1'
                 ],
                 'price_selectors': [
-                    # Most accurate Walmart price selectors
+                    # PRIORITY: Your specific Walmart price selector
+                    'span.inline-flex.flex-column span[itemprop="price"][data-seo-id="hero-price"]',
+                    'span[itemprop="price"][data-seo-id="hero-price"][data-fs-element="price"]',
+                    'span[itemprop="price"][data-seo-id="hero-price"]',
+                    
+                    # High-priority main product price selectors
                     'div[data-testid="price-wrap"] span[itemprop="price"]',
                     'span[data-automation-id="buybox-price"]',
-                    'div[data-testid="add-to-cart-price"] span',
+                    'div[data-testid="add-to-cart-price"] span[itemprop="price"]',
+                    'span[data-automation-id="product-price"]',
+                    
+                    # Additional backup selectors
                     'span[itemprop="price"]',
                     'div.price-current span',
                     '.price.display-inline-block span',
-                    'div[data-testid="price"] span'
+                    'div[data-testid="price"] span',
+                    '[data-testid="price-section"] span[itemprop="price"]'
                 ],
                 'exclude_selectors': [
                     # Exclude recommendation/other product prices
@@ -66,9 +73,11 @@ class EnhancedMultiPlatformScraper:
                     'div[data-testid="you-might-also-like"] *',
                     '.recommendations *',
                     '.similar-items *',
-                    '.sponsored-products *'
+                    '.sponsored-products *',
+                    '[data-testid="similar-products"] *',
+                    '[data-testid="related-products"] *'
                 ],
-                'wait_time': 8000,
+                'wait_time': 10000,  # Increased wait time for Walmart
                 'scroll_behavior': 'targeted'
             },
             'etsy': {
@@ -80,7 +89,6 @@ class EnhancedMultiPlatformScraper:
                     'div[data-region="listing-title"] h1'
                 ],
                 'price_selectors': [
-                    # Updated Etsy selectors for 2024
                     'p[data-testid="price"] span.currency-value',
                     'div[data-buy-box-region="price"] p[data-selector="price-only"]',
                     'p.wt-text-title-larger span.currency-value',
@@ -88,8 +96,8 @@ class EnhancedMultiPlatformScraper:
                     'div[data-selector="listing-page-cart"] span.currency-value',
                     'p.currency span.currency-value'
                 ],
-                'wait_time': 7000,
-                'scroll_behavior': 'gentle'
+                'wait_time': 12000,  # Increased wait time for Etsy stealth
+                'scroll_behavior': 'ultra_gentle'  # New ultra-gentle mode for Etsy
             },
             'ebay': {
                 'domain_patterns': ['ebay.com', 'ebay.co.uk', 'ebay.ca', 'ebay.de', 'ebay.fr'],
@@ -148,16 +156,41 @@ class EnhancedMultiPlatformScraper:
             }
         }
         
-        # Advanced user agents with real fingerprints
+        # Ultra-realistic user agents with latest versions
         self.user_agents = [
-            # Chrome on Windows 10
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            # Chrome on macOS
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            # Edge on Windows
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
-            # Firefox on Windows
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/120.0'
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3 Safari/605.1.15'
+        ]
+        
+        # Enhanced fingerprint data for ultra-stealth
+        self.fingerprints = [
+            {
+                'screen': {'width': 1920, 'height': 1080},
+                'viewport': {'width': 1920, 'height': 1080},
+                'hardware_concurrency': 8,
+                'device_memory': 8,
+                'platform': 'Win32',
+                'timezone': 'America/New_York'
+            },
+            {
+                'screen': {'width': 2560, 'height': 1440},
+                'viewport': {'width': 2560, 'height': 1440},
+                'hardware_concurrency': 12,
+                'device_memory': 16,
+                'platform': 'MacIntel',
+                'timezone': 'America/Los_Angeles'
+            },
+            {
+                'screen': {'width': 1366, 'height': 768},
+                'viewport': {'width': 1366, 'height': 768},
+                'hardware_concurrency': 4,
+                'device_memory': 4,
+                'platform': 'Win32',
+                'timezone': 'America/Chicago'
+            }
         ]
     
     def detect_platform(self, url: str) -> Optional[str]:
@@ -176,22 +209,23 @@ class EnhancedMultiPlatformScraper:
             return None
     
     async def setup_ultra_stealth_browser(self, platform: str):
-        """Ultra-stealth browser setup with advanced anti-detection"""
+        """Ultra-stealth browser setup with maximum anti-detection for Etsy and enhanced Walmart support"""
         try:
             user_agent = random.choice(self.user_agents)
+            fingerprint = random.choice(self.fingerprints)
             
-            # Enhanced stealth context
+            # Enhanced context setup with randomized fingerprinting
             context = await self.browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                screen={'width': 1920, 'height': 1080},
+                viewport=fingerprint['viewport'],
+                screen=fingerprint['screen'],
                 device_scale_factor=1,
                 is_mobile=False,
                 has_touch=False,
                 locale='en-US',
-                timezone_id='America/New_York',
+                timezone_id=fingerprint['timezone'],
                 user_agent=user_agent,
                 permissions=['geolocation'],
-                geolocation={'latitude': 40.7128, 'longitude': -74.0060},
+                geolocation={'latitude': 40.7128 + random.uniform(-0.1, 0.1), 'longitude': -74.0060 + random.uniform(-0.1, 0.1)},
                 extra_http_headers={
                     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                     'Accept-Language': 'en-US,en;q=0.9',
@@ -203,88 +237,118 @@ class EnhancedMultiPlatformScraper:
                     'Sec-Fetch-Site': 'none',
                     'Sec-Fetch-User': '?1',
                     'Cache-Control': 'max-age=0',
-                    'DNT': '1'
+                    'DNT': '1',
+                    'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                    'Sec-Ch-Ua-Mobile': '?0',
+                    'Sec-Ch-Ua-Platform': f'"{fingerprint["platform"]}"'
                 }
             )
             
             page = await context.new_page()
             
-            # Ultra-advanced stealth scripts
-            await page.add_init_script("""
-                // Remove webdriver property completely
-                Object.defineProperty(navigator, 'webdriver', {
+            # Ultra-advanced stealth scripts with enhanced Etsy bypass
+            await page.add_init_script(f"""
+                // Remove ALL automation traces
+                Object.defineProperty(navigator, 'webdriver', {{
                     get: () => undefined,
                     configurable: true
-                });
+                }});
                 
-                // Mock real plugins
-                Object.defineProperty(navigator, 'plugins', {
-                    get: () => {
-                        return {
-                            0: {
-                                0: {type: "application/x-google-chrome-pdf", suffixes: "pdf", description: "Portable Document Format"},
+                // Enhanced plugin spoofing
+                Object.defineProperty(navigator, 'plugins', {{
+                    get: () => {{
+                        return {{
+                            0: {{
+                                0: {{type: "application/x-google-chrome-pdf", suffixes: "pdf", description: "Portable Document Format"}},
                                 description: "Portable Document Format",
                                 filename: "internal-pdf-viewer",
                                 length: 1,
                                 name: "Chrome PDF Plugin"
-                            },
-                            1: {
-                                0: {type: "application/pdf", suffixes: "pdf", description: "Portable Document Format"},
-                                description: "Portable Document Format",
+                            }},
+                            1: {{
+                                0: {{type: "application/pdf", suffixes: "pdf", description: "Portable Document Format"}},
+                                description: "Portable Document Format", 
                                 filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
                                 length: 1,
                                 name: "Chrome PDF Viewer"
-                            },
-                            length: 2
-                        };
-                    }
-                });
+                            }},
+                            2: {{
+                                0: {{type: "application/x-nacl", suffixes: "nexe", description: "Native Client Executable"}},
+                                description: "Native Client",
+                                filename: "internal-nacl-plugin",
+                                length: 1,
+                                name: "Native Client"
+                            }},
+                            length: 3
+                        }};
+                    }}
+                }});
                 
-                // Mock languages realistically
-                Object.defineProperty(navigator, 'languages', {
-                    get: () => ['en-US', 'en']
-                });
+                // Mock languages with regional variations
+                Object.defineProperty(navigator, 'languages', {{
+                    get: () => ['en-US', 'en', 'es']
+                }});
                 
-                // Mock hardware concurrency
-                Object.defineProperty(navigator, 'hardwareConcurrency', {
-                    get: () => 8
-                });
+                // Mock hardware with realistic values
+                Object.defineProperty(navigator, 'hardwareConcurrency', {{
+                    get: () => {fingerprint['hardware_concurrency']}
+                }});
                 
-                // Mock device memory
-                Object.defineProperty(navigator, 'deviceMemory', {
-                    get: () => 8
-                });
+                Object.defineProperty(navigator, 'deviceMemory', {{
+                    get: () => {fingerprint['device_memory']}
+                }});
                 
-                // Mock platform
-                Object.defineProperty(navigator, 'platform', {
-                    get: () => 'Win32'
-                });
+                Object.defineProperty(navigator, 'platform', {{
+                    get: () => '{fingerprint['platform']}'
+                }});
                 
-                // Mock permissions API
+                // Enhanced permissions API mock
                 const originalQuery = window.navigator.permissions.query;
-                window.navigator.permissions.query = (parameters) => (
-                    parameters.name === 'notifications' ?
-                        Promise.resolve({ state: Notification.permission }) :
-                        originalQuery(parameters)
-                );
+                window.navigator.permissions.query = (parameters) => {{
+                    const permission = parameters.name;
+                    if (permission === 'notifications') {{
+                        return Promise.resolve({{ state: 'default' }});
+                    }}
+                    if (permission === 'geolocation') {{
+                        return Promise.resolve({{ state: 'granted' }});
+                    }}
+                    return originalQuery ? originalQuery(parameters) : Promise.resolve({{ state: 'granted' }});
+                }};
                 
-                // Mock Chrome runtime
-                window.chrome = {
-                    runtime: {
+                // Enhanced Chrome object mock
+                window.chrome = {{
+                    runtime: {{
                         onConnect: null,
                         onMessage: null,
-                        connect: function() { return { onMessage: null, onDisconnect: null, postMessage: function() {} }; },
-                        sendMessage: function() {}
-                    },
-                    storage: {
-                        local: {
-                            get: function() { return Promise.resolve({}); },
-                            set: function() { return Promise.resolve(); }
-                        }
-                    }
-                };
+                        connect: function() {{ return {{ onMessage: null, onDisconnect: null, postMessage: function() {{}} }}; }},
+                        sendMessage: function() {{}}
+                    }},
+                    storage: {{
+                        local: {{
+                            get: function() {{ return Promise.resolve({{}}); }},
+                            set: function() {{ return Promise.resolve(); }}
+                        }}
+                    }},
+                    loadTimes: function() {{
+                        return {{
+                            commitLoadTime: Date.now() / 1000 - Math.random() * 100,
+                            connectionInfo: 'http/1.1',
+                            finishDocumentLoadTime: Date.now() / 1000 - Math.random() * 10,
+                            finishLoadTime: Date.now() / 1000 - Math.random() * 10,
+                            firstPaintAfterLoadTime: Date.now() / 1000 - Math.random() * 10,
+                            firstPaintTime: Date.now() / 1000 - Math.random() * 10,
+                            navigationType: 'Other',
+                            npnNegotiatedProtocol: 'http/1.1',
+                            requestTime: Date.now() / 1000 - Math.random() * 200,
+                            startLoadTime: Date.now() / 1000 - Math.random() * 200,
+                            wasAlternateProtocolAvailable: false,
+                            wasFetchedViaSpdy: false,
+                            wasNpnNegotiated: false
+                        }};
+                    }}
+                }};
                 
-                // Remove automation traces
+                // Remove ALL automation traces
                 delete window.__playwright;
                 delete window.__puppeteer;
                 delete window._phantom;
@@ -292,44 +356,111 @@ class EnhancedMultiPlatformScraper:
                 delete window.callPhantom;
                 delete window.callSelenium;
                 delete window._Selenium_IDE_Recorder;
+                delete window.__webdriver_script_func;
+                delete window.__webdriver_evaluate;
+                delete window.__selenium_evaluate;
+                delete window.__fxdriver_evaluate;
+                delete window.__driver_unwrapped;
+                delete window.__webdriver_unwrapped;
+                delete window.__driver_evaluate;
+                delete window.__selenium_unwrapped;
+                delete window.__fxdriver_unwrapped;
                 
-                // Remove CDP traces
-                Object.keys(window).forEach(key => {
-                    if (key.includes('cdc_') || key.includes('$cdc_') || key.includes('selenium')) {
-                        delete window[key];
-                    }
-                });
+                // Remove CDP traces with enhanced detection
+                Object.keys(window).forEach(key => {{
+                    if (key.includes('cdc_') || key.includes('$cdc_') || key.includes('selenium') || 
+                        key.includes('webdriver') || key.includes('driver') || key.includes('__nightmare')) {{
+                        try {{ delete window[key]; }} catch(e) {{}}
+                    }}
+                }});
                 
-                // Mock WebGL
+                // Enhanced WebGL spoofing
                 const getParameter = WebGLRenderingContext.prototype.getParameter;
-                WebGLRenderingContext.prototype.getParameter = function(parameter) {
+                WebGLRenderingContext.prototype.getParameter = function(parameter) {{
+                    // Vendor and renderer spoofing with realistic values
                     if (parameter === 37445) return 'Intel Inc.';
                     if (parameter === 37446) return 'Intel Iris OpenGL Engine';
+                    if (parameter === 35724) return 'WebGL 1.0 (OpenGL ES 2.0 Chromium)';
+                    if (parameter === 37448) return 'OpenGL ES 2.0 Chromium';
                     return getParameter.apply(this, arguments);
-                };
+                }};
                 
-                // Mock canvas fingerprinting
+                // Enhanced canvas fingerprinting resistance
                 const originalToDataURL = HTMLCanvasElement.prototype.toDataURL;
-                HTMLCanvasElement.prototype.toDataURL = function(...args) {
-                    // Add slight randomization to avoid fingerprinting
+                HTMLCanvasElement.prototype.toDataURL = function(...args) {{
+                    // Add noise to canvas fingerprinting
                     const context = this.getContext('2d');
-                    context.fillStyle = 'rgba(255, 255, 255, 0.01)';
-                    context.fillRect(0, 0, 1, 1);
+                    const imageData = context.getImageData(0, 0, this.width, this.height);
+                    for (let i = 0; i < imageData.data.length; i += 4) {{
+                        if (Math.random() < 0.001) {{
+                            imageData.data[i] = imageData.data[i] ^ (Math.random() < 0.5 ? 1 : 2);
+                        }}
+                    }}
+                    context.putImageData(imageData, 0, 0);
                     return originalToDataURL.apply(this, args);
-                };
+                }};
                 
-                // Mock Date to prevent timezone fingerprinting
+                // Enhanced Date and timezone spoofing
                 const originalDate = Date;
-                Date = function(...args) {
-                    if (args.length === 0) {
-                        return new originalDate();
-                    }
+                const timeOffset = Math.floor(Math.random() * 1000) + 500;
+                Date = function(...args) {{
+                    if (args.length === 0) {{
+                        const d = new originalDate();
+                        d.setTime(d.getTime() + timeOffset);
+                        return d;
+                    }}
                     return new originalDate(...args);
-                };
+                }};
                 Date.prototype = originalDate.prototype;
-                Date.now = originalDate.now;
+                Date.now = function() {{ return originalDate.now() + timeOffset; }};
                 Date.parse = originalDate.parse;
                 Date.UTC = originalDate.UTC;
+                
+                // Mock screen properties with realistic variations
+                Object.defineProperty(screen, 'width', {{ get: () => {fingerprint['screen']['width']} }});
+                Object.defineProperty(screen, 'height', {{ get: () => {fingerprint['screen']['height']} }});
+                Object.defineProperty(screen, 'availWidth', {{ get: () => {fingerprint['screen']['width']} }});
+                Object.defineProperty(screen, 'availHeight', {{ get: () => {fingerprint['screen']['height'] - 40} }});
+                Object.defineProperty(screen, 'colorDepth', {{ get: () => 24 }});
+                Object.defineProperty(screen, 'pixelDepth', {{ get: () => 24 }});
+                
+                // Enhanced mouse and keyboard event spoofing
+                const originalAddEventListener = EventTarget.prototype.addEventListener;
+                EventTarget.prototype.addEventListener = function(type, listener, options) {{
+                    // Allow all events but add slight randomization to timing
+                    if (type === 'mousemove' || type === 'click') {{
+                        const wrappedListener = function(event) {{
+                            // Add human-like delay
+                            setTimeout(() => {{
+                                if (typeof listener === 'function') {{
+                                    listener.call(this, event);
+                                }} else if (listener && typeof listener.handleEvent === 'function') {{
+                                    listener.handleEvent(event);
+                                }}
+                            }}, Math.random() * 2);
+                        }};
+                        return originalAddEventListener.call(this, type, wrappedListener, options);
+                    }}
+                    return originalAddEventListener.call(this, type, listener, options);
+                }};
+                
+                // Mock connection info for enhanced realism
+                Object.defineProperty(navigator, 'connection', {{
+                    get: () => ({{
+                        effectiveType: '4g',
+                        rtt: 50 + Math.random() * 50,
+                        downlink: 10 + Math.random() * 5,
+                        saveData: false
+                    }})
+                }});
+                
+                // Enhanced console protection
+                const noop = () => {{}};
+                ['debug', 'clear', 'error', 'info', 'log', 'warn', 'dir', 'dirxml', 'table', 'trace', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd', 'timeStamp'].forEach(method => {{
+                    if (console[method]) {{
+                        console[method] = noop;
+                    }}
+                }});
             """)
             
             return page
@@ -338,120 +469,261 @@ class EnhancedMultiPlatformScraper:
             raise
     
     async def simulate_human_interaction(self, page, platform: str):
-        """Advanced human behavior simulation"""
+        """Ultra-advanced human behavior simulation with platform-specific patterns"""
         try:
             config = self.platform_configs.get(platform, {})
             scroll_behavior = config.get('scroll_behavior', 'minimal')
             
-            # Random initial wait
-            await asyncio.sleep(random.uniform(2, 4))
+            # Initial random wait - humans don't act immediately
+            await asyncio.sleep(random.uniform(3, 6))
             
-            # Realistic mouse movements
-            for _ in range(random.randint(3, 6)):
-                x = random.randint(200, 1600)
-                y = random.randint(200, 900)
+            # Simulate realistic mouse movements with Bézier curves
+            for _ in range(random.randint(4, 8)):
+                start_x = random.randint(100, 1800)
+                start_y = random.randint(100, 800)
+                end_x = random.randint(100, 1800)
+                end_y = random.randint(100, 800)
                 
-                # Create Bézier curve-like movement
-                current_x, current_y = 500, 500  # Starting position
-                steps = random.randint(15, 25)
+                # Create Bézier curve for natural movement
+                control_x = (start_x + end_x) / 2 + random.randint(-200, 200)
+                control_y = (start_y + end_y) / 2 + random.randint(-200, 200)
                 
+                steps = random.randint(20, 40)
                 for i in range(steps):
                     t = i / steps
-                    # Easing function for natural movement
-                    eased_t = t * t * (3.0 - 2.0 * t)
-                    next_x = current_x + (x - current_x) * eased_t
-                    next_y = current_y + (y - current_y) * eased_t
+                    # Quadratic Bézier curve
+                    x = (1-t)**2 * start_x + 2*(1-t)*t * control_x + t**2 * end_x
+                    y = (1-t)**2 * start_y + 2*(1-t)*t * control_y + t**2 * end_y
                     
-                    await page.mouse.move(next_x, next_y)
-                    await asyncio.sleep(random.uniform(0.01, 0.02))
+                    await page.mouse.move(x, y)
+                    await asyncio.sleep(random.uniform(0.005, 0.015))
                 
-                current_x, current_y = x, y
-                await asyncio.sleep(random.uniform(0.3, 0.8))
+                # Random pause at destination
+                await asyncio.sleep(random.uniform(0.5, 1.5))
             
             # Platform-specific scrolling behavior
-            if scroll_behavior == 'targeted':
-                # Scroll to specific areas for better content loading
-                await page.evaluate("window.scrollTo({top: 300, behavior: 'smooth'})")
-                await asyncio.sleep(2)
-                await page.evaluate("window.scrollTo({top: 600, behavior: 'smooth'})")
-                await asyncio.sleep(2)
-                await page.evaluate("window.scrollTo({top: 200, behavior: 'smooth'})")
-                await asyncio.sleep(1)
+            if scroll_behavior == 'ultra_gentle':
+                # Ultra-gentle scrolling for Etsy (maximum stealth)
+                scroll_positions = [100, 250, 150, 400, 300, 500, 350, 200]
+                for pos in scroll_positions:
+                    await page.evaluate(f"""
+                        window.scrollTo({{
+                            top: {pos},
+                            behavior: 'smooth'
+                        }});
+                    """)
+                    await asyncio.sleep(random.uniform(2, 4))
+                    
+                    # Simulate reading behavior
+                    if random.random() > 0.6:
+                        await asyncio.sleep(random.uniform(1, 3))
+                        
+            elif scroll_behavior == 'targeted':
+                # Enhanced targeted scrolling for Walmart
+                scroll_actions = [
+                    {'top': 200, 'delay': random.uniform(1.5, 2.5)},
+                    {'top': 500, 'delay': random.uniform(2, 3)},
+                    {'top': 300, 'delay': random.uniform(1, 2)},
+                    {'top': 700, 'delay': random.uniform(2, 3.5)},
+                    {'top': 400, 'delay': random.uniform(1.5, 2)}
+                ]
+                
+                for action in scroll_actions:
+                    await page.evaluate(f"""
+                        window.scrollTo({{
+                            top: {action['top']},
+                            behavior: 'smooth'
+                        }});
+                    """)
+                    await asyncio.sleep(action['delay'])
+                    
             elif scroll_behavior == 'gentle':
-                # Gentle scrolling for Etsy-like sites
-                for scroll_pos in [200, 400, 300, 500]:
+                # Gentle scrolling for other platforms
+                for scroll_pos in [150, 350, 200, 450, 250]:
                     await page.evaluate(f"window.scrollTo({{top: {scroll_pos}, behavior: 'smooth'}})")
-                    await asyncio.sleep(random.uniform(1, 2))
+                    await asyncio.sleep(random.uniform(1.5, 2.5))
+                    
             elif scroll_behavior == 'minimal':
-                # Minimal scrolling for Amazon-like sites
-                await page.evaluate("window.scrollTo({top: 250, behavior: 'smooth'})")
-                await asyncio.sleep(1.5)
+                # Minimal scrolling
+                await page.evaluate("window.scrollTo({top: 200, behavior: 'smooth'})")
+                await asyncio.sleep(random.uniform(2, 3))
             
-            # Random hover interactions
-            if random.random() > 0.6:
-                await page.mouse.move(
-                    random.randint(400, 1000),
-                    random.randint(300, 700)
-                )
-                await asyncio.sleep(random.uniform(0.5, 1))
+            # Random additional interactions
+            if random.random() > 0.7:
+                # Simulate hovering over elements
+                try:
+                    elements = await page.query_selector_all('button, a, img')
+                    if elements:
+                        random_element = random.choice(elements[:10])  # Only first 10 to avoid ads
+                        await random_element.hover()
+                        await asyncio.sleep(random.uniform(0.5, 1))
+                except:
+                    pass
+            
+            # Final realistic pause
+            await asyncio.sleep(random.uniform(1, 2))
                 
         except Exception as e:
             print(f"Error simulating human interaction: {e}")
     
     async def wait_for_content_load(self, page, platform: str):
-        """Advanced content loading detection"""
+        """Enhanced content loading detection with platform-specific optimizations"""
         try:
             config = self.platform_configs.get(platform, {})
             wait_time = config.get('wait_time', 5000)
             
-            # Wait for network idle
+            # Multi-stage loading detection
             try:
-                await page.wait_for_load_state('networkidle', timeout=wait_time)
+                await page.wait_for_load_state('domcontentloaded', timeout=wait_time // 2)
+                await asyncio.sleep(2)
+                await page.wait_for_load_state('networkidle', timeout=wait_time // 2)
             except:
-                await page.wait_for_load_state('domcontentloaded', timeout=wait_time)
-            
-            # Platform-specific waiting
-            if platform == 'walmart':
-                # Wait for Walmart's dynamic pricing to load
                 try:
-                    await page.wait_for_selector('[data-testid="price-wrap"]', timeout=5000)
+                    await page.wait_for_load_state('load', timeout=wait_time)
                 except:
                     pass
-                await asyncio.sleep(3)  # Extra wait for dynamic content
+            
+            # Platform-specific waiting strategies
+            if platform == 'walmart':
+                # Enhanced Walmart loading detection
+                selectors_to_wait = [
+                    '[data-seo-id="hero-price"]',
+                    '[data-testid="price-wrap"]',
+                    '[itemprop="price"]',
+                    '[data-automation-id="product-price"]'
+                ]
+                
+                for selector in selectors_to_wait:
+                    try:
+                        await page.wait_for_selector(selector, timeout=3000)
+                        print(f"✅ Walmart: Found price selector {selector}")
+                        break
+                    except:
+                        continue
+                
+                # Extra wait for dynamic pricing
+                await asyncio.sleep(random.uniform(4, 6))
                 
             elif platform == 'etsy':
-                # Wait for Etsy's price component
+                # Enhanced Etsy loading with maximum patience
                 try:
-                    await page.wait_for_selector('[data-testid="price"]', timeout=5000)
+                    await page.wait_for_selector('[data-testid="price"]', timeout=8000)
+                except:
+                    try:
+                        await page.wait_for_selector('[data-buy-box-region="price"]', timeout=5000)
+                    except:
+                        pass
+                # Extra stealth wait
+                await asyncio.sleep(random.uniform(3, 5))
+                
+            elif platform == 'amazon':
+                try:
+                    await page.wait_for_selector('.a-price', timeout=4000)
                 except:
                     pass
                 await asyncio.sleep(2)
-                
-            elif platform == 'amazon':
-                # Wait for Amazon's price block
-                try:
-                    await page.wait_for_selector('.a-price', timeout=3000)
-                except:
-                    pass
             
-            # General wait for JavaScript execution
-            await page.wait_for_timeout(2000)
+            # General JavaScript execution wait
+            await page.wait_for_timeout(random.randint(2000, 4000))
             
             return True
         except Exception as e:
             print(f"Error waiting for content load: {e}")
             return True
     
-    async def extract_accurate_price(self, page, platform: str, product_title: str = None) -> Optional[float]:
-        """Ultra-accurate price extraction with context validation"""
+    async def extract_walmart_price_enhanced(self, page) -> Optional[float]:
+        """Enhanced Walmart price extraction with your specific selector priority"""
         try:
+            print("🎯 Enhanced Walmart price extraction starting...")
+            
+            # Your priority selector first
+            priority_selectors = [
+                'span.inline-flex.flex-column span[itemprop="price"][data-seo-id="hero-price"]',
+                'span[itemprop="price"][data-seo-id="hero-price"][data-fs-element="price"]',
+                'span[itemprop="price"][data-seo-id="hero-price"]'
+            ]
+            
+            # Try priority selectors first
+            for i, selector in enumerate(priority_selectors):
+                try:
+                    elements = await page.query_selector_all(selector)
+                    print(f"Priority selector {i+1}: {selector} found {len(elements)} elements")
+                    
+                    for element in elements:
+                        price_text = await element.text_content()
+                        if price_text:
+                            price = await self.extract_price_from_text(price_text, 'walmart')
+                            if price and 0.01 <= price <= 99999:
+                                print(f"✅ WALMART PRIORITY: Found price ${price:.2f} with selector: {selector}")
+                                return price
+                except Exception as e:
+                    print(f"Priority selector {selector} failed: {e}")
+                    continue
+            
+            # If priority selectors fail, try standard selectors
+            print("🔄 Priority selectors failed, trying standard Walmart selectors...")
+            standard_selectors = [
+                'div[data-testid="price-wrap"] span[itemprop="price"]',
+                'span[data-automation-id="buybox-price"]',
+                'div[data-testid="add-to-cart-price"] span[itemprop="price"]',
+                'span[data-automation-id="product-price"]',
+                'span[itemprop="price"]',
+                'div.price-current span',
+                '.price.display-inline-block span'
+            ]
+            
+            for i, selector in enumerate(standard_selectors):
+                try:
+                    elements = await page.query_selector_all(selector)
+                    print(f"Standard selector {i+1}: {selector} found {len(elements)} elements")
+                    
+                    for element in elements:
+                        # Check if element is in main product area (not recommendations)
+                        parent_html = await page.evaluate('''
+                            (element) => {
+                                let parent = element.closest('[data-testid="product-page"]') || 
+                                           element.closest('main') ||
+                                           element.closest('[data-automation-id="product-title"]');
+                                return parent ? parent.innerHTML.substring(0, 1000) : '';
+                            }
+                        ''', element)
+                        
+                        if any(exclude in parent_html.lower() for exclude in ['recommendation', 'similar', 'sponsored', 'related']):
+                            continue
+                        
+                        price_text = await element.text_content()
+                        if price_text:
+                            price = await self.extract_price_from_text(price_text, 'walmart')
+                            if price and 0.01 <= price <= 99999:
+                                print(f"✅ WALMART STANDARD: Found price ${price:.2f} with selector: {selector}")
+                                return price
+                except Exception as e:
+                    print(f"Standard selector {selector} failed: {e}")
+                    continue
+            
+            print("❌ All Walmart price selectors failed")
+            return None
+            
+        except Exception as e:
+            print(f"Error in Walmart price extraction: {e}")
+            return None
+    
+    async def extract_accurate_price(self, page, platform: str, product_title: str = None) -> Optional[float]:
+        """Ultra-accurate price extraction with enhanced platform-specific logic"""
+        try:
+            print(f"🔍 Extracting price for {platform}...")
+            
+            # Use enhanced Walmart extraction
+            if platform == 'walmart':
+                return await self.extract_walmart_price_enhanced(page)
+            
             config = self.platform_configs.get(platform, {})
             price_selectors = config.get('price_selectors', [])
             exclude_selectors = config.get('exclude_selectors', [])
             
-            print(f"Extracting price for {platform} with {len(price_selectors)} selectors...")
+            print(f"Using {len(price_selectors)} selectors for {platform}")
             
-            # First, exclude unwanted price elements (recommendations, etc.)
+            # Exclude unwanted price elements
             if exclude_selectors:
                 for exclude_selector in exclude_selectors:
                     try:
@@ -470,7 +742,6 @@ class EnhancedMultiPlatformScraper:
                     
                     for element in elements:
                         try:
-                            # Get both text content and any data attributes
                             price_text = await element.text_content()
                             
                             # Also check for price in data attributes
@@ -482,21 +753,6 @@ class EnhancedMultiPlatformScraper:
                             except:
                                 pass
                             
-                            # Validate price context if product title is available
-                            if product_title and platform == 'walmart':
-                                # For Walmart, ensure we're not getting recommendation prices
-                                parent_html = await page.evaluate('''
-                                    (element) => {
-                                        let parent = element.closest('[data-testid="product-page"]') || 
-                                                   element.closest('main') ||
-                                                   element.closest('[data-automation-id="product-title"]').closest('div');
-                                        return parent ? parent.innerHTML.substring(0, 500) : '';
-                                    }
-                                ''', element)
-                                
-                                if 'recommendation' in parent_html.lower() or 'similar' in parent_html.lower():
-                                    continue
-                            
                             # Extract price from text
                             if price_text:
                                 price = await self.extract_price_from_text(price_text, platform)
@@ -507,7 +763,7 @@ class EnhancedMultiPlatformScraper:
                                         'selector': selector,
                                         'source': 'text'
                                     })
-                                    print(f"Found valid price: ${price} from text: '{price_text.strip()}'")
+                                    print(f"Found valid price: {self.format_price(price, platform)} from text: '{price_text.strip()}'")
                             
                             # Extract price from attributes
                             if price_attr:
@@ -519,7 +775,7 @@ class EnhancedMultiPlatformScraper:
                                         'selector': selector,
                                         'source': 'attribute'
                                     })
-                                    print(f"Found valid price: ${price} from attribute: '{price_attr}'")
+                                    print(f"Found valid price: {self.format_price(price, platform)} from attribute: '{price_attr}'")
                                     
                         except Exception as e:
                             continue
@@ -542,6 +798,13 @@ class EnhancedMultiPlatformScraper:
         except Exception as e:
             print(f"Error extracting price for {platform}: {e}")
             return None
+    
+    def format_price(self, price: float, platform: str) -> str:
+        """Format price display based on platform"""
+        if platform == 'roblox':
+            return f"{int(price)} Robux"
+        else:
+            return f"${price:.2f}"
     
     async def extract_price_from_text(self, price_text: str, platform: str) -> Optional[float]:
         """Enhanced price extraction with platform-specific logic"""
@@ -569,11 +832,11 @@ class EnhancedMultiPlatformScraper:
                         except:
                             continue
             else:
-                # Currency extraction for other platforms
+                # Enhanced currency extraction for other platforms
                 currency_patterns = [
                     r'\$(\d{1,4}(?:\.\d{1,2})?)',  # $123.45
                     r'USD\s*(\d{1,4}(?:\.\d{1,2})?)',  # USD 123.45
-                    r'(\d{1,4}(?:\.\d{1,2})?)\s*\$',  # 123.45$
+                    r'(\d{1,4}(?:\.\d{1,2})?)\s*\)',  # 123.45$
                     r'(\d{1,4}\.\d{2})',  # 123.45
                     r'(\d{1,4})'  # 123 (last resort)
                 ]
@@ -611,7 +874,7 @@ class EnhancedMultiPlatformScraper:
         
         # For platforms like Walmart, prefer prices from main product area
         if platform == 'walmart':
-            main_prices = [p for p in prices if 'buybox' in p.get('selector', '') or 'add-to-cart' in p.get('selector', '')]
+            main_prices = [p for p in prices if any(keyword in p.get('selector', '') for keyword in ['hero-price', 'buybox', 'add-to-cart'])]
             if main_prices:
                 return main_prices[0]['price']
         
@@ -640,13 +903,13 @@ class EnhancedMultiPlatformScraper:
             return None
     
     async def scrape_product(self, url: str) -> Optional[Tuple[str, float]]:
-        """Main scraping method with ultra-stealth and accuracy"""
+        """Main scraping method with ultra-stealth and enhanced accuracy"""
         platform = self.detect_platform(url)
         if not platform:
             print(f"Unsupported platform for URL: {url}")
             return None
         
-        print(f"Scraping {platform} with ultra-stealth mode: {url}")
+        print(f"🕵️ Scraping {platform} with ULTRA-STEALTH mode: {url}")
         
         async with async_playwright() as p:
             # Enhanced browser launch with maximum stealth
@@ -676,21 +939,33 @@ class EnhancedMultiPlatformScraper:
                     '--hide-scrollbars',
                     '--mute-audio',
                     '--no-default-browser-check',
-                    '--no-first-run',
                     '--disable-logging',
                     '--disable-permissions-api',
                     '--disable-presentation-api',
                     '--disable-remote-fonts',
-                    '--disable-speech-api'
+                    '--disable-speech-api',
+                    '--disable-background-timer-throttling',
+                    '--disable-backgrounding-occluded-windows',
+                    '--disable-renderer-backgrounding',
+                    '--disable-features=TranslateUI',
+                    '--disable-component-extensions-with-background-pages',
+                    '--disable-default-apps',
+                    '--disable-extensions',
+                    '--disable-features=Translate',
+                    '--disable-http2',
+                    '--disable-plugins',
+                    '--disable-plugins-discovery',
+                    '--disable-preconnect',
+                    '--disable-hang-monitor'
                 ]
             )
             
             try:
                 page = await self.setup_ultra_stealth_browser(platform)
                 
-                print(f"Navigating to: {url}")
+                print(f"🌐 Navigating to: {url}")
                 
-                # Navigate with multiple fallback strategies
+                # Enhanced navigation with multiple fallback strategies
                 navigation_success = False
                 for attempt in range(3):
                     try:
@@ -703,52 +978,48 @@ class EnhancedMultiPlatformScraper:
                         
                         if response and response.status < 400:
                             navigation_success = True
+                            print(f"✅ Navigation successful (attempt {attempt + 1})")
                             break
                             
                     except Exception as e:
-                        print(f"Navigation attempt {attempt + 1} failed: {e}")
+                        print(f"❌ Navigation attempt {attempt + 1} failed: {e}")
                         if attempt < 2:
-                            await asyncio.sleep(2)
+                            await asyncio.sleep(random.uniform(3, 6))
                             continue
                         else:
                             raise
                 
                 if not navigation_success:
-                    print("All navigation attempts failed")
+                    print("❌ All navigation attempts failed")
                     return None
                 
-                # Wait for content to load
-                await self.wait_for_content# Wait for content to load
+                # Enhanced content loading and human simulation
                 await self.wait_for_content_load(page, platform)
-                
-                # Simulate human behavior
                 await self.simulate_human_interaction(page, platform)
                 
                 # Extract product title for context
                 title = await self.extract_product_title(page, platform)
                 if not title:
-                    print(f"Could not extract title for {platform}")
+                    print(f"⚠️ Could not extract title for {platform}")
                     title = f"Product from {platform.title()}"
                 
                 # Extract price with enhanced accuracy
                 price = await self.extract_accurate_price(page, platform, title)
                 
                 if price:
-                    if platform == 'roblox':
-                        print(f"✅ Successfully scraped {platform}: {title[:50]}... - {int(price)} Robux")
-                    else:
-                        print(f"✅ Successfully scraped {platform}: {title[:50]}... - ${price:.2f}")
+                    formatted_price = self.format_price(price, platform)
+                    print(f"✅ SUCCESS: {platform.upper()} - {title[:50]}... - {formatted_price}")
                     return title, price
                 else:
-                    print(f"❌ Failed to extract price for {platform}")
+                    print(f"❌ FAILED: Could not extract price for {platform}")
                     
-                    # Debug: Save page content for analysis
+                    # Debug: Save page content for analysis (only in development)
                     try:
                         content = await page.content()
                         debug_file = f'debug_{platform}_{int(time.time())}.html'
                         with open(debug_file, 'w', encoding='utf-8') as f:
                             f.write(content)
-                        print(f"💾 Saved debug HTML: {debug_file}")
+                        print(f"💾 Debug: Saved HTML to {debug_file}")
                     except Exception:
                         pass
                     
@@ -773,12 +1044,51 @@ class EnhancedMultiPlatformScraper:
         }
 
 
-# Enhanced test function with specific URL testing
+# Enhanced error handling and retry mechanism
+class ScrapingRetryManager:
+    """Manages retries and error handling for scraping operations with enhanced backoff"""
+    
+    def __init__(self, max_retries: int = 3, backoff_factor: float = 2.0):
+        self.max_retries = max_retries
+        self.backoff_factor = backoff_factor
+    
+    async def execute_with_retry(self, scraper_func, *args, **kwargs):
+        """Execute scraping function with enhanced retry logic"""
+        last_exception = None
+        
+        for attempt in range(self.max_retries):
+            try:
+                result = await scraper_func(*args, **kwargs)
+                if result:
+                    return result
+                    
+                # If no result but no exception, wait and retry
+                if attempt < self.max_retries - 1:
+                    wait_time = self.backoff_factor ** attempt + random.uniform(1, 3)
+                    print(f"🔄 Attempt {attempt + 1} failed, retrying in {wait_time:.1f}s...")
+                    await asyncio.sleep(wait_time)
+                    
+            except Exception as e:
+                last_exception = e
+                print(f"❌ Attempt {attempt + 1} failed with error: {e}")
+                
+                if attempt < self.max_retries - 1:
+                    wait_time = self.backoff_factor ** attempt + random.uniform(2, 5)
+                    print(f"🔄 Retrying in {wait_time:.1f}s...")
+                    await asyncio.sleep(wait_time)
+        
+        print(f"❌ All {self.max_retries} attempts failed")
+        if last_exception:
+            raise last_exception
+        return None
+
+
+# Enhanced test function
 async def test_enhanced_scraper():
     """Test the enhanced scraper with problematic URLs"""
     scraper = EnhancedMultiPlatformScraper()
     
-    # Test URLs including the problematic Walmart URL
+    # Test URLs including your specific Walmart URL
     test_urls = [
         "https://www.walmart.com/ip/JW-SAGA-VILLIAN-1/14141570021?classType=REGULAR&athbdg=L1800",
         "https://www.amazon.com/dp/B08N5WRWNW",
@@ -794,100 +1104,21 @@ async def test_enhanced_scraper():
         if result:
             title, price = result
             platform = scraper.detect_platform(url)
-            if platform == 'roblox':
-                print(f"✅ SUCCESS: {title} - {int(price)} Robux")
-            else:
-                print(f"✅ SUCCESS: {title} - ${price:.2f}")
+            formatted_price = scraper.format_price(price, platform)
+            print(f"✅ SUCCESS: {title} - {formatted_price}")
         else:
             print("❌ FAILED to scrape")
         
         # Wait between tests
-        print("⏳ Waiting 5 seconds before next test...")
-        await asyncio.sleep(5)
+        print("⏳ Waiting 10 seconds before next test...")
+        await asyncio.sleep(10)
 
 
-# Advanced price validation class
-class PriceValidator:
-    """Validates extracted prices against known patterns and context"""
-    
-    @staticmethod
-    def validate_walmart_price(price: float, title: str, page_content: str) -> bool:
-        """Walmart-specific price validation"""
-        try:
-            # Check if price appears in main product context
-            main_price_indicators = [
-                'data-testid="price"',
-                'buybox-price',
-                'add-to-cart-price',
-                'current-price'
-            ]
-            
-            price_str = f"${price:.2f}"
-            price_alt = f"{price:.2f}"
-            
-            for indicator in main_price_indicators:
-                if indicator in page_content and (price_str in page_content or price_alt in page_content):
-                    return True
-            
-            return False
-        except:
-            return True  # Default to true if validation fails
-    
-    @staticmethod
-    def validate_etsy_price(price: float, title: str) -> bool:
-        """Etsy-specific price validation"""
-        # Etsy prices are typically between $1-$10000
-        return 1.0 <= price <= 10000.0
-    
-    @staticmethod
-    def validate_amazon_price(price: float, title: str) -> bool:
-        """Amazon-specific price validation"""
-        # Amazon prices vary widely, basic range check
-        return 0.01 <= price <= 50000.0
-
-
-# Enhanced error handling and retry mechanism
-class ScrapingRetryManager:
-    """Manages retries and error handling for scraping operations"""
-    
-    def __init__(self, max_retries: int = 3, backoff_factor: float = 2.0):
-        self.max_retries = max_retries
-        self.backoff_factor = backoff_factor
-    
-    async def execute_with_retry(self, scraper_func, *args, **kwargs):
-        """Execute scraping function with retry logic"""
-        last_exception = None
-        
-        for attempt in range(self.max_retries):
-            try:
-                result = await scraper_func(*args, **kwargs)
-                if result:
-                    return result
-                    
-                # If no result but no exception, wait and retry
-                if attempt < self.max_retries - 1:
-                    wait_time = self.backoff_factor ** attempt
-                    print(f"🔄 Attempt {attempt + 1} failed, retrying in {wait_time:.1f}s...")
-                    await asyncio.sleep(wait_time)
-                    
-            except Exception as e:
-                last_exception = e
-                print(f"❌ Attempt {attempt + 1} failed with error: {e}")
-                
-                if attempt < self.max_retries - 1:
-                    wait_time = self.backoff_factor ** attempt
-                    print(f"🔄 Retrying in {wait_time:.1f}s...")
-                    await asyncio.sleep(wait_time)
-        
-        print(f"❌ All {self.max_retries} attempts failed")
-        if last_exception:
-            raise last_exception
-        return None
-
-
-# Main execution with enhanced error handling
+# Main execution
 if __name__ == "__main__":
-    print("🚀 Enhanced Multi-Platform Scraper - Ultra Stealth Mode")
+    print("🚀 Enhanced Multi-Platform Scraper - ULTRA STEALTH MODE")
+    print("🎯 Enhanced Walmart Detection with Priority Selectors")
+    print("🛡️ Maximum Etsy Bot Evasion")
     print("=" * 60)
     
     # Test the scraper
